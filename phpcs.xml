@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<ruleset name="CF7 AI Inbox">
+    <description>CF7 AI Inbox for Contact Form 7 — WordPress Coding Standards ruleset.</description>
+
+    <!-- Files to scan -->
+    <file>.</file>
+
+    <!-- Exclude third-party and generated code -->
+    <exclude-pattern>vendor/*</exclude-pattern>
+    <exclude-pattern>node_modules/*</exclude-pattern>
+    <exclude-pattern>assets/*</exclude-pattern>
+    <exclude-pattern>*.min.js</exclude-pattern>
+    <exclude-pattern>*.min.css</exclude-pattern>
+
+    <!-- WordPress Coding Standards (includes WordPress-Core, WordPress-Docs, WordPress-Extra) -->
+    <rule ref="WordPress">
+        <!--
+            PSR-4 autoloading uses PascalCase filenames (e.g. RestApi.php).
+            WP's class-*.php convention does not apply to namespace-based plugins.
+        -->
+        <exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+        <exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+
+        <!--
+            Short array syntax [] is used throughout the codebase.
+            Both sniff names are excluded because WPCS 3.x triggers the Universal variant.
+        -->
+        <exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
+        <exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+
+        <!--
+            Short ternary ?: is used intentionally in several places
+            (e.g. $result ?: null, $rows ?: []).
+        -->
+        <exclude name="Universal.Operators.DisallowShortTernary"/>
+
+        <!--
+            The PSR-4 autoloader callback must be named $class — it is a
+            PHP convention for autoloaders and cannot be renamed.
+        -->
+        <exclude name="Universal.NamingConventions.NoReservedKeywordParameterNames"/>
+    </rule>
+
+    <!--
+        manage_woocommerce is a capability registered by WooCommerce, not WordPress core.
+        Declaring it here prevents false-positive "Unknown capability" warnings.
+    -->
+    <rule ref="WordPress.WP.Capabilities">
+        <properties>
+            <property name="custom_capabilities" type="array">
+                <element value="manage_woocommerce"/>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- Enforce the correct text domain -->
+    <rule ref="WordPress.WP.I18n">
+        <properties>
+            <property name="text_domain" type="array" value="cf7-ai-inbox"/>
+        </properties>
+    </rule>
+
+    <!-- Minimum WordPress version the plugin supports -->
+    <config name="minimum_supported_wp_version" value="6.0"/>
+
+    <!-- Minimum PHP version for PHPCompatibility checks -->
+    <config name="testVersion" value="8.1-"/>
+
+    <!-- Only scan PHP files -->
+    <arg name="extensions" value="php"/>
+
+    <!-- Output: show sniff codes (-s), progress dots (-p) -->
+    <arg value="sp"/>
+    <arg name="colors"/>
+    <arg name="parallel" value="8"/>
+    <arg name="basepath" value="."/>
+</ruleset>

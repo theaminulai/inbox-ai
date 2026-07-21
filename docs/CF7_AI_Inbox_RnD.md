@@ -535,11 +535,11 @@ cf7-ai-inbox/
 │   ├── Requirements.php
 │   ├── Admin/
 │   │   ├── Menu.php
-│   │   ├── InboxPage.php
-│   │   ├── MessagePage.php
-│   │   ├── SettingsPage.php
-│   │   ├── DashboardWidget.php
-│   │   └── ListTable.php
+│   │   ├── AiInbox.php
+│   │   ├── Contacts.php
+│   │   ├── Settings.php
+│   │   ├── Dashboard.php
+│   │   └── Analytics.php
 │   ├── AI/
 │   │   ├── AIManager.php
 │   │   ├── PromptBuilder.php
