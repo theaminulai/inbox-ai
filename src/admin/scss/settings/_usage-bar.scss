@@ -1,0 +1,39 @@
+// Usage & Billing tab: the "Cost by Request Type" horizontal bars.
+
+.cf7-ai-inbox-usage-bar {
+	&__row {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin-bottom: 12px;
+	}
+
+	&__label {
+		width: 110px;
+		font-size: 12.5px;
+		font-weight: 600;
+		flex-shrink: 0;
+	}
+
+	&__track {
+		flex: 1;
+		height: 10px;
+		border-radius: 5px;
+		background: var(--surface-2);
+		overflow: hidden;
+	}
+
+	&__fill {
+		height: 100%;
+		border-radius: 5px;
+		background: var(--accent);
+	}
+
+	&__value {
+		width: 90px;
+		text-align: right;
+		font-family: var(--mono);
+		font-size: 12px;
+		color: var(--text-secondary);
+	}
+}

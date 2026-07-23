@@ -1,0 +1,141 @@
+// Page header + the two-column Settings shell (subnav sidebar + content
+// stack) shared by all six subtab templates.
+
+.cf7-ai-inbox-page-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 20px;
+	margin-bottom: 22px;
+	flex-wrap: wrap;
+
+	h1 {
+		font-size: 22px;
+		font-weight: 700;
+		margin: 0 0 4px;
+		letter-spacing: -0.01em;
+
+		@media (max-width: 520px) {
+			font-size: 19px;
+		}
+	}
+
+	p {
+		margin: 0;
+		color: var(--text-secondary);
+		font-size: 13.5px;
+	}
+
+	&__controls {
+		display: flex;
+		gap: 8px;
+		align-items: center;
+		flex-wrap: wrap;
+
+		@media (max-width: 760px) {
+			width: 100%;
+		}
+
+		@media (max-width: 520px) {
+			flex-wrap: wrap;
+		}
+	}
+
+	@media (max-width: 760px) {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 12px;
+	}
+}
+
+// The decorative "This month" control on the Usage & Billing tab.
+.cf7-ai-inbox-control {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	background: var(--surface);
+	border: 1px solid var(--border-strong);
+	padding: 7px 12px;
+	border-radius: 8px;
+	font-size: 13px;
+	color: var(--text-primary);
+	cursor: pointer;
+	box-shadow: var(--shadow-sm);
+
+	&:hover {
+		border-color: var(--accent);
+	}
+
+	svg {
+		width: 14px;
+		height: 14px;
+		color: var(--text-secondary);
+	}
+}
+
+.cf7-ai-inbox-stack {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	min-width: 0;
+}
+
+// Two-column grid: the subnav sidebar (200px) + whichever tab's card stack
+// (1fr). Each tab template repeats its own copy of `.cf7-ai-inbox-settings__tabs`
+// because it's the grid's own first column, not just navigation — see the
+// note in includes/Templates/settings.php.
+.cf7-ai-inbox-settings__shell {
+	display: grid;
+	grid-template-columns: 200px 1fr;
+	gap: 20px;
+
+	@media (max-width: 1180px) {
+		grid-template-columns: 160px 1fr;
+	}
+
+	@media (max-width: 980px) {
+		grid-template-columns: 1fr;
+	}
+}
+
+.cf7-ai-inbox-settings__tabs {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+
+	a {
+		padding: 9px 12px;
+		border-radius: 7px;
+		font-size: 13px;
+		font-weight: 500;
+		color: var(--text-secondary);
+		cursor: pointer;
+
+		&.cf7-ai-inbox-is-active {
+			background: var(--accent-soft);
+			color: var(--accent-deep);
+			font-weight: 700;
+		}
+
+		&:hover:not(.cf7-ai-inbox-is-active) {
+			background: var(--surface-2);
+			color: var(--text-primary);
+		}
+
+		@media (max-width: 980px) {
+			white-space: nowrap;
+			flex-shrink: 0;
+		}
+	}
+
+	@media (max-width: 980px) {
+		flex-direction: row;
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		gap: 6px;
+		padding-bottom: 6px;
+		margin-bottom: 4px;
+		border-bottom: 1px solid var(--border);
+		-webkit-overflow-scrolling: touch;
+	}
+}

@@ -25,8 +25,7 @@ module.exports = {
 	devtool: false,
 
 	entry: {
-		// 'assets/js/admin':  path.resolve( rootDir, 'src/main.jsx' ),
-		// 'assets/css/admin': path.resolve( rootDir, 'src/styles/main.scss' ),
+		'build/admin':  path.resolve( rootDir, 'src/admin/index.js' ),
 	},
 
 	output: {

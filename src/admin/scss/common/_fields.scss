@@ -1,0 +1,53 @@
+// Form fields: text/password/range inputs, selects, and textareas — every
+// `[data-field]` control the Settings tab modules read/write.
+
+.cf7-ai-inbox-field {
+	margin-bottom: 20px;
+
+	label {
+		display: block;
+		font-size: 13px;
+		font-weight: 600;
+		margin-bottom: 6px;
+	}
+
+	&__hint {
+		font-size: 12px;
+		color: var(--text-tertiary);
+		margin-top: 5px;
+	}
+
+	&__input {
+		width: 100%;
+		border: 1px solid var(--border-strong);
+		border-radius: 8px;
+		padding: 9px 12px;
+		font-size: 13px;
+		font-family: inherit;
+		background: var(--surface);
+		color: var(--text-primary);
+
+		&:focus {
+			outline: 2px solid var(--accent-soft-border);
+			border-color: var(--accent);
+		}
+	}
+}
+
+textarea.cf7-ai-inbox-field__input {
+	resize: vertical;
+	min-height: 90px;
+	font-family: var(--mono);
+	font-size: 12.5px;
+	line-height: 1.6;
+}
+
+.cf7-ai-inbox-field-row {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+
+	@media (max-width: 760px) {
+		grid-template-columns: 1fr;
+	}
+}

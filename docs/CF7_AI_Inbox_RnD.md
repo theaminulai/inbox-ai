@@ -540,6 +540,7 @@ cf7-ai-inbox/
 │   │   ├── Settings.php
 │   │   ├── Dashboard.php
 │   │   └── Analytics.php
+│   ├── Templates/
 │   ├── AI/
 │   │   ├── AIManager.php
 │   │   ├── PromptBuilder.php

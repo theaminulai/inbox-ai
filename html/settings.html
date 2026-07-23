@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Settings · CF7 AI Inbox</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/cf7-ai-inbox.css">
+</head>
+<body>
+
+  <div class="cf7-ai-inbox-main" id="main">
+
+    <section class="cf7-ai-inbox-screen cf7-ai-inbox-is-active" id="screen-ai-settings">
+      <div class="cf7-ai-inbox-nav">
+        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html">Contacts</a><a href="analytics.html">Analytics</a><a href="settings.html" class="cf7-ai-inbox-is-active">Settings</a>
+      </div>
+      <div class="cf7-ai-inbox-page-header"><div><h1>AI Provider Settings</h1><p>Connect and configure the AI provider used to analyze submissions.</p></div></div>
+      <div class="cf7-ai-inbox-settings__shell">
+        <div class="cf7-ai-inbox-settings__tabs" id="settings-tabs">
+          <a data-subnav="ai-settings" class="cf7-ai-inbox-is-active">AI Provider</a><a data-subnav="general-settings">General</a><a data-subnav="prompts">Prompts</a><a data-subnav="usage">Usage & Billing</a><a data-subnav="notifications">Notifications</a><a data-subnav="flamingo">Import & Migration</a>
+        </div>
+        <div class="cf7-ai-inbox-stack">
+          <div class="cf7-ai-inbox-card"><div class="cf7-ai-inbox-card__header"><h2>Choose a provider</h2></div>
+            <div class="cf7-ai-inbox-card__body">
+              <div class="cf7-ai-inbox-provider__option cf7-ai-inbox-is-selected" data-provider="openai"><div class="cf7-ai-inbox-provider__logo" style="background:#EAF3FF;color:#10A37F;">AI</div><div><div style="font-weight:700;font-size:13.5px;">OpenAI</div><div style="font-size:12px;color:var(--text-tertiary);">GPT-4.1, GPT-4.1 Mini, GPT-4o</div></div><div class="cf7-ai-inbox-provider__radio cf7-ai-inbox-is-checked"></div></div>
+              <div class="cf7-ai-inbox-provider__option" data-provider="anthropic"><div class="cf7-ai-inbox-provider__logo" style="background:#FBEFE9;color:#D97757;">AN</div><div><div style="font-weight:700;font-size:13.5px;">Anthropic</div><div style="font-size:12px;color:var(--text-tertiary);">Claude Sonnet, Claude Haiku</div></div><div class="cf7-ai-inbox-provider__radio"></div></div>
+              <div class="cf7-ai-inbox-provider__option" data-provider="google"><div class="cf7-ai-inbox-provider__logo" style="background:#EEF3FF;color:#4285F4;">G</div><div><div style="font-weight:700;font-size:13.5px;">Google</div><div style="font-size:12px;color:var(--text-tertiary);">Gemini 2.5 Flash, Gemini 2.5 Pro</div></div><div class="cf7-ai-inbox-provider__radio"></div></div>
+            </div>
+          </div>
+          <div class="cf7-ai-inbox-card">
+            <div class="cf7-ai-inbox-card__header"><h2>OpenAI Configuration</h2><span class="cf7-ai-inbox-connected-pill" id="settings-provider-pill"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Connected</span></div>
+            <div class="cf7-ai-inbox-card__body">
+              <div class="cf7-ai-inbox-field"><label>API key</label><input class="cf7-ai-inbox-field__input" type="password" value="sk-••••••••••••••••••••7f2A" style="font-family:var(--mono);"><div class="cf7-ai-inbox-field__hint">Your key is encrypted at rest and never shown in full. It is not exposed in logs or error messages.</div></div>
+              <div class="cf7-ai-inbox-field-row">
+                <div class="cf7-ai-inbox-field" style="margin-bottom:0;"><label>Model</label><select class="cf7-ai-inbox-field__input"><option>GPT-4.1 Mini (recommended)</option><option>GPT-4.1</option><option>GPT-4o</option></select></div>
+                <div class="cf7-ai-inbox-field" style="margin-bottom:0;"><label>Request timeout</label><select class="cf7-ai-inbox-field__input"><option>30 seconds</option><option>60 seconds</option><option>90 seconds</option></select></div>
+              </div>
+              <div style="display:flex;gap:10px;margin-top:18px;">
+                <button class="cf7-ai-inbox-btn--secondary" id="settings-test-connection">Test Connection</button>
+                <button class="cf7-ai-inbox-btn--primary" id="settings-save-provider">Save Changes</button>
+              </div>
+            </div>
+          </div>
+          <div class="cf7-ai-inbox-card"><div class="cf7-ai-inbox-card__header"><h2>Fallback Behavior</h2></div>
+            <div class="cf7-ai-inbox-card__body">
+              <div class="cf7-ai-inbox-switch-row"><div><div class="cf7-ai-inbox-switch-row__text">Retry failed requests automatically</div><div class="cf7-ai-inbox-switch-row__sub">Up to 3 attempts with exponential backoff</div></div><div class="cf7-ai-inbox-switch cf7-ai-inbox-is-on"></div></div>
+              <div class="cf7-ai-inbox-switch-row"><div><div class="cf7-ai-inbox-switch-row__text">Fall back to manual review on repeated failure</div><div class="cf7-ai-inbox-switch-row__sub">Marks the submission as Needs Review instead of Failed</div></div><div class="cf7-ai-inbox-switch cf7-ai-inbox-is-on"></div></div>
+              <div class="cf7-ai-inbox-switch-row"><div><div class="cf7-ai-inbox-switch-row__text">Send email alert on provider outage</div><div class="cf7-ai-inbox-switch-row__sub">Notifies site admins if the provider is unreachable</div></div><div class="cf7-ai-inbox-switch"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cf7-ai-inbox-screen" id="screen-general-settings">
+      <div class="cf7-ai-inbox-nav">
+        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html">Contacts</a><a href="analytics.html">Analytics</a><a href="settings.html" class="cf7-ai-inbox-is-active">Settings</a>
+      </div>
+      <div class="cf7-ai-inbox-page-header"><div><h1>General Settings</h1><p>Choose which forms feed the AI Inbox and how new submissions are handled.</p></div></div>
+      <div class="cf7-ai-inbox-settings__shell">
+        <div class="cf7-ai-inbox-settings__tabs" id="settings-tabs-2">
+          <a data-subnav="ai-settings">AI Provider</a><a data-subnav="general-settings" class="cf7-ai-inbox-is-active">General</a><a data-subnav="prompts">Prompts</a><a data-subnav="usage">Usage & Billing</a><a data-subnav="notifications">Notifications</a><a data-subnav="flamingo">Import & Migration</a>
+        </div>
+        <div class="cf7-ai-inbox-stack">
+          <div class="cf7-ai-inbox-card"><div class="cf7-ai-inbox-card__header"><h2>Monitored Forms</h2></div>
+            <div class="cf7-ai-inbox-card__body">
+              <div class="cf7-ai-inbox-switch-row"><div><div class="cf7-ai-inbox-switch-row__text">Sales Contact</div><div class="cf7-ai-inbox-switch-row__sub">42 submissions this month</div></div><div class="cf7-ai-inbox-switch cf7-ai-inbox-is-on" data-form-toggle="Sales Contact"></div></div>
+              <div class="cf7-ai-inbox-switch-row"><div><div class="cf7-ai-inbox-switch-row__text">Support Form</div><div class="cf7-ai-inbox-switch-row__sub">61 submissions this month</div></div><div class="cf7-ai-inbox-switch cf7-ai-inbox-is-on" data-form-toggle="Support Form"></div></div>
+              <div class="cf7-ai-inbox-switch-row"><div><div class="cf7-ai-inbox-switch-row__text">Billing Form</div><div class="cf7-ai-inbox-switch-row__sub">18 submissions this month</div></div><div class="cf7-ai-inbox-switch cf7-ai-inbox-is-on" data-form-toggle="Billing Form"></div></div>
+              <div class="cf7-ai-inbox-switch-row"><div><div class="cf7-ai-inbox-switch-row__text">General Contact</div><div class="cf7-ai-inbox-switch-row__sub">27 submissions this month</div></div><div class="cf7-ai-inbox-switch cf7-ai-inbox-is-on" data-form-toggle="General Contact"></div></div>
+              <div class="cf7-ai-inbox-switch-row"><div><div class="cf7-ai-inbox-switch-row__text">Newsletter Signup</div><div class="cf7-ai-inbox-switch-row__sub">Not a support-related form</div></div><div class="cf7-ai-inbox-switch"></div></div>
+            </div>
+          </div>
+          <div class="cf7-ai-inbox-card"><div class="cf7-ai-inbox-card__header"><h2>Automatic Processing</h2></div>
+            <div class="cf7-ai-inbox-card__body">
+              <div class="cf7-ai-inbox-switch-row"><div><div class="cf7-ai-inbox-switch-row__text">Analyze new submissions automatically</div><div class="cf7-ai-inbox-switch-row__sub">Runs AI analysis as soon as a message arrives</div></div><div class="cf7-ai-inbox-switch cf7-ai-inbox-is-on"></div></div>
+              <div class="cf7-ai-inbox-switch-row"><div><div class="cf7-ai-inbox-switch-row__text">Auto-draft replies for high-confidence messages</div><div class="cf7-ai-inbox-switch-row__sub">Drafts are never sent without approval</div></div><div class="cf7-ai-inbox-switch cf7-ai-inbox-is-on"></div></div>
+              <div class="cf7-ai-inbox-switch-row"><div><div class="cf7-ai-inbox-switch-row__text">Auto-archive detected spam</div><div class="cf7-ai-inbox-switch-row__sub">Applies only above 95% spam confidence</div></div><div class="cf7-ai-inbox-switch cf7-ai-inbox-is-on"></div></div>
+              <div class="cf7-ai-inbox-field" style="margin-top:16px;"><label>Confidence threshold for "Needs Review"</label><input class="cf7-ai-inbox-field__input" type="range" min="0" max="100" value="60"><div class="cf7-ai-inbox-field__hint">Messages analyzed below 60% confidence are flagged for manual review.</div></div>
+            </div>
+          </div>
+          <div class="cf7-ai-inbox-card"><div class="cf7-ai-inbox-card__header"><h2>Data Retention</h2></div>
+            <div class="cf7-ai-inbox-card__body">
+              <div class="cf7-ai-inbox-field"><label>Keep submissions for</label><select class="cf7-ai-inbox-field__input"><option>Forever</option><option>24 months</option><option>12 months</option><option>6 months</option></select></div>
+              <div class="cf7-ai-inbox-switch-row"><div><div class="cf7-ai-inbox-switch-row__text">Delete attachments after reply is sent</div><div class="cf7-ai-inbox-switch-row__sub">Reduces storage use; text content is kept</div></div><div class="cf7-ai-inbox-switch"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cf7-ai-inbox-screen" id="screen-prompts">
+      <div class="cf7-ai-inbox-nav">
+        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html">Contacts</a><a href="analytics.html">Analytics</a><a href="settings.html" class="cf7-ai-inbox-is-active">Settings</a>
+      </div>
+      <div class="cf7-ai-inbox-page-header"><div><h1>Prompt Configuration</h1><p>Customize the instructions the AI uses to analyze submissions and draft replies.</p></div></div>
+      <div class="cf7-ai-inbox-settings__shell">
+        <div class="cf7-ai-inbox-settings__tabs" id="settings-tabs-3">
+          <a data-subnav="ai-settings">AI Provider</a><a data-subnav="general-settings">General</a><a data-subnav="prompts" class="cf7-ai-inbox-is-active">Prompts</a><a data-subnav="usage">Usage & Billing</a><a data-subnav="notifications">Notifications</a><a data-subnav="flamingo">Import & Migration</a>
+        </div>
+        <div class="cf7-ai-inbox-stack">
+          <div class="cf7-ai-inbox-card"><div class="cf7-ai-inbox-card__header"><h2>Analysis Prompt</h2><span class="cf7-ai-inbox-card__muted">Used to summarize, categorize, and score priority</span></div>
+            <div class="cf7-ai-inbox-card__body">
+              <div class="cf7-ai-inbox-field"><label>Available variables</label><div style="display:flex;gap:6px;flex-wrap:wrap;"><span class="cf7-ai-inbox-prompt-var">{message}</span><span class="cf7-ai-inbox-prompt-var">{customer_name}</span><span class="cf7-ai-inbox-prompt-var">{form_name}</span><span class="cf7-ai-inbox-prompt-var">{submitted_fields}</span><span class="cf7-ai-inbox-prompt-var">{categories}</span></div></div>
+              <div class="cf7-ai-inbox-field" style="margin-bottom:8px;"><label>Prompt template</label>
+                <textarea class="cf7-ai-inbox-field__input" style="min-height:180px;">You are a support triage assistant. Read the submission below and:
+1. Summarize the request in 1-2 sentences.
+2. Assign one category from: {categories}
+3. Assign a priority: urgent, high, normal, or low.
+4. Explain your reasoning briefly.
+
+Customer: {customer_name}
+Form: {form_name}
+Message: {message}
+Submitted fields: {submitted_fields}
+
+Respond in the required structured format only.</textarea>
+              </div>
+              <div class="cf7-ai-inbox-field__hint">Changes apply to new submissions only. Existing analyses are not reprocessed.</div>
+            </div>
+          </div>
+          <div class="cf7-ai-inbox-card"><div class="cf7-ai-inbox-card__header"><h2>Reply Draft Prompt</h2><span class="cf7-ai-inbox-card__muted">Used to generate suggested replies</span></div>
+            <div class="cf7-ai-inbox-card__body">
+              <div class="cf7-ai-inbox-field"><label>Available variables</label><div style="display:flex;gap:6px;flex-wrap:wrap;"><span class="cf7-ai-inbox-prompt-var">{message}</span><span class="cf7-ai-inbox-prompt-var">{summary}</span><span class="cf7-ai-inbox-prompt-var">{tone}</span><span class="cf7-ai-inbox-prompt-var">{signature}</span></div></div>
+              <div class="cf7-ai-inbox-field" style="margin-bottom:0;"><label>Prompt template</label>
+                <textarea class="cf7-ai-inbox-field__input" style="min-height:130px;">Draft a helpful, {tone} reply to this customer based on the summary below. Keep it concise, address every question they asked, and end with the signature.
+
+Summary: {summary}
+Original message: {message}
+Signature: {signature}</textarea>
+              </div>
+            </div>
+          </div>
+          <div class="cf7-ai-inbox-card"><div class="cf7-ai-inbox-card__header"><h2>Reply Tone</h2></div><div class="cf7-ai-inbox-card__body"><div class="cf7-ai-inbox-field" style="margin-bottom:0;"><label>Default tone</label><select class="cf7-ai-inbox-field__input"><option>Friendly and professional</option><option>Formal</option><option>Casual</option><option>Concise</option></select></div></div></div>
+          <div style="display:flex;gap:10px;justify-content:flex-end;"><button class="cf7-ai-inbox-btn--secondary">Reset to defaults</button><button class="cf7-ai-inbox-btn--primary" id="prompts-save-btn">Save Prompts</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cf7-ai-inbox-screen" id="screen-usage">
+      <div class="cf7-ai-inbox-nav">
+        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html">Contacts</a><a href="analytics.html">Analytics</a><a href="settings.html" class="cf7-ai-inbox-is-active">Settings</a>
+      </div>
+      <div class="cf7-ai-inbox-page-header"><div><h1>Usage Dashboard</h1><p>Track AI requests, tokens, and estimated cost across providers.</p></div><div class="cf7-ai-inbox-page-header__controls"><div class="cf7-ai-inbox-control">This month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div></div></div>
+      <div class="cf7-ai-inbox-settings__shell">
+        <div class="cf7-ai-inbox-settings__tabs" id="settings-tabs-4">
+          <a data-subnav="ai-settings">AI Provider</a><a data-subnav="general-settings">General</a><a data-subnav="prompts">Prompts</a><a data-subnav="usage" class="cf7-ai-inbox-is-active">Usage & Billing</a><a data-subnav="notifications">Notifications</a><a data-subnav="flamingo">Import & Migration</a>
+        </div>
+        <div class="cf7-ai-inbox-stack">
+          <div class="cf7-ai-inbox-kpi__strip" style="margin-bottom:0;">
+            <div class="cf7-ai-inbox-kpi__card"><div class="cf7-ai-inbox-kpi__label">Total requests</div><div class="cf7-ai-inbox-kpi__value">142</div><div class="cf7-ai-inbox-kpi__sub">Analysis + reply generation</div></div>
+            <div class="cf7-ai-inbox-kpi__card"><div class="cf7-ai-inbox-kpi__label">Tokens used</div><div class="cf7-ai-inbox-kpi__value">85.4K</div><div class="cf7-ai-inbox-kpi__sub">57K in · 28.4K out</div></div>
+            <div class="cf7-ai-inbox-kpi__card"><div class="cf7-ai-inbox-kpi__label">Estimated cost</div><div class="cf7-ai-inbox-kpi__value">$2.48</div><div class="cf7-ai-inbox-kpi__sub">GPT-4.1 Mini pricing</div></div>
+            <div class="cf7-ai-inbox-kpi__card"><div class="cf7-ai-inbox-kpi__label">Monthly budget</div><div class="cf7-ai-inbox-kpi__value">$10.00</div><div class="cf7-ai-inbox-kpi__sub">25% used · resets in 11 days</div></div>
+          </div>
+          <div class="cf7-ai-inbox-card"><div class="cf7-ai-inbox-card__header"><h2>Requests Over Time</h2></div>
+            <div class="cf7-ai-inbox-card__body">
+              <svg viewBox="0 0 700 180" width="100%" height="180">
+                <g><rect x="10" y="120" width="16" height="50" fill="#3A5CF6" rx="2"/><rect x="60" y="90" width="16" height="80" fill="#3A5CF6" rx="2"/><rect x="110" y="60" width="16" height="110" fill="#3A5CF6" rx="2"/><rect x="160" y="100" width="16" height="70" fill="#3A5CF6" rx="2"/><rect x="210" y="40" width="16" height="130" fill="#3A5CF6" rx="2"/><rect x="260" y="75" width="16" height="95" fill="#3A5CF6" rx="2"/><rect x="310" y="55" width="16" height="115" fill="#3A5CF6" rx="2"/><rect x="360" y="95" width="16" height="75" fill="#3A5CF6" rx="2"/><rect x="410" y="30" width="16" height="140" fill="#3A5CF6" rx="2"/><rect x="460" y="65" width="16" height="105" fill="#3A5CF6" rx="2"/><rect x="510" y="50" width="16" height="120" fill="#3A5CF6" rx="2"/><rect x="560" y="20" width="16" height="150" fill="#3A5CF6" rx="2"/></g>
+                <line x1="0" y1="172" x2="700" y2="172" stroke="var(--border-strong)"/>
+              </svg>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-tertiary);font-family:var(--mono);"><span>Jul 1</span><span>Jul 8</span><span>Jul 15</span><span>Jul 20</span></div>
+            </div>
+          </div>
+          <div class="cf7-ai-inbox-card"><div class="cf7-ai-inbox-card__header"><h2>Cost by Request Type</h2></div>
+            <div class="cf7-ai-inbox-card__body">
+              <div class="cf7-ai-inbox-usage-bar__row"><span class="cf7-ai-inbox-usage-bar__label">Analysis</span><div class="cf7-ai-inbox-usage-bar__track"><div class="cf7-ai-inbox-usage-bar__fill" style="width:60%;"></div></div><span class="cf7-ai-inbox-usage-bar__value">$1.49</span></div>
+              <div class="cf7-ai-inbox-usage-bar__row"><span class="cf7-ai-inbox-usage-bar__label">Reply drafts</span><div class="cf7-ai-inbox-usage-bar__track"><div class="cf7-ai-inbox-usage-bar__fill" style="width:32%;background:#8A7EF0;"></div></div><span class="cf7-ai-inbox-usage-bar__value">$0.79</span></div>
+              <div class="cf7-ai-inbox-usage-bar__row"><span class="cf7-ai-inbox-usage-bar__label">Regenerations</span><div class="cf7-ai-inbox-usage-bar__track"><div class="cf7-ai-inbox-usage-bar__fill" style="width:8%;background:var(--low);"></div></div><span class="cf7-ai-inbox-usage-bar__value">$0.20</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cf7-ai-inbox-screen" id="screen-notifications">
+      <div class="cf7-ai-inbox-nav">
+        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html">Contacts</a><a href="analytics.html">Analytics</a><a href="settings.html" class="cf7-ai-inbox-is-active">Settings</a>
+      </div>
+      <div class="cf7-ai-inbox-page-header"><div><h1>Notifications</h1><p>Choose how you and your team hear about inbox activity.</p></div></div>
+      <div class="cf7-ai-inbox-settings__shell">
+        <div class="cf7-ai-inbox-settings__tabs" id="settings-tabs-5">
+          <a data-subnav="ai-settings">AI Provider</a><a data-subnav="general-settings">General</a><a data-subnav="prompts">Prompts</a><a data-subnav="usage">Usage & Billing</a><a data-subnav="notifications" class="cf7-ai-inbox-is-active">Notifications</a><a data-subnav="flamingo">Import & Migration</a>
+        </div>
+        <div class="cf7-ai-inbox-stack">
+          <div class="cf7-ai-inbox-card"><div class="cf7-ai-inbox-card__header"><h2>Email Notifications</h2></div>
+            <div class="cf7-ai-inbox-card__body">
+              <div class="cf7-ai-inbox-switch-row"><div><div class="cf7-ai-inbox-switch-row__text">Notify me on urgent messages</div><div class="cf7-ai-inbox-switch-row__sub">Sent immediately when priority is Urgent</div></div><div class="cf7-ai-inbox-switch cf7-ai-inbox-is-on"></div></div>
+              <div class="cf7-ai-inbox-switch-row"><div><div class="cf7-ai-inbox-switch-row__text">Daily summary digest</div><div class="cf7-ai-inbox-switch-row__sub">Sent every morning at 9:00 AM</div></div><div class="cf7-ai-inbox-switch cf7-ai-inbox-is-on"></div></div>
+              <div class="cf7-ai-inbox-switch-row"><div><div class="cf7-ai-inbox-switch-row__text">Notify on AI analysis failure</div><div class="cf7-ai-inbox-switch-row__sub">Sent when a submission fails processing</div></div><div class="cf7-ai-inbox-switch cf7-ai-inbox-is-on"></div></div>
+              <div class="cf7-ai-inbox-switch-row"><div><div class="cf7-ai-inbox-switch-row__text">Notify when a reply draft is ready</div><div class="cf7-ai-inbox-switch-row__sub">For messages awaiting approval</div></div><div class="cf7-ai-inbox-switch"></div></div>
+            </div>
+          </div>
+          <div class="cf7-ai-inbox-card"><div class="cf7-ai-inbox-card__header"><h2>Slack Integration</h2></div>
+            <div class="cf7-ai-inbox-card__body">
+              <div class="cf7-ai-inbox-switch-row"><div><div class="cf7-ai-inbox-switch-row__text">Send a Slack message for urgent submissions</div><div class="cf7-ai-inbox-switch-row__sub">Requires a connected Slack workspace</div></div><div class="cf7-ai-inbox-switch"></div></div>
+              <div class="cf7-ai-inbox-field" style="margin-top:14px;margin-bottom:0;"><label>Slack channel webhook URL</label><input class="cf7-ai-inbox-field__input" placeholder="https://hooks.slack.com/services/…"></div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;"><button class="cf7-ai-inbox-btn--primary" id="notifications-save-btn">Save Notification Settings</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cf7-ai-inbox-screen" id="screen-flamingo">
+      <div class="cf7-ai-inbox-nav">
+        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html">Contacts</a><a href="analytics.html">Analytics</a><a href="settings.html" class="cf7-ai-inbox-is-active">Settings</a>
+      </div>
+      <div class="cf7-ai-inbox-page-header"><div><h1>Flamingo Import</h1><p>Import data from Flamingo to CF7 AI Inbox.</p></div></div>
+      <div class="cf7-ai-inbox-settings__shell">
+        <div class="cf7-ai-inbox-settings__tabs" id="settings-tabs-6">
+          <a data-subnav="ai-settings">AI Provider</a><a data-subnav="general-settings">General</a><a data-subnav="prompts">Prompts</a><a data-subnav="usage">Usage & Billing</a><a data-subnav="notifications">Notifications</a><a data-subnav="flamingo" class="cf7-ai-inbox-is-active">Import & Migration</a>
+        </div>
+        <div>
+          <div class="cf7-ai-inbox-wizard__steps">
+            <div class="cf7-ai-inbox-wizard__step cf7-ai-inbox-is-active" data-wizard-step="1"><div class="cf7-ai-inbox-wizard__circle">1</div><span>Upload</span></div>
+            <div class="cf7-ai-inbox-wizard__line"></div>
+            <div class="cf7-ai-inbox-wizard__step" data-wizard-step="2"><div class="cf7-ai-inbox-wizard__circle">2</div><span>Map Fields</span></div>
+            <div class="cf7-ai-inbox-wizard__line"></div>
+            <div class="cf7-ai-inbox-wizard__step" data-wizard-step="3"><div class="cf7-ai-inbox-wizard__circle">3</div><span>Import</span></div>
+            <div class="cf7-ai-inbox-wizard__line"></div>
+            <div class="cf7-ai-inbox-wizard__step" data-wizard-step="4"><div class="cf7-ai-inbox-wizard__circle">4</div><span>Complete</span></div>
+          </div>
+
+          <!-- STEP 1: UPLOAD -->
+          <div class="cf7-ai-inbox-card" id="flamingo-panel-1">
+            <div class="cf7-ai-inbox-card__body" style="text-align:center;padding:44px 24px 28px;">
+              <h2 style="margin:0 0 4px;font-size:16px;">Upload Flamingo Export File</h2>
+              <p style="color:var(--text-secondary);font-size:13px;margin:0 0 22px;">Select the Flamingo export (.json or .csv) file to import.</p>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6" style="width:44px;height:44px;"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3"/></svg>
+                <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;">
+                  <label class="cf7-ai-inbox-btn--secondary" for="flamingo-file-input" style="cursor:pointer;margin:0;">Choose File</label>
+                  <input type="file" id="flamingo-file-input" accept=".json,.csv" style="display:none;">
+                  <span id="flamingo-file-name" style="font-size:12.5px;color:var(--text-tertiary);">No file chosen</span>
+                </div>
+                <div style="font-size:12px;color:var(--text-tertiary);">Supports .json and .csv files exported from Flamingo.</div>
+                <div id="flamingo-detected-info" style="display:none;align-items:center;gap:8px;background:var(--conf-good-soft);border:1px solid #BEE7CD;border-radius:8px;padding:10px 14px;font-size:12.5px;color:var(--conf-good);font-weight:600;margin-top:6px;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:13px;height:13px;flex-shrink:0;"><path d="M20 6L9 17l-5-5"/></svg>
+                  <span>Detected Flamingo 3.2.1 export — 1,204 messages, 318 attachments found.</span>
+                </div>
+              </div>
+              <div style="margin-top:22px;"><a href="#" id="flamingo-guide-link" style="font-size:12.5px;color:var(--accent-deep);font-weight:600;">Download Flamingo Export Guide</a></div>
+            </div>
+            <div class="cf7-ai-inbox-modal__footer" style="justify-content:flex-end;background:transparent;">
+              <button class="cf7-ai-inbox-btn--primary" id="flamingo-next-1" disabled>Next</button>
+            </div>
+          </div>
+
+          <!-- STEP 2: MAP FIELDS -->
+          <div class="cf7-ai-inbox-card" id="flamingo-panel-2" style="display:none;">
+            <div class="cf7-ai-inbox-card__header"><h2>Map Fields</h2><span class="cf7-ai-inbox-card__muted">Choose what to bring in from your Flamingo export</span></div>
+            <div class="cf7-ai-inbox-card__body">
+              <div class="cf7-ai-inbox-switch-row"><div><div class="cf7-ai-inbox-switch-row__text">Inbound messages</div><div class="cf7-ai-inbox-switch-row__sub">Mapped to AI Inbox submissions · 1,204 messages</div></div><div class="cf7-ai-inbox-switch cf7-ai-inbox-is-on" id="flamingo-toggle-messages"></div></div>
+              <div class="cf7-ai-inbox-switch-row"><div><div class="cf7-ai-inbox-switch-row__text">Attachments</div><div class="cf7-ai-inbox-switch-row__sub">Mapped to submission attachments · 318 files, ~640MB</div></div><div class="cf7-ai-inbox-switch cf7-ai-inbox-is-on" id="flamingo-toggle-attachments"></div></div>
+              <div class="cf7-ai-inbox-switch-row"><div><div class="cf7-ai-inbox-switch-row__text">Existing forwarded/reply history</div><div class="cf7-ai-inbox-switch-row__sub">Mapped to activity timeline · where available in Flamingo</div></div><div class="cf7-ai-inbox-switch" id="flamingo-toggle-history"></div></div>
+              <div class="cf7-ai-inbox-switch-row" style="border-bottom:none;"><div><div class="cf7-ai-inbox-switch-row__text">Run AI analysis on imported messages</div><div class="cf7-ai-inbox-switch-row__sub">Optional — can also be run later in smaller batches to manage cost</div></div><div class="cf7-ai-inbox-switch cf7-ai-inbox-is-on" id="flamingo-toggle-ai"></div></div>
+            </div>
+            <div class="cf7-ai-inbox-modal__footer" style="justify-content:space-between;background:transparent;">
+              <button class="cf7-ai-inbox-btn--secondary" id="flamingo-back-2">Back</button>
+              <button class="cf7-ai-inbox-btn--primary" id="flamingo-next-2">Next</button>
+            </div>
+          </div>
+
+          <!-- STEP 3: IMPORT -->
+          <div class="cf7-ai-inbox-card" id="flamingo-panel-3" style="display:none;">
+            <div class="cf7-ai-inbox-card__header"><h2>Review & Import</h2><span class="cf7-ai-inbox-card__muted">A summary is shown before anything is permanently imported</span></div>
+            <div class="cf7-ai-inbox-card__body">
+              <div class="cf7-ai-inbox-info-row"><span>Source</span><b>Flamingo 3.2.1</b></div>
+              <div class="cf7-ai-inbox-info-row"><span>Messages to import</span><b style="font-family:var(--mono);" id="flamingo-summary-messages">1,204</b></div>
+              <div class="cf7-ai-inbox-info-row"><span>Attachments</span><b style="font-family:var(--mono);" id="flamingo-summary-attachments">318</b></div>
+              <div class="cf7-ai-inbox-info-row"><span>Est. AI analysis cost</span><b style="font-family:var(--mono);" id="flamingo-summary-cost">≈ $18.60</b></div>
+              <div class="cf7-ai-inbox-info-row"><span>Est. time</span><b>~25 minutes</b></div>
+              <div id="flamingo-progress-wrap" style="display:none;margin-top:14px;">
+                <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-secondary);margin-bottom:6px;"><span id="flamingo-progress-label">Importing…</span><span id="flamingo-progress-pct">0%</span></div>
+                <div class="cf7-ai-inbox-confidence__track"><div class="cf7-ai-inbox-confidence__fill" id="flamingo-progress-fill" style="width:0%;background:var(--accent);"></div></div>
+              </div>
+            </div>
+            <div class="cf7-ai-inbox-modal__footer" style="justify-content:space-between;background:transparent;">
+              <button class="cf7-ai-inbox-btn--secondary" id="flamingo-back-3">Back</button>
+              <button class="cf7-ai-inbox-btn--primary" id="flamingo-start-import-btn">Start Import</button>
+            </div>
+          </div>
+
+          <!-- STEP 4: COMPLETE -->
+          <div class="cf7-ai-inbox-card" id="flamingo-panel-4" style="display:none;">
+            <div class="cf7-ai-inbox-card__body" style="text-align:center;padding:44px 24px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--conf-good)" stroke-width="1.6" style="width:48px;height:48px;"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-6"/></svg>
+              <h2 style="margin:14px 0 6px;font-size:16px;">Import Complete</h2>
+              <p style="color:var(--text-secondary);font-size:13px;margin:0 0 22px;" id="flamingo-complete-summary">1,204 messages and 318 attachments were imported successfully.</p>
+              <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+                <button class="cf7-ai-inbox-btn--secondary" id="flamingo-restart-btn">Import Another File</button>
+                <a class="cf7-ai-inbox-btn--primary" href="inbox.html">View AI Inbox</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="cf7-ai-inbox-card" style="margin-top:16px;">
+            <div class="cf7-ai-inbox-card__header"><h2>Notes</h2></div>
+            <div class="cf7-ai-inbox-card__body" style="font-size:12.5px;color:var(--text-secondary);line-height:1.7;">Original Flamingo entries are left untouched — this creates copies inside AI Inbox. You can re-run this import later for any new Flamingo messages received after today.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+<div class="cf7-ai-inbox-modal" id="import-modal-overlay" style="display:none;">
+  <div class="cf7-ai-inbox-modal__box">
+    <div class="cf7-ai-inbox-modal__header"><h3>Start Flamingo import?</h3><div class="cf7-ai-inbox-btn--icon" data-close-modal="import-modal-overlay" style="width:26px;height:26px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></div></div>
+    <div class="cf7-ai-inbox-modal__body">
+      This will import <b style="color:var(--text-primary);">1,204 messages</b> and <b style="color:var(--text-primary);">318 attachments</b> from Flamingo into AI Inbox, and run AI analysis on each one. Original Flamingo entries are left untouched.
+      <div class="cf7-ai-inbox-modal__preview">
+        <b>Estimated AI analysis cost:</b> ≈ $18.60<br>
+        <b>Estimated time:</b> ~25 minutes
+      </div>
+    </div>
+    <div class="cf7-ai-inbox-modal__footer">
+      <button class="cf7-ai-inbox-btn--secondary" data-close-modal="import-modal-overlay">Cancel</button>
+      <button class="cf7-ai-inbox-btn--primary" id="modal-confirm-import"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>Confirm & Import</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="assets/js/common.js"></script>
+<script src="assets/js/settings.js"></script>
+</body>
+</html>

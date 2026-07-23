@@ -32,6 +32,11 @@ wp-config.php
 # Log files
 *.log
 
+# Node modules
+/node_modules
+/build
+package-lock.json
+
 # htaccess
 /.htaccess
 

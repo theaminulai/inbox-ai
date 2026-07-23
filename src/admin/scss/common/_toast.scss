@@ -1,0 +1,59 @@
+// Toast notifications (src/admin/componets/shared/toast.js).
+
+#toast-container {
+	position: fixed;
+	bottom: 22px;
+	right: 22px;
+	z-index: 300;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	align-items: flex-end;
+
+	@media (max-width: 760px) {
+		left: 16px;
+		right: 16px;
+		bottom: 16px;
+		align-items: stretch;
+	}
+}
+
+.cf7-ai-inbox-toast {
+	background: #1D2327;
+	color: #fff;
+	padding: 10px 16px;
+	border-radius: 8px;
+	font-size: 12.5px;
+	font-weight: 500;
+	box-shadow: var(--shadow-md);
+	opacity: 0;
+	transform: translateY(8px);
+	transition: opacity .2s, transform .2s;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	max-width: 320px;
+
+	&.cf7-ai-inbox-is-visible {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	&.cf7-ai-inbox-toast--success {
+		background: #1F9254;
+	}
+
+	&.cf7-ai-inbox-toast--error {
+		background: #D93B3B;
+	}
+
+	svg {
+		width: 14px;
+		height: 14px;
+		flex-shrink: 0;
+	}
+
+	@media (max-width: 760px) {
+		max-width: none;
+	}
+}

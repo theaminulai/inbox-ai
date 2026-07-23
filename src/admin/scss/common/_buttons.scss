@@ -1,0 +1,76 @@
+// The three button styles used throughout the Settings tabs: primary
+// (Save/Confirm), secondary (Cancel/Back/Test Connection), and icon-only
+// (the modal close button).
+
+.cf7-ai-inbox-btn--icon {
+	width: 32px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--surface);
+	border: 1px solid var(--border-strong);
+	border-radius: 8px;
+	cursor: pointer;
+	box-shadow: var(--shadow-sm);
+
+	svg {
+		width: 15px;
+		height: 15px;
+		color: var(--text-secondary);
+	}
+
+	&:hover {
+		border-color: var(--accent);
+	}
+}
+
+.cf7-ai-inbox-btn--primary {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	background: var(--accent);
+	color: #fff;
+	border: 1px solid var(--accent-deep);
+	padding: 8px 14px;
+	border-radius: 8px;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	box-shadow: var(--shadow-sm);
+
+	&:hover {
+		background: var(--accent-deep);
+	}
+
+	&:disabled {
+		opacity: .6;
+		cursor: default;
+	}
+
+	svg {
+		width: 14px;
+		height: 14px;
+	}
+}
+
+.cf7-ai-inbox-btn--secondary {
+	padding: 8px 14px;
+	border-radius: 8px;
+	border: 1px solid var(--border-strong);
+	background: var(--surface);
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--text-primary);
+	cursor: pointer;
+
+	&:hover {
+		border-color: var(--accent);
+		color: var(--accent-deep);
+	}
+
+	&:disabled {
+		opacity: .6;
+		cursor: default;
+	}
+}

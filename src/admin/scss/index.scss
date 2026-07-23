@@ -1,0 +1,34 @@
+
+// Ported from html/assets/css/cf7-ai-inbox.css, scoped to only what the
+// Settings page (includes/Templates/settings.php + settings-*.php) actually
+// uses. Rules only needed by the other four pages (top nav, message/contact
+// tables, badges, activity timelines, empty states, etc.) were deliberately
+// left out — see docs/plans/05-settings-plan.md.
+//
+// Not yet wired into a build step: includes/Admin/Pages/SettingsPage.php
+// currently enqueues the original flat
+// html/assets/css/cf7-ai-inbox.css directly, since no compiler runs in this
+// environment. Once `npm run build` (wp-scripts) is run against this file,
+// point that enqueue at the compiled output instead.
+//
+// Partials shared across every admin page (design tokens, reset, buttons,
+// card, fields, switch, modal, toast) live in Common/. Partials specific
+// to this page (layout, provider, prompts, kpi, usage-bar, wizard) live in
+// Settings/. Each future page gets its own same-named folder (Overview/,
+// Contacts/, Analytics/) alongside Common/, keeping the scss/ folder
+// organized by which page a partial belongs to.
+
+@use 'common/variables';
+@use 'common/base';
+@use 'settings/layout';
+@use 'common/buttons';
+@use 'common/card';
+@use 'common/fields';
+@use 'common/switch';
+@use 'settings/provider';
+@use 'settings/prompts';
+@use 'settings/kpi';
+@use 'settings/usage-bar';
+@use 'settings/wizard';
+@use 'common/modal';
+@use 'common/toast';

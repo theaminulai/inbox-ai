@@ -16,6 +16,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use CF7AIInbox\Admin\AjaxController;
+use CF7AIInbox\Admin\Menu;
 use CF7AIInbox\Database\Migrator;
 
 /**
@@ -92,6 +94,11 @@ final class Plugin {
 		// Cheap no-op once already up to date; catches installs upgraded
 		// in place without a deactivate/reactivate cycle.
 		Migrator::maybe_migrate();
+
+		if ( is_admin() ) {
+			( new Menu() )->init();
+			( new AjaxController() )->init();
+		}
 
 		/**
 		 * Fires once CF7 AI Inbox has confirmed its requirements are met

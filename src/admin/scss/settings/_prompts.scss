@@ -1,0 +1,13 @@
+// Prompts tab: the `{variable}` chips shown above each prompt textarea.
+
+.cf7-ai-inbox-prompt-var {
+	display: inline-flex;
+	background: var(--accent-soft);
+	color: var(--accent-deep);
+	border: 1px solid var(--accent-soft-border);
+	border-radius: 5px;
+	padding: 1px 6px;
+	font-family: var(--mono);
+	font-size: 11.5px;
+	font-weight: 600;
+}
