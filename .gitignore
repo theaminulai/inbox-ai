@@ -37,6 +37,8 @@ wp-config.php
 /build
 package-lock.json
 
+#zip
+*.zip
 #composer
 /vendor
 
