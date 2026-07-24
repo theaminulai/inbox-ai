@@ -18,11 +18,18 @@ use CF7AIInbox\Database\Migrator;
  * Class FlamingoImporter
  *
  * Powers the Settings page's Import & Migration tab (R&D §10). Reads
- * Flamingo's `flamingo_inbound` posts through public APIs only
- * (`get_posts()`/`get_post_meta()`) — Flamingo's internal classes are never
- * treated as a stable dependency (R&D §10.1) — and never deletes or
- * modifies Flamingo's own data; every import creates a new row in this
- * plugin's own `cf7ai_messages` table instead.
+ * Flamingo's `flamingo_inbound` posts (message submissions) through public
+ * APIs only (`get_posts()`/`get_post_meta()`/`wp_get_object_terms()`) —
+ * Flamingo's internal classes are never treated as a stable dependency (R&D
+ * §10.1) — and never deletes or modifies Flamingo's own data; every import
+ * creates a row in this plugin's own `cf7ai_messages` table instead.
+ *
+ * This importer also had a companion path for Flamingo's separate
+ * `flamingo_contact` posts (its Address Book) at one point, alongside a
+ * minimal Contacts admin page — both were built and then deliberately
+ * reverted at the user's request ("Contacts page are not needed for now, I
+ * will develop them later according to my development plan."), so this
+ * class is messages-only again pending that later, from-scratch build.
  */
 final class FlamingoImporter {
 
@@ -62,6 +69,22 @@ final class FlamingoImporter {
 	}
 
 	/**
+	 * Every `post_status` that actually exists on a `flamingo_inbound` row on
+	 * this site right now, per `wp_count_posts()` — the same raw, unfiltered
+	 * count {@see self::detect()} sums. Used as `import_batch()`'s own
+	 * `post_status` argument so the two can never disagree about how many
+	 * messages there are to import (see the comment at that call site for
+	 * why `'any'` can't be used here).
+	 *
+	 * @return string[]
+	 */
+	private static function get_all_statuses(): array {
+		$statuses = array_keys( (array) wp_count_posts( 'flamingo_inbound' ) );
+
+		return array() !== $statuses ? $statuses : array( 'any' );
+	}
+
+	/**
 	 * Imports one batch of Flamingo messages, skipping any already
 	 * imported. Called repeatedly (with an increasing offset) by the
 	 * wizard's Import step until `done` comes back true.
@@ -88,7 +111,19 @@ final class FlamingoImporter {
 		$post_ids = get_posts(
 			array(
 				'post_type'      => 'flamingo_inbound',
-				'post_status'    => 'any',
+				// Deliberately NOT 'any': WP_Query expands 'any' to every
+				// status EXCEPT ones registered with `exclude_from_search`,
+				// and Flamingo registers its own spam status
+				// (`flamingo-spam`) with exactly that flag set — so 'any'
+				// silently drops every spam-flagged message, while
+				// `wp_count_posts()` in self::detect() has no such
+				// exclusion and counts them anyway. That mismatch (wizard
+				// says "N messages found", import then processes 0 of them)
+				// was the actual cause of Flamingo imports appearing to do
+				// nothing. Querying the exact same statuses detect() summed
+				// keeps both in sync without hardcoding Flamingo's internal
+				// status constant here.
+				'post_status'    => self::get_all_statuses(),
 				'posts_per_page' => $limit,
 				'offset'         => $offset,
 				'orderby'        => 'ID',
@@ -122,7 +157,7 @@ final class FlamingoImporter {
 			$wpdb->insert(
 				$table,
 				array(
-					'form_title'      => sanitize_text_field( (string) get_post_meta( $post_id, '_channel', true ) ),
+					'form_title'      => sanitize_text_field( self::get_channel( $post_id ) ),
 					'sender_name'     => sanitize_text_field( (string) get_post_meta( $post_id, '_from_name', true ) ),
 					'sender_email'    => sanitize_email( (string) get_post_meta( $post_id, '_from_email', true ) ),
 					'subject'         => sanitize_text_field( (string) get_post_meta( $post_id, '_subject', true ) ),
@@ -147,6 +182,36 @@ final class FlamingoImporter {
 			'done'     => $fetched < $limit,
 			'offset'   => $offset + $fetched,
 		);
+	}
+
+	/**
+	 * A `flamingo_inbound` post's channel — i.e. which Contact Form 7 form it
+	 * came from — for this importer's `form_title` column.
+	 *
+	 * This is NOT post meta. `Flamingo_Inbound_Message::save()` (see
+	 * `flamingo/includes/class-inbound-message.php`) stores it as a term in
+	 * Flamingo's own `flamingo_inbound_channel` taxonomy via
+	 * `wp_set_object_terms()`, not as a `_channel` meta value — there is no
+	 * such meta key, so reading it with `get_post_meta( $id, '_channel', true )`
+	 * (this importer's original approach) silently returns an empty string
+	 * for every row, leaving `form_title` permanently blank on every import.
+	 * The taxonomy is queried through the public `wp_get_object_terms()` API
+	 * only, consistent with this class never depending on Flamingo's internal
+	 * classes (see the class docblock).
+	 *
+	 * @param int $post_id Flamingo's `flamingo_inbound` post id.
+	 *
+	 * @return string The channel term's name (Flamingo stores the CF7 form's
+	 *                title there), or '' if it has none.
+	 */
+	private static function get_channel( int $post_id ): string {
+		$terms = wp_get_object_terms( $post_id, 'flamingo_inbound_channel' );
+
+		if ( ! is_array( $terms ) || array() === $terms || is_wp_error( $terms ) ) {
+			return '';
+		}
+
+		return (string) $terms[0]->name;
 	}
 
 	/**

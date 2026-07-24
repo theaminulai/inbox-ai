@@ -27,7 +27,10 @@ export function initGeneralTab() {
 			} );
 			values.monitored_forms = monitoredForms;
 
-			cf7aiAjax( 'cf7ai_save_settings', { tab: 'general-settings', values: JSON.stringify( values ) } )
+			cf7aiAjax( 'cf7ai_save_settings', {
+				tab: 'general-settings',
+				values: JSON.stringify( values ),
+			} )
 				.then( () => showToast( 'General settings saved', 'success' ) )
 				.catch( ( err ) => showToast( err.message, 'error' ) );
 		} );

@@ -37,6 +37,9 @@ wp-config.php
 /build
 package-lock.json
 
+#composer
+/vendor
+
 # htaccess
 /.htaccess
 

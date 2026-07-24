@@ -1,22 +1,19 @@
 
-// Ported from html/assets/css/cf7-ai-inbox.css, scoped to only what the
-// Settings page (includes/Templates/settings.php + settings-*.php) actually
-// uses. Rules only needed by the other four pages (top nav, message/contact
-// tables, badges, activity timelines, empty states, etc.) were deliberately
-// left out — see docs/plans/05-settings-plan.md.
-//
-// Not yet wired into a build step: includes/Admin/Pages/SettingsPage.php
-// currently enqueues the original flat
-// html/assets/css/cf7-ai-inbox.css directly, since no compiler runs in this
-// environment. Once `npm run build` (wp-scripts) is run against this file,
-// point that enqueue at the compiled output instead.
+// Ported from html/assets/css/cf7-ai-inbox.css. Compiled by wp-scripts/
+// webpack (see webpack.config.js) into build/admin.css, which
+// includes/Admin/Menu.php enqueues on every plugin admin screen — run
+// `npm run build` after editing anything under src/admin/scss/ for changes
+// to take effect.
 //
 // Partials shared across every admin page (design tokens, reset, buttons,
-// card, fields, switch, modal, toast) live in Common/. Partials specific
-// to this page (layout, provider, prompts, kpi, usage-bar, wizard) live in
-// Settings/. Each future page gets its own same-named folder (Overview/,
-// Contacts/, Analytics/) alongside Common/, keeping the scss/ folder
-// organized by which page a partial belongs to.
+// card, fields, switch, modal, toast, page header, badges/status/
+// confidence, empty/error states, pagination + row menus, breadcrumb,
+// layout grids) live in Common/. Partials specific to one page (Settings:
+// layout, provider, prompts, kpi, usage-bar, wizard; AI Inbox List: table
+// toolbar, messages grid-table, activity timeline) live in that page's own
+// same-named folder. Each future page (Overview/, Contacts/, Analytics/)
+// gets its own folder alongside Common/ the same way, keeping the scss/
+// folder organized by which page a partial belongs to.
 
 @use 'common/variables';
 @use 'common/base';
@@ -32,3 +29,12 @@
 @use 'settings/wizard';
 @use 'common/modal';
 @use 'common/toast';
+@use 'common/layout' as common-layout;
+@use 'common/page-header';
+@use 'common/badges';
+@use 'common/state';
+@use 'common/pager';
+@use 'common/breadcrumb';
+@use 'inbox/toolbar';
+@use 'inbox/table';
+@use 'inbox/timeline';

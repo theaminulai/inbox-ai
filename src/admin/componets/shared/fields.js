@@ -21,7 +21,9 @@ export function collectFields( root ) {
 		} else if ( 'range' === el.type || 'number' === el.type ) {
 			values[ field ] = parseInt( el.value, 10 ) || 0;
 		} else if ( el.multiple ) {
-			values[ field ] = Array.from( el.selectedOptions ).map( ( o ) => o.value );
+			values[ field ] = Array.from( el.selectedOptions ).map(
+				( o ) => o.value
+			);
 		} else {
 			values[ field ] = el.value;
 		}

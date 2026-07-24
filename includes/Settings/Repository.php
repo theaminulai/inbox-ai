@@ -163,7 +163,7 @@ final class Repository {
 			'auto_draft_high_confidence'     => true,
 			'auto_archive_spam'              => true,
 			'confidence_threshold'           => 60,
-			'retention_period'                => 'forever',
+			'retention_period'               => 'forever',
 			'delete_attachments_after_reply' => false,
 		);
 
@@ -193,10 +193,10 @@ final class Repository {
 			array(
 				'monitored_forms'                => $monitored_forms,
 				'auto_analyze'                   => ! empty( $data['auto_analyze'] ),
-				'auto_draft_high_confidence'      => ! empty( $data['auto_draft_high_confidence'] ),
-				'auto_archive_spam'               => ! empty( $data['auto_archive_spam'] ),
-				'confidence_threshold'            => min( 100, max( 0, absint( $data['confidence_threshold'] ?? $current['confidence_threshold'] ) ) ),
-				'retention_period'                => in_array( $data['retention_period'] ?? '', self::RETENTION_PERIODS, true ) ? $data['retention_period'] : $current['retention_period'],
+				'auto_draft_high_confidence'     => ! empty( $data['auto_draft_high_confidence'] ),
+				'auto_archive_spam'              => ! empty( $data['auto_archive_spam'] ),
+				'confidence_threshold'           => min( 100, max( 0, absint( $data['confidence_threshold'] ?? $current['confidence_threshold'] ) ) ),
+				'retention_period'               => in_array( $data['retention_period'] ?? '', self::RETENTION_PERIODS, true ) ? $data['retention_period'] : $current['retention_period'],
 				'delete_attachments_after_reply' => ! empty( $data['delete_attachments_after_reply'] ),
 			),
 			false

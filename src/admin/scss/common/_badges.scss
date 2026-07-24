@@ -1,0 +1,130 @@
+// Priority badges, workflow-status pills, and the AI-confidence bar —
+// ported from html/assets/css/cf7-ai-inbox.css. Rendered by
+// `src/admin/componets/shared/badges.js` on the AI Inbox List table and the
+// Submission Detail screen; the same classes will be reused by the
+// Contacts List/Analytics pages later.
+
+.cf7-ai-inbox-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	padding: 3px 9px;
+	border-radius: 20px;
+	font-size: 11.5px;
+	font-weight: 700;
+	white-space: nowrap;
+
+	.cf7-ai-inbox-badge__dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+	}
+
+	&--urgent {
+		background: var(--urgent-soft);
+		color: var(--urgent);
+	}
+
+	&--high {
+		background: var(--high-soft);
+		color: var(--high);
+	}
+
+	&--normal {
+		background: var(--normal-soft);
+		color: var(--normal);
+	}
+
+	&--low {
+		background: var(--low-soft);
+		color: var(--low);
+	}
+}
+
+.cf7-ai-inbox-status {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	padding: 4px 9px;
+	border-radius: 6px;
+	font-size: 11.5px;
+	font-weight: 600;
+	border: 1px solid transparent;
+
+	&--new {
+		background: var(--accent-soft);
+		color: var(--accent-deep);
+		border-color: var(--accent-soft-border);
+	}
+
+	&--review {
+		background: var(--conf-mid-soft);
+		color: var(--conf-mid);
+		border-color: #F3DFAE;
+	}
+
+	&--reviewed {
+		background: #EEF3FF;
+		color: #4A5578;
+		border-color: var(--border-strong);
+	}
+
+	&--drafted {
+		background: var(--purple-soft);
+		color: var(--purple);
+		border-color: #DCD3FB;
+	}
+
+	&--replied {
+		background: var(--conf-good-soft);
+		color: var(--conf-good);
+		border-color: #BEE7CD;
+	}
+
+	&--failed {
+		background: var(--urgent-soft);
+		color: var(--urgent);
+		border-color: #F3C6C6;
+	}
+
+	&--archived {
+		background: var(--low-soft);
+		color: var(--low);
+		border-color: var(--border-strong);
+	}
+}
+
+.cf7-ai-inbox-confidence {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	min-width: 90px;
+
+	&__value {
+		display: flex;
+		align-items: center;
+		gap: 5px;
+		font-family: var(--mono);
+		font-size: 12px;
+		font-weight: 600;
+
+		svg {
+			width: 12px;
+			height: 12px;
+			color: var(--conf-mid);
+		}
+	}
+
+	&__track {
+		width: 100%;
+		height: 5px;
+		border-radius: 3px;
+		background: var(--surface-2);
+		overflow: hidden;
+	}
+
+	&__fill {
+		height: 100%;
+		border-radius: 3px;
+	}
+}

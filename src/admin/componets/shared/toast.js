@@ -7,7 +7,8 @@
  */
 
 const ICONS = {
-	success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>',
+	success:
+		'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>',
 	error: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>',
 	info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>',
 };
@@ -24,7 +25,9 @@ export function showToast( message, type ) {
 	}
 
 	const el = document.createElement( 'div' );
-	el.className = 'cf7-ai-inbox-toast' + ( type && ICONS[ type ] ? ' cf7-ai-inbox-toast--' + type : '' );
+	el.className =
+		'cf7-ai-inbox-toast' +
+		( type && ICONS[ type ] ? ' cf7-ai-inbox-toast--' + type : '' );
 
 	const icon = document.createElement( 'span' );
 	icon.innerHTML = ICONS[ type ] || ICONS.info;
@@ -36,7 +39,9 @@ export function showToast( message, type ) {
 	el.appendChild( text );
 	container.appendChild( el );
 
-	requestAnimationFrame( () => el.classList.add( 'cf7-ai-inbox-is-visible' ) );
+	requestAnimationFrame( () =>
+		el.classList.add( 'cf7-ai-inbox-is-visible' )
+	);
 
 	setTimeout( () => {
 		el.classList.remove( 'cf7-ai-inbox-is-visible' );

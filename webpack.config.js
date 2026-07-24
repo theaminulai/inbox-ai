@@ -25,13 +25,23 @@ module.exports = {
 	devtool: false,
 
 	entry: {
-		'build/admin':  path.resolve( rootDir, 'src/admin/index.js' ),
+		'build/admin/admin': path.resolve(rootDir, 'src/admin/index.js'),
+		'build/cf7/category': path.resolve(rootDir, 'src/cf7/category-metabox.js'),
 	},
 
 	output: {
 		...defaultConfig.output,
 		path:  path.resolve( rootDir ),
 		clean: false,
+		// The `admin` entry is deliberately remapped to `build/admin.js` (see
+		// `entry` above), but `output.path` itself is the plugin root — so
+		// without an explicit `chunkFilename`, every dynamically-`import()`ed
+		// page module (src/admin/index.js's `loaders` map) gets written as
+		// its own chunk file directly at the plugin root instead of inside
+		// build/ (e.g. `src_admin_componets_inbox_index_js.js` next to
+		// composer.json). Nesting chunks under build/ keeps every compiled
+		// artifact in one place.
+		chunkFilename: 'build/[name].js',
 	},
 
 	optimization: {

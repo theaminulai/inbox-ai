@@ -24,6 +24,50 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class UsageRepository {
 
 	/**
+	 * Records one AI request's token usage and estimated cost.
+	 *
+	 * Written by {@see \CF7AIInbox\AI\AnalysisQueue} for both the analysis
+	 * call and (if it ran) the reply-draft call — `$request_status`
+	 * distinguishes the two for the Settings page's Usage & Billing "Cost by
+	 * Request Type" breakdown (see docs/plans/05-settings-plan.md, section 3.5).
+	 *
+	 * @param int|null $message_id        Related message row id, if any.
+	 * @param string   $provider          Provider id (`openai`, `anthropic`, `google`).
+	 * @param string   $model             Model identifier used.
+	 * @param int      $prompt_tokens     Prompt tokens reported by the provider.
+	 * @param int      $completion_tokens Completion tokens reported by the provider.
+	 * @param float    $estimated_cost    Rough estimated cost in USD (blended
+	 *                                    per-provider rate, not exact per-model
+	 *                                    billing — see `AnalysisQueue::estimate_cost()`).
+	 * @param string   $request_status    `analysis` or `reply_draft`.
+	 *
+	 * @return int The new row's id, or 0 on failure.
+	 */
+	public static function record( ?int $message_id, string $provider, string $model, int $prompt_tokens, int $completion_tokens, float $estimated_cost, string $request_status ): int {
+		global $wpdb;
+
+		$table = $wpdb->prefix . Migrator::USAGE_TABLE;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table; there is no WP API for it, and a write is never cached.
+		$inserted = $wpdb->insert(
+			$table,
+			array(
+				'message_id'        => $message_id,
+				'provider'          => $provider,
+				'model'             => $model,
+				'prompt_tokens'     => $prompt_tokens,
+				'completion_tokens' => $completion_tokens,
+				'estimated_cost'    => $estimated_cost,
+				'request_status'    => $request_status,
+				'created_at'        => current_time( 'mysql' ),
+			),
+			array( '%d', '%s', '%s', '%d', '%d', '%f', '%s', '%s' )
+		);
+
+		return false === $inserted ? 0 : (int) $wpdb->insert_id;
+	}
+
+	/**
 	 * Total requests/tokens/cost for a period.
 	 *
 	 * @param string $period `30_days` (default), `this_month`, or `{n}_days`.

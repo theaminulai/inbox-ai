@@ -1,0 +1,83 @@
+// Empty states and inline error boxes — ported from
+// html/assets/css/cf7-ai-inbox.css. `#inbox-empty` (AI Inbox List, truly no
+// data yet), the "Submission not found" state (`includes/Templates/inbox.php`),
+// and the detail screen's "AI analysis failed" error card
+// (`includes/Templates/inbox-detail.php`) all use these.
+
+.cf7-ai-inbox-state {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	padding: 60px 40px;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-sm);
+
+	h2 {
+		font-size: 18px;
+		margin: 18px 0 6px;
+	}
+
+	p {
+		color: var(--text-secondary);
+		font-size: 13.5px;
+		max-width: 420px;
+		margin: 0 0 20px;
+		line-height: 1.6;
+	}
+
+	&__actions {
+		display: flex;
+		gap: 10px;
+		align-items: center;
+	}
+}
+
+.cf7-ai-inbox-error {
+	display: flex;
+	gap: 16px;
+	background: var(--urgent-soft);
+	border: 1px solid #F3C6C6;
+	border-radius: var(--radius-lg);
+	padding: 20px;
+
+	&__icon {
+		width: 38px;
+		height: 38px;
+		border-radius: 10px;
+		background: #fff;
+		color: var(--urgent);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+
+		svg {
+			width: 18px;
+			height: 18px;
+		}
+	}
+
+	&__body {
+		h3 {
+			margin: 0 0 4px;
+			font-size: 14.5px;
+			color: #7A1F1F;
+		}
+
+		p {
+			margin: 0 0 12px;
+			font-size: 13px;
+			color: #8A3232;
+			line-height: 1.6;
+		}
+	}
+
+	&__actions {
+		display: flex;
+		gap: 8px;
+		flex-wrap: wrap;
+	}
+}

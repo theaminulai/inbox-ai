@@ -17,12 +17,10 @@ use WP_Error;
 /**
  * Interface AIProviderInterface
  *
- * Covers what the Settings page's AI Provider tab needs (credential
- * validation, model listing). The submission-analysis half of this
- * contract (`analyze()`, working against `AnalysisRequest`/`AnalysisResult`
- * value objects) belongs to the AI Inbox List page's build — see
- * docs/plans/02-ai-inbox-list-plan.md, section 3.2 — and will extend this
- * interface once that phase starts, rather than being guessed at here.
+ * Covers both what the Settings page's AI Provider tab needs (credential
+ * validation, model listing) and what the AI Inbox List page's analysis
+ * queue needs ({@see self::analyze()}) — see
+ * docs/plans/02-ai-inbox-list-plan.md, section 3.2.
  */
 interface AIProviderInterface {
 
@@ -61,4 +59,26 @@ interface AIProviderInterface {
 	 * @return string[]|WP_Error List of model ids, or a WP_Error on failure.
 	 */
 	public function get_models( string $api_key );
+
+	/**
+	 * Runs one AI generation call (submission analysis or reply drafting —
+	 * both use this same generic method, with different prompts built by
+	 * {@see \CF7AIInbox\AI\PromptBuilder}).
+	 *
+	 * Implementations must never log the API key or the raw prompt content.
+	 *
+	 * @param string $api_key       API key to authenticate with.
+	 * @param string $model         Model identifier to use.
+	 * @param string $system_prompt System/instruction prompt. May be an empty
+	 *                              string, in which case implementations omit
+	 *                              the system role entirely rather than sending
+	 *                              an empty one.
+	 * @param string $user_prompt   User/content prompt.
+	 *
+	 * @return array{content:string,prompt_tokens:int,completion_tokens:int}|WP_Error
+	 *               On success, the raw text response plus token usage (`0`
+	 *               if the provider's response didn't include usage data).
+	 *               A WP_Error with a user-safe message on failure.
+	 */
+	public function analyze( string $api_key, string $model, string $system_prompt, string $user_prompt );
 }

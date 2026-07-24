@@ -10,22 +10,24 @@
  */
 import '../admin/scss/index.scss';
 
-const loaders = {
-	settings: () => import( './componets/settings/index.js' ).then( ( m ) => m.initSettingsPage() ),
-};
+import { initSettingsPage } from './componets/settings/index.js';
+import { initInboxPage } from './componets/inbox/index.js';
 
 function boot() {
-	const root = document.getElementById( 'main' );
-	const page = root ? root.dataset.page : '';
+	const page = document.getElementById( 'main' )?.dataset.page;
 
-	if ( page && loaders[ page ] ) {
-		loaders[ page ]();
+	switch ( page ) {
+		case 'settings':
+			initSettingsPage();
+			break;
+
+		case 'inbox':
+			initInboxPage();
+			break;
 	}
 }
 
-// Module scripts run deferred, so DOMContentLoaded may already have fired
-// by the time this executes — check readyState instead of assuming either way.
-if ( 'loading' === document.readyState ) {
+if ( document.readyState === 'loading' ) {
 	document.addEventListener( 'DOMContentLoaded', boot );
 } else {
 	boot();

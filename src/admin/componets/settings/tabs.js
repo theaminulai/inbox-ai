@@ -6,7 +6,14 @@
  * client-side visibility toggle with no fetch involved.
  */
 
-const TABS = [ 'ai-settings', 'general-settings', 'prompts', 'usage', 'notifications', 'flamingo' ];
+const TABS = [
+	'ai-settings',
+	'general-settings',
+	'prompts',
+	'usage',
+	'notifications',
+	'flamingo',
+];
 
 /**
  * @param {string} name
@@ -27,7 +34,9 @@ export function showSettingsTab( key ) {
 		key = 'ai-settings';
 	}
 
-	document.querySelectorAll( '.cf7-ai-inbox-screen' ).forEach( ( s ) => s.classList.remove( 'cf7-ai-inbox-is-active' ) );
+	document
+		.querySelectorAll( '.cf7-ai-inbox-screen' )
+		.forEach( ( s ) => s.classList.remove( 'cf7-ai-inbox-is-active' ) );
 
 	const el = document.getElementById( 'screen-' + key );
 
@@ -36,7 +45,10 @@ export function showSettingsTab( key ) {
 	}
 
 	document.querySelectorAll( '[data-subnav]' ).forEach( ( a ) => {
-		a.classList.toggle( 'cf7-ai-inbox-is-active', a.dataset.subnav === key );
+		a.classList.toggle(
+			'cf7-ai-inbox-is-active',
+			a.dataset.subnav === key
+		);
 	} );
 
 	const main = document.getElementById( 'main' );

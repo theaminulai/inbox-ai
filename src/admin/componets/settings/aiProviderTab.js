@@ -7,7 +7,9 @@ import { showToast } from '../shared/toast.js';
 import { collectFields } from '../shared/fields.js';
 
 function selectedProviderId( screen ) {
-	const selected = screen.querySelector( '.cf7-ai-inbox-provider__option.cf7-ai-inbox-is-selected' );
+	const selected = screen.querySelector(
+		'.cf7-ai-inbox-provider__option.cf7-ai-inbox-is-selected'
+	);
 	return selected ? selected.dataset.provider : 'openai';
 }
 
@@ -45,14 +47,18 @@ export function initAiProviderTab() {
 			return;
 		}
 
-		screen.querySelectorAll( '.cf7-ai-inbox-provider__option' ).forEach( ( o ) => {
-			o.classList.remove( 'cf7-ai-inbox-is-selected' );
-			const radio = o.querySelector( '.cf7-ai-inbox-provider__radio' );
+		screen
+			.querySelectorAll( '.cf7-ai-inbox-provider__option' )
+			.forEach( ( o ) => {
+				o.classList.remove( 'cf7-ai-inbox-is-selected' );
+				const radio = o.querySelector(
+					'.cf7-ai-inbox-provider__radio'
+				);
 
-			if ( radio ) {
-				radio.classList.remove( 'cf7-ai-inbox-is-checked' );
-			}
-		} );
+				if ( radio ) {
+					radio.classList.remove( 'cf7-ai-inbox-is-checked' );
+				}
+			} );
 
 		option.classList.add( 'cf7-ai-inbox-is-selected' );
 		const radio = option.querySelector( '.cf7-ai-inbox-provider__radio' );
@@ -80,17 +86,26 @@ export function initAiProviderTab() {
 				.then( () => {
 					showToast( 'Connection successful', 'success' );
 
-					const pill = document.getElementById( 'settings-provider-pill' );
+					const pill = document.getElementById(
+						'settings-provider-pill'
+					);
 
 					if ( pill ) {
 						pill.style.display = '';
 					}
 
-					return cf7aiAjax( 'cf7ai_list_models', { provider, api_key: apiKey } );
+					return cf7aiAjax( 'cf7ai_list_models', {
+						provider,
+						api_key: apiKey,
+					} );
 				} )
 				.then( ( data ) => {
 					if ( data && data.models ) {
-						populateModels( modelSelect, data.models, modelSelect ? modelSelect.value : null );
+						populateModels(
+							modelSelect,
+							data.models,
+							modelSelect ? modelSelect.value : null
+						);
 					}
 				} )
 				.catch( ( err ) => showToast( err.message, 'error' ) )
@@ -105,9 +120,15 @@ export function initAiProviderTab() {
 
 	if ( saveBtn ) {
 		saveBtn.addEventListener( 'click', () => {
-			const values = Object.assign( { provider: selectedProviderId( screen ) }, collectFields( screen ) );
+			const values = Object.assign(
+				{ provider: selectedProviderId( screen ) },
+				collectFields( screen )
+			);
 
-			cf7aiAjax( 'cf7ai_save_settings', { tab: 'ai-settings', values: JSON.stringify( values ) } )
+			cf7aiAjax( 'cf7ai_save_settings', {
+				tab: 'ai-settings',
+				values: JSON.stringify( values ),
+			} )
 				.then( ( data ) => {
 					showToast( 'Provider settings saved', 'success' );
 

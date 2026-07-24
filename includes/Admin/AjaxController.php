@@ -12,20 +12,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use CF7AIInbox\AI\AnalysisQueue;
 use CF7AIInbox\AI\ProviderFactory;
+use CF7AIInbox\Database\ActivityRepository;
+use CF7AIInbox\Database\MessageRepository;
 use CF7AIInbox\Database\UsageRepository;
+use CF7AIInbox\Migration\FlamingoCsvImporter;
 use CF7AIInbox\Migration\FlamingoImporter;
 use CF7AIInbox\Security\Capabilities;
+use CF7AIInbox\Services\ReplyService;
 use CF7AIInbox\Settings\Repository as SettingsRepository;
 
 /**
  * Class AjaxController
  *
  * One shared controller for every admin-page AJAX action (see
- * docs/plans/*.md, section 3 of each) rather than a class per page —
- * currently only the Settings page's actions are implemented; the AI
- * Inbox List, Contacts List, and Analytics actions land with those pages'
- * own build passes and register here alongside these.
+ * docs/plans/*.md, section 3 of each) rather than a class per page — the
+ * Settings page and the AI Inbox List page's actions are both implemented
+ * here; the Contacts List and Analytics actions land with those pages' own
+ * build passes and register here alongside these.
  */
 final class AjaxController {
 
@@ -41,6 +46,13 @@ final class AjaxController {
 	public const SETTINGS_NONCE_ACTION = 'cf7ai_inbox_settings';
 
 	/**
+	 * Nonce action name shared by every AI Inbox List page AJAX call.
+	 *
+	 * @var string
+	 */
+	public const INBOX_NONCE_ACTION = 'cf7ai_inbox_messages';
+
+	/**
 	 * Registers every `wp_ajax_*` hook this controller handles.
 	 *
 	 * @return void
@@ -52,6 +64,17 @@ final class AjaxController {
 		add_action( 'wp_ajax_cf7ai_list_models', array( $this, 'list_models' ) );
 		add_action( 'wp_ajax_cf7ai_flamingo_detect', array( $this, 'flamingo_detect' ) );
 		add_action( 'wp_ajax_cf7ai_flamingo_import_batch', array( $this, 'flamingo_import_batch' ) );
+		add_action( 'wp_ajax_cf7ai_flamingo_upload_csv', array( $this, 'flamingo_upload_csv' ) );
+		add_action( 'wp_ajax_cf7ai_flamingo_import_csv_batch', array( $this, 'flamingo_import_csv_batch' ) );
+
+		add_action( 'wp_ajax_cf7ai_list_messages', array( $this, 'list_messages' ) );
+		add_action( 'wp_ajax_cf7ai_get_message', array( $this, 'get_message' ) );
+		add_action( 'wp_ajax_cf7ai_save_draft', array( $this, 'save_draft' ) );
+		add_action( 'wp_ajax_cf7ai_send_reply', array( $this, 'send_reply' ) );
+		add_action( 'wp_ajax_cf7ai_mark_reviewed', array( $this, 'mark_reviewed' ) );
+		add_action( 'wp_ajax_cf7ai_archive_message', array( $this, 'archive_message' ) );
+		add_action( 'wp_ajax_cf7ai_delete_message', array( $this, 'delete_message' ) );
+		add_action( 'wp_ajax_cf7ai_retry_analysis', array( $this, 'retry_analysis' ) );
 	}
 
 	/**
@@ -59,12 +82,15 @@ final class AjaxController {
 	 * `Requirements`/`Capabilities` elsewhere in this plugin. Sends a JSON
 	 * error and stops execution if either check fails.
 	 *
-	 * @param string $capability Required capability.
+	 * @param string $capability   Required capability.
+	 * @param string $nonce_action Which page's nonce this request must carry —
+	 *                             {@see self::SETTINGS_NONCE_ACTION} or
+	 *                             {@see self::INBOX_NONCE_ACTION}.
 	 *
 	 * @return void
 	 */
-	private function check( string $capability ): void {
-		check_ajax_referer( self::SETTINGS_NONCE_ACTION, 'nonce' );
+	private function check( string $capability, string $nonce_action = self::SETTINGS_NONCE_ACTION ): void {
+		check_ajax_referer( $nonce_action, 'nonce' );
 
 		if ( ! current_user_can( $capability ) ) {
 			wp_send_json_error(
@@ -83,7 +109,7 @@ final class AjaxController {
 	public function get_settings(): void {
 		$this->check( Capabilities::MANAGE_SETTINGS );
 
-		$tab = isset( $_POST['tab'] ) ? sanitize_key( wp_unslash( $_POST['tab'] ) ) : '';
+		$tab = isset( $_POST['tab'] ) ? sanitize_key( wp_unslash( $_POST['tab'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above; phpcs can't trace verification through a helper method call.
 
 		$data = array(
 			'provider'      => SettingsRepository::get_provider(),
@@ -114,9 +140,9 @@ final class AjaxController {
 	public function save_settings(): void {
 		$this->check( Capabilities::MANAGE_SETTINGS );
 
-		$tab = isset( $_POST['tab'] ) ? sanitize_key( wp_unslash( $_POST['tab'] ) ) : '';
+		$tab = isset( $_POST['tab'] ) ? sanitize_key( wp_unslash( $_POST['tab'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above.
 
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- wp_unslash() is applied explicitly below before decoding; the decoded array is then sanitized field-by-field by each save_*() method.
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce already verified in self::check() above; wp_unslash() is applied explicitly below before decoding; the decoded array is then sanitized field-by-field by each save_*() method (see the docblock above), never trusted or echoed as raw JSON itself.
 		$raw    = isset( $_POST['values'] ) ? wp_unslash( $_POST['values'] ) : '';
 		$values = json_decode( (string) $raw, true );
 		$values = is_array( $values ) ? $values : array();
@@ -129,7 +155,12 @@ final class AjaxController {
 					SettingsRepository::save_api_key( sanitize_text_field( (string) $values['api_key'] ) );
 				}
 
-				wp_send_json_success( array( 'saved' => true, 'apiKeyMasked' => SettingsRepository::get_masked_api_key() ) );
+				wp_send_json_success(
+					array(
+						'saved'        => true,
+						'apiKeyMasked' => SettingsRepository::get_masked_api_key(),
+					)
+				);
 				break;
 
 			case 'general-settings':
@@ -140,7 +171,12 @@ final class AjaxController {
 			case 'prompts':
 				if ( ! empty( $values['reset'] ) ) {
 					$defaults = SettingsRepository::reset_prompts_to_defaults();
-					wp_send_json_success( array( 'saved' => true, 'defaults' => $defaults ) );
+					wp_send_json_success(
+						array(
+							'saved'    => true,
+							'defaults' => $defaults,
+						)
+					);
 				}
 
 				SettingsRepository::save_prompts( $values );
@@ -225,19 +261,269 @@ final class AjaxController {
 	public function flamingo_import_batch(): void {
 		$this->check( Capabilities::MANAGE_SETTINGS );
 
-		$offset = isset( $_POST['offset'] ) ? absint( wp_unslash( $_POST['offset'] ) ) : 0;
-		$run_ai = ! empty( $_POST['run_ai'] );
+		$offset = isset( $_POST['offset'] ) ? absint( wp_unslash( $_POST['offset'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above.
+		$run_ai = ! empty( $_POST['run_ai'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above.
 
 		wp_send_json_success( FlamingoImporter::import_batch( $offset, 25, $run_ai ) );
 	}
 
 	/**
+	 * `cf7ai_flamingo_upload_csv` — Import & Migration wizard's alternate
+	 * "Upload a CSV export" path, step 1: validates and parses the
+	 * uploaded file, stages its rows, and reports back what was detected
+	 * (mirroring `cf7ai_flamingo_detect`'s response shape) without
+	 * touching this plugin's own tables yet.
+	 *
+	 * @return void
+	 */
+	public function flamingo_upload_csv(): void {
+		$this->check( Capabilities::MANAGE_SETTINGS );
+
+		if ( empty( $_FILES['file']['tmp_name'] ) || ! is_uploaded_file( $_FILES['file']['tmp_name'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce already verified in self::check() above; $_FILES['file']['tmp_name'] is only used with is_uploaded_file()/wp_handle_upload(), which validate the path themselves; never echoed or used in a filesystem call directly.
+			wp_send_json_error( array( 'message' => __( 'No file was uploaded.', 'cf7-ai-inbox' ) ), 400 );
+		}
+
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+
+		$overrides = array(
+			'test_form' => false,
+			'mimes'     => array( 'csv' => 'text/csv' ),
+		);
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- this request's own nonce was already verified in self::check() above; wp_handle_upload() has no nonce concept of its own.
+		$moved = wp_handle_upload( $_FILES['file'], $overrides );
+
+		if ( ! isset( $moved['file'] ) ) {
+			wp_send_json_error(
+				array( 'message' => $moved['error'] ?? __( 'The file could not be uploaded.', 'cf7-ai-inbox' ) ),
+				400
+			);
+		}
+
+		$staged = FlamingoCsvImporter::stage( $moved['file'] );
+
+		// The parsed rows are already safely in a transient (or the
+		// upload was rejected) — nothing further needs this temp copy.
+		wp_delete_file( $moved['file'] );
+
+		if ( is_wp_error( $staged ) ) {
+			wp_send_json_error( array( 'message' => $staged->get_error_message() ), 400 );
+		}
+
+		wp_send_json_success( $staged );
+	}
+
+	/**
+	 * `cf7ai_flamingo_import_csv_batch` — Import & Migration wizard step
+	 * 3's batch loop for the CSV-upload path, called repeatedly
+	 * (increasing offset) until `done` is true, exactly like
+	 * `cf7ai_flamingo_import_batch`.
+	 *
+	 * @return void
+	 */
+	public function flamingo_import_csv_batch(): void {
+		$this->check( Capabilities::MANAGE_SETTINGS );
+
+		$token  = isset( $_POST['token'] ) ? sanitize_text_field( wp_unslash( $_POST['token'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above.
+		$offset = isset( $_POST['offset'] ) ? absint( wp_unslash( $_POST['offset'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above.
+		$run_ai = ! empty( $_POST['run_ai'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above.
+
+		if ( '' === $token ) {
+			wp_send_json_error( array( 'message' => __( 'This import session has expired. Please upload the file again.', 'cf7-ai-inbox' ) ), 400 );
+		}
+
+		wp_send_json_success( FlamingoCsvImporter::import_batch( $token, $offset, 25, $run_ai ) );
+	}
+
+	/**
+	 * `cf7ai_list_messages` — the AI Inbox List screen's filtered, paginated
+	 * table.
+	 *
+	 * @return void
+	 */
+	public function list_messages(): void {
+		$this->check( Capabilities::VIEW_MESSAGES, self::INBOX_NONCE_ACTION );
+
+		// Nonce already verified in self::check() above; phpcs can't trace verification through a helper method call, hence the per-line ignore comments below.
+		$filters = array(
+			'status'           => isset( $_POST['status'] ) ? sanitize_key( wp_unslash( $_POST['status'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'priority'         => isset( $_POST['priority'] ) ? sanitize_key( wp_unslash( $_POST['priority'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'category'         => isset( $_POST['category'] ) ? sanitize_text_field( wp_unslash( $_POST['category'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'form'             => isset( $_POST['form'] ) ? sanitize_text_field( wp_unslash( $_POST['form'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'confidence_below' => isset( $_POST['confidence_below'] ) && '' !== $_POST['confidence_below'] ? absint( wp_unslash( $_POST['confidence_below'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'search'           => isset( $_POST['search'] ) ? sanitize_text_field( wp_unslash( $_POST['search'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		);
+
+		$page     = isset( $_POST['page'] ) ? max( 1, absint( wp_unslash( $_POST['page'] ) ) ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above.
+		$per_page = isset( $_POST['per_page'] ) ? max( 1, absint( wp_unslash( $_POST['per_page'] ) ) ) : 20; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above.
+
+		wp_send_json_success( MessageRepository::get_filtered( $filters, $page, $per_page ) );
+	}
+
+	/**
+	 * `cf7ai_get_message` — the Submission Detail screen's data, including
+	 * its activity timeline.
+	 *
+	 * @return void
+	 */
+	public function get_message(): void {
+		$this->check( Capabilities::VIEW_MESSAGES, self::INBOX_NONCE_ACTION );
+
+		$id      = isset( $_POST['id'] ) ? absint( wp_unslash( $_POST['id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above.
+		$message = MessageRepository::find( $id );
+
+		if ( null === $message ) {
+			wp_send_json_error( array( 'message' => __( 'This submission could not be found.', 'cf7-ai-inbox' ) ), 404 );
+		}
+
+		wp_send_json_success(
+			array(
+				'message'    => $message,
+				'activities' => ActivityRepository::get_for_message( $id ),
+			)
+		);
+	}
+
+	/**
+	 * `cf7ai_save_draft` — persists an edited reply draft without sending it.
+	 *
+	 * @return void
+	 */
+	public function save_draft(): void {
+		$this->check( Capabilities::EDIT_MESSAGES, self::INBOX_NONCE_ACTION );
+
+		$id      = isset( $_POST['id'] ) ? absint( wp_unslash( $_POST['id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above.
+		$subject = isset( $_POST['subject'] ) ? sanitize_text_field( wp_unslash( $_POST['subject'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above.
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- nonce already verified in self::check() above; wp_unslash() applied explicitly; wp_kses_post() sanitizes the HTML reply body immediately after.
+		$body = isset( $_POST['body'] ) ? wp_kses_post( wp_unslash( $_POST['body'] ) ) : '';
+
+		if ( 0 === $id || ! MessageRepository::save_draft( $id, $subject, $body ) ) {
+			wp_send_json_error( array( 'message' => __( 'The draft could not be saved.', 'cf7-ai-inbox' ) ), 400 );
+		}
+
+		ActivityRepository::log( $id, 'draft_saved', array(), get_current_user_id() );
+
+		wp_send_json_success( array( 'saved' => true ) );
+	}
+
+	/**
+	 * `cf7ai_send_reply` — sends the reply (saved draft, or an edited
+	 * subject/body passed along with the request) to the visitor.
+	 *
+	 * @return void
+	 */
+	public function send_reply(): void {
+		$this->check( Capabilities::SEND_REPLIES, self::INBOX_NONCE_ACTION );
+
+		$id      = isset( $_POST['id'] ) ? absint( wp_unslash( $_POST['id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above.
+		$subject = isset( $_POST['subject'] ) ? sanitize_text_field( wp_unslash( $_POST['subject'] ) ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above.
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- nonce already verified in self::check() above; wp_unslash() applied explicitly; wp_kses_post() sanitizes the HTML reply body immediately after.
+		$body = isset( $_POST['body'] ) ? wp_kses_post( wp_unslash( $_POST['body'] ) ) : null;
+
+		$result = ReplyService::send( $id, $subject, $body, get_current_user_id() );
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( array( 'message' => $result->get_error_message() ), 400 );
+		}
+
+		wp_send_json_success( array( 'sent' => true ) );
+	}
+
+	/**
+	 * `cf7ai_mark_reviewed` — clears a `review`-status row without drafting
+	 * or sending a reply (e.g. the admin handled it another way).
+	 *
+	 * @return void
+	 */
+	public function mark_reviewed(): void {
+		$this->check( Capabilities::EDIT_MESSAGES, self::INBOX_NONCE_ACTION );
+
+		$id = isset( $_POST['id'] ) ? absint( wp_unslash( $_POST['id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above.
+
+		if ( 0 === $id || ! MessageRepository::update_status( $id, 'reviewed' ) ) {
+			wp_send_json_error( array( 'message' => __( 'This submission could not be updated.', 'cf7-ai-inbox' ) ), 400 );
+		}
+
+		ActivityRepository::log( $id, 'reviewed', array(), get_current_user_id() );
+
+		wp_send_json_success( array( 'updated' => true ) );
+	}
+
+	/**
+	 * `cf7ai_archive_message` — moves a row to `archived` (used for both the
+	 * row-menu action and manually archiving a false-positive-spam row).
+	 *
+	 * @return void
+	 */
+	public function archive_message(): void {
+		$this->check( Capabilities::EDIT_MESSAGES, self::INBOX_NONCE_ACTION );
+
+		$id = isset( $_POST['id'] ) ? absint( wp_unslash( $_POST['id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above.
+
+		if ( 0 === $id || ! MessageRepository::update_status( $id, 'archived' ) ) {
+			wp_send_json_error( array( 'message' => __( 'This submission could not be archived.', 'cf7-ai-inbox' ) ), 400 );
+		}
+
+		ActivityRepository::log( $id, 'archived', array(), get_current_user_id() );
+
+		wp_send_json_success( array( 'updated' => true ) );
+	}
+
+	/**
+	 * `cf7ai_delete_message` — soft-deletes a row (list queries always
+	 * exclude these; nothing is permanently removed from this screen).
+	 *
+	 * @return void
+	 */
+	public function delete_message(): void {
+		$this->check( Capabilities::DELETE_MESSAGES, self::INBOX_NONCE_ACTION );
+
+		$id = isset( $_POST['id'] ) ? absint( wp_unslash( $_POST['id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above.
+
+		if ( 0 === $id || ! MessageRepository::soft_delete( $id ) ) {
+			wp_send_json_error( array( 'message' => __( 'This submission could not be deleted.', 'cf7-ai-inbox' ) ), 400 );
+		}
+
+		wp_send_json_success( array( 'deleted' => true ) );
+	}
+
+	/**
+	 * `cf7ai_retry_analysis` — the Submission Failure screen's "Retry"
+	 * action: re-enqueues the message for analysis exactly as its original
+	 * capture did, without re-inserting a row.
+	 *
+	 * @return void
+	 */
+	public function retry_analysis(): void {
+		$this->check( Capabilities::EDIT_MESSAGES, self::INBOX_NONCE_ACTION );
+
+		$id      = isset( $_POST['id'] ) ? absint( wp_unslash( $_POST['id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above.
+		$message = MessageRepository::find( $id );
+
+		if ( null === $message ) {
+			wp_send_json_error( array( 'message' => __( 'This submission could not be found.', 'cf7-ai-inbox' ) ), 404 );
+		}
+
+		MessageRepository::update_status( $id, 'new' );
+		ActivityRepository::log( $id, 'retry_requested', array(), get_current_user_id() );
+
+		AnalysisQueue::enqueue( $id );
+
+		wp_send_json_success( array( 'queued' => true ) );
+	}
+
+	/**
 	 * Reads and lightly sanitizes `$_POST['provider']`.
+	 *
+	 * Only called from methods that already ran `self::check()` (which
+	 * verifies the request's nonce) before reaching this helper — phpcs
+	 * can't trace that verification through the call, hence the ignore
+	 * comment below.
 	 *
 	 * @return string
 	 */
 	private function posted_provider_id(): string {
-		return isset( $_POST['provider'] ) ? sanitize_key( wp_unslash( $_POST['provider'] ) ) : '';
+		return isset( $_POST['provider'] ) ? sanitize_key( wp_unslash( $_POST['provider'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- see docblock above; nonce verified by the calling method.
 	}
 
 	/**
@@ -245,10 +531,14 @@ final class AjaxController {
 	 * when the value is empty or is the masked placeholder the browser
 	 * shows (never a real key it should overwrite).
 	 *
+	 * Only called from methods that already ran `self::check()` before
+	 * reaching this helper — same nonce-verification note as
+	 * {@see self::posted_provider_id()}.
+	 *
 	 * @return string
 	 */
 	private function posted_api_key(): string {
-		$posted = isset( $_POST['api_key'] ) ? sanitize_text_field( wp_unslash( $_POST['api_key'] ) ) : '';
+		$posted = isset( $_POST['api_key'] ) ? sanitize_text_field( wp_unslash( $_POST['api_key'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- see docblock above; nonce verified by the calling method.
 
 		if ( '' === $posted || false !== strpos( $posted, "\u{2022}" ) ) {
 			return (string) SettingsRepository::get_api_key();

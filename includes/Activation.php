@@ -21,9 +21,15 @@ use CF7AIInbox\Security\Capabilities;
  * Runs once when the plugin is activated: provisions the database schema,
  * grants capabilities to Administrators, and records bookkeeping metadata.
  * Deliberately does not enforce {@see Requirements} here — WordPress 6.5+
- * already blocks activation itself via the "Requires at least" / "Requires
- * PHP" / "Requires Plugins" headers, and refusing to activate on older core
- * would leave the site owner without even an explanatory admin notice.
+ * already blocks activation itself for the "Requires at least" / "Requires
+ * PHP" headers, and this plugin deliberately does *not* declare a "Requires
+ * Plugins: contact-form-7" header (that would make WordPress core hard-block
+ * activation with a dead-end error page whenever Contact Form 7 isn't
+ * already active/installed, instead of the friendlier "stay active, show an
+ * Install/Activate button, switch features on automatically" behavior
+ * {@see \CF7AIInbox\Plugin::init()} implements). Refusing to activate here
+ * on unmet requirements would leave the site owner without even an
+ * explanatory admin notice.
  */
 final class Activation {
 

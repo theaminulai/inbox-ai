@@ -15,11 +15,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Class Migrator
  *
- * Owns the three custom tables described in docs/CF7_AI_Inbox_RnD.md
- * (section 6): messages, activities, and usage. Custom tables were chosen
- * over post types/postmeta for indexed filtering, cleaner analytics, and
- * easier retention/deletion at volume. The optional `cf7ai_contacts` table
- * is deferred past this first pass — see the R&D doc, section 6.
+ * Owns the plugin's custom tables described in docs/CF7_AI_Inbox_RnD.md
+ * (section 6): messages, activities, usage, and contacts. Custom tables were
+ * chosen over post types/postmeta for indexed filtering, cleaner analytics,
+ * and easier retention/deletion at volume. `cf7ai_contacts` was originally
+ * deferred past the first pass, but is needed now that
+ * {@see \CF7AIInbox\Migration\FlamingoImporter} imports Flamingo's Contact/
+ * Address Book records (not just its inbound messages) as real rows of
+ * their own, rather than only merging their details into a message.
  */
 final class Migrator {
 
@@ -31,6 +34,7 @@ final class Migrator {
 	public const MESSAGES_TABLE   = 'cf7ai_messages';
 	public const ACTIVITIES_TABLE = 'cf7ai_activities';
 	public const USAGE_TABLE      = 'cf7ai_usage';
+	public const CONTACTS_TABLE   = 'cf7ai_contacts';
 
 	/**
 	 * Current schema version. Bumping this triggers {@see self::maybe_migrate()}
@@ -38,7 +42,7 @@ final class Migrator {
 	 *
 	 * @var string
 	 */
-	private const SCHEMA_VERSION = '0.1.0';
+	private const SCHEMA_VERSION = '0.2.0';
 
 	/**
 	 * Option name tracking which schema version has been applied.
@@ -91,6 +95,7 @@ final class Migrator {
 		$messages_table   = $wpdb->prefix . self::MESSAGES_TABLE;
 		$activities_table = $wpdb->prefix . self::ACTIVITIES_TABLE;
 		$usage_table      = $wpdb->prefix . self::USAGE_TABLE;
+		$contacts_table   = $wpdb->prefix . self::CONTACTS_TABLE;
 
 		$sql = "CREATE TABLE {$messages_table} (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -167,10 +172,31 @@ final class Migrator {
 		) {$charset_collate};";
 
 		dbDelta( $sql );
+
+		$sql = "CREATE TABLE {$contacts_table} (
+			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+			email VARCHAR(320) NOT NULL DEFAULT '',
+			name VARCHAR(255) NOT NULL DEFAULT '',
+			first_name VARCHAR(191) NOT NULL DEFAULT '',
+			last_name VARCHAR(191) NOT NULL DEFAULT '',
+			props LONGTEXT NULL,
+			tags LONGTEXT NULL,
+			last_contacted_at DATETIME NULL,
+			source VARCHAR(50) NOT NULL DEFAULT '',
+			source_ref VARCHAR(191) NOT NULL DEFAULT '',
+			created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			updated_at DATETIME NULL,
+			PRIMARY KEY  (id),
+			KEY email (email),
+			KEY source_ref (source_ref),
+			KEY last_contacted_at (last_contacted_at)
+		) {$charset_collate};";
+
+		dbDelta( $sql );
 	}
 
 	/**
-	 * Drops all three tables. Called only from uninstall.php, and only
+	 * Drops all four tables. Called only from uninstall.php, and only
 	 * when the site owner has opted into full data removal.
 	 *
 	 * @return void
@@ -178,10 +204,10 @@ final class Migrator {
 	public static function drop_tables(): void {
 		global $wpdb;
 
-		foreach ( array( self::MESSAGES_TABLE, self::ACTIVITIES_TABLE, self::USAGE_TABLE ) as $table ) {
+		foreach ( array( self::MESSAGES_TABLE, self::ACTIVITIES_TABLE, self::USAGE_TABLE, self::CONTACTS_TABLE ) as $table ) {
 			$table_name = $wpdb->prefix . $table;
 
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $table_name is $wpdb->prefix + a hardcoded class constant, never user input; table names cannot be passed as prepare() placeholders.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $table_name is $wpdb->prefix + a hardcoded class constant, never user input; table names cannot be passed as prepare() placeholders.
 			$wpdb->query( "DROP TABLE IF EXISTS {$table_name}" );
 		}
 

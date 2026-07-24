@@ -18,7 +18,9 @@ export function initSwitches( root = document ) {
 		}
 
 		el.classList.toggle( 'cf7-ai-inbox-is-on' );
-		el.dispatchEvent( new CustomEvent( 'cf7ai:switch-toggled', { bubbles: true } ) );
+		el.dispatchEvent(
+			new CustomEvent( 'cf7ai:switch-toggled', { bubbles: true } )
+		);
 	} );
 }
 

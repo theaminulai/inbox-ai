@@ -26,6 +26,7 @@ use WP_Error;
 final class OpenAIProvider implements AIProviderInterface {
 
 	private const MODELS_ENDPOINT = 'https://api.openai.com/v1/models';
+	private const CHAT_ENDPOINT   = 'https://api.openai.com/v1/chat/completions';
 
 	/**
 	 * {@inheritDoc}
@@ -76,6 +77,93 @@ final class OpenAIProvider implements AIProviderInterface {
 		sort( $ids );
 
 		return array() !== $ids ? $ids : array( 'gpt-4.1-mini', 'gpt-4.1', 'gpt-4o' );
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function analyze( string $api_key, string $model, string $system_prompt, string $user_prompt ) {
+		if ( '' === trim( $api_key ) ) {
+			return new WP_Error( 'cf7ai_missing_key', __( 'No API key has been configured.', 'cf7-ai-inbox' ) );
+		}
+
+		$messages = array();
+
+		if ( '' !== trim( $system_prompt ) ) {
+			$messages[] = array(
+				'role'    => 'system',
+				'content' => $system_prompt,
+			);
+		}
+
+		$messages[] = array(
+			'role'    => 'user',
+			'content' => $user_prompt,
+		);
+
+		$response = wp_remote_post(
+			self::CHAT_ENDPOINT,
+			array(
+				'headers' => array(
+					'Authorization' => 'Bearer ' . $api_key,
+					'Content-Type'  => 'application/json',
+				),
+				'timeout' => 45,
+				'body'    => wp_json_encode(
+					array(
+						'model'       => $model,
+						'messages'    => $messages,
+						'temperature' => 0.3,
+					)
+				),
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			return new WP_Error( 'cf7ai_provider_unreachable', __( 'Could not reach OpenAI. Please try again.', 'cf7-ai-inbox' ) );
+		}
+
+		$code = (int) wp_remote_retrieve_response_code( $response );
+		$body = json_decode( (string) wp_remote_retrieve_body( $response ), true );
+		$body = is_array( $body ) ? $body : array();
+
+		if ( $code < 200 || $code >= 300 ) {
+			return new WP_Error( 'cf7ai_provider_error', $this->error_message( $body, $code ) );
+		}
+
+		$content = (string) ( $body['choices'][0]['message']['content'] ?? '' );
+
+		if ( '' === trim( $content ) ) {
+			return new WP_Error( 'cf7ai_empty_response', __( 'OpenAI returned an empty response.', 'cf7-ai-inbox' ) );
+		}
+
+		return array(
+			'content'           => trim( $content ),
+			'prompt_tokens'     => (int) ( $body['usage']['prompt_tokens'] ?? 0 ),
+			'completion_tokens' => (int) ( $body['usage']['completion_tokens'] ?? 0 ),
+		);
+	}
+
+	/**
+	 * Pulls a human-readable error message out of a decoded error response.
+	 *
+	 * @param array<string, mixed> $body Decoded JSON response body.
+	 * @param int                  $code HTTP response status code.
+	 *
+	 * @return string
+	 */
+	private function error_message( array $body, int $code ): string {
+		$message = $body['error']['message'] ?? null;
+
+		if ( is_string( $message ) && '' !== $message ) {
+			return $message;
+		}
+
+		return sprintf(
+			/* translators: %d: HTTP status code */
+			__( 'OpenAI returned an unexpected error (HTTP %d).', 'cf7-ai-inbox' ),
+			$code
+		);
 	}
 
 	/**

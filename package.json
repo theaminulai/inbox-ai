@@ -17,7 +17,7 @@
         "packages-update": "wp-scripts packages-update",
         "plugin-zip": "wp-scripts plugin-zip",
         "update-version": "node update-version-and-changelog.js",
-        "make-pot": "wp i18n make-pot . languages/cf7-ai-inbox.pot --domain=cf7-ai-inbox --exclude=node_modules,vendor,tests"
+        "make-pot": "php vendor/wp-cli/wp-cli/php/boot-fs.php i18n make-pot . languages/cf7-ai-inbox.pot --domain=cf7-ai-inbox --exclude=node_modules,vendor,tests"
     },
     "devDependencies": {
         "@wordpress/scripts": "^30.23.0",

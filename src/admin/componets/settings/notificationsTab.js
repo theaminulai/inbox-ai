@@ -19,8 +19,13 @@ export function initNotificationsTab() {
 		saveBtn.addEventListener( 'click', () => {
 			const values = collectFields( screen );
 
-			cf7aiAjax( 'cf7ai_save_settings', { tab: 'notifications', values: JSON.stringify( values ) } )
-				.then( () => showToast( 'Notification settings saved', 'success' ) )
+			cf7aiAjax( 'cf7ai_save_settings', {
+				tab: 'notifications',
+				values: JSON.stringify( values ),
+			} )
+				.then( () =>
+					showToast( 'Notification settings saved', 'success' )
+				)
 				.catch( ( err ) => showToast( err.message, 'error' ) );
 		} );
 	}

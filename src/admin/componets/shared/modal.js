@@ -11,7 +11,9 @@
  */
 export function initModalClose( root = document ) {
 	root.querySelectorAll( '[data-close-modal]' ).forEach( ( el ) => {
-		el.addEventListener( 'click', () => closeModal( el.dataset.closeModal ) );
+		el.addEventListener( 'click', () =>
+			closeModal( el.dataset.closeModal )
+		);
 	} );
 }
 

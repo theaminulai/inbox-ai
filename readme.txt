@@ -4,11 +4,11 @@ Tags: contact form 7, ai, inbox, openai, anthropic
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.1.0
+Stable tag: 0.3.0
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-An AI-powered review inbox for Contact Form 7 submissions: AI-drafted summaries and replies for you to review and send — nothing is emailed automatically.
+AI-powered review inbox for Contact Form 7: AI drafts summaries, replies, and priority — you review and send, nothing is automatic.
 
 == Description ==
 
@@ -65,14 +65,37 @@ None yet — there is no admin UI in this release.
 
 == Changelog ==
 
+= CF7AI Inbox/v0.3.0 - 2026-07-15 =
+= 0.3.0 - 2026-07-15 =
+**Added**
+* Added AI Inbox with filters, search, sorting, pagination, and submission details.
+* Added AI reply composer with draft, regenerate, retry analysis, and send workflow.
+* Added background AI analysis queue with OpenAI, Anthropic, and Gemini support.
+* Added per-form AI categories with real-time category management in the Contact Form 7 editor.
+* Added spam auto-archive, validation, and normalization for AI results.
+* Added failure screen with one-click retry for failed AI analysis.
+* Added CSV export of the current filtered list.
+**Improved**
+* Improved inbox actions, permissions, and overall admin experience.
+**Fixed**
+* Fixed AI Categories UI rendering on the Contact Form 7 editor.
+* Fixed admin stylesheet build issue.
+
+= CF7AI Inbox/v0.2.0 - 2026-07-10 =
+**Added**
+* Added a settings page to configure AI providers and plugin options.
+* Added monitored forms management to choose which Contact Form 7 forms are analyzed.
+* Added customizable AI analysis prompts for better response quality.
+* Added email notification settings for inbox activity.
+* Added usage tracking, spending limits, and secure API key management.
+* Added Flamingo import to migrate existing Contact Form 7 submissions.
+
 = CF7AI Inbox/v0.1.0 - 2026-07-01 =
 **Added**
-* Initial foundation release. No AI Inbox functionality yet.
-* Plugin bootstrap, PSR-4 autoloader, and constants.
-* Requirements checks (PHP 8.1+, WordPress 6.7+, Contact Form 7 active) with admin notices, plus a native "Requires Plugins" dependency declaration.
-* Database schema for messages, activities, and usage, managed via `dbDelta` with versioned upgrades.
-* Capability system (view/edit/delete messages, send replies, manage settings, view analytics, export messages), granted to Administrators on activation.
-* Uninstall routine that removes all plugin data.
+* Initial release.
+* Added plugin setup, requirements checks, and Contact Form 7 dependency.
+* Added database schema and upgrade routines.
+* Added user capabilities and uninstall cleanup.
 
 == Upgrade Notice ==
 

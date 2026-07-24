@@ -19,7 +19,10 @@ export function initPromptsTab() {
 		saveBtn.addEventListener( 'click', () => {
 			const values = collectFields( screen );
 
-			cf7aiAjax( 'cf7ai_save_settings', { tab: 'prompts', values: JSON.stringify( values ) } )
+			cf7aiAjax( 'cf7ai_save_settings', {
+				tab: 'prompts',
+				values: JSON.stringify( values ),
+			} )
 				.then( () => showToast( 'Prompts saved', 'success' ) )
 				.catch( ( err ) => showToast( err.message, 'error' ) );
 		} );
@@ -29,9 +32,15 @@ export function initPromptsTab() {
 
 	if ( resetBtn ) {
 		resetBtn.addEventListener( 'click', () => {
-			cf7aiAjax( 'cf7ai_save_settings', { tab: 'prompts', values: JSON.stringify( { reset: true } ) } )
+			cf7aiAjax( 'cf7ai_save_settings', {
+				tab: 'prompts',
+				values: JSON.stringify( { reset: true } ),
+			} )
 				.then( ( data ) => {
-					populateFields( screen, data && data.defaults ? data.defaults : {} );
+					populateFields(
+						screen,
+						data && data.defaults ? data.defaults : {}
+					);
 					showToast( 'Prompts reset to defaults', 'success' );
 				} )
 				.catch( ( err ) => showToast( err.message, 'error' ) );

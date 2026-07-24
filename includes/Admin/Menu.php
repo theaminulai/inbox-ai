@@ -12,6 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use CF7AIInbox\Admin\Pages\InboxListPage;
 use CF7AIInbox\Admin\Pages\SettingsPage;
 use CF7AIInbox\Security\Capabilities;
 
@@ -31,13 +32,19 @@ use CF7AIInbox\Security\Capabilities;
  *   └── Settings
  *
  * Only pages with a real, finished, data-backed renderer are registered in
- * {@see self::PAGES} — currently just Settings
+ * {@see self::PAGES} — currently AI Inbox List
+ * ({@see \CF7AIInbox\Admin\Pages\InboxListPage}, see
+ * docs/plans/02-ai-inbox-list-plan.md) and Settings
  * ({@see \CF7AIInbox\Admin\Pages\SettingsPage}, see
  * docs/plans/05-settings-plan.md). There is no more static-mockup iframe
- * preview fallback: Overview, AI Inbox List, Contacts List, and Analytics
- * (docs/plans/01-04-*.md) are added to {@see self::PAGES} — with their own
- * page class, the same way Settings is — once each one's own build pass is
- * actually complete.
+ * preview fallback: Overview, Contacts, and Analytics
+ * (docs/plans/01,03,04-*.md) are added to {@see self::PAGES} — with their
+ * own page class, the same way these are — once each one's own build pass
+ * is actually complete. A minimal Contacts page and a Flamingo contacts
+ * importer were built and then deliberately reverted (kept out of this list
+ * and out of the Flamingo import wizard) so the full docs/plans/03 design
+ * can be built from scratch later, per its own plan, without an in-between
+ * page to reconcile.
  *
  * This class also owns every page's asset loading. `enqueue_assets()`
  * enqueues the one shared `build/admin.js` / `build/admin.css` bundle
@@ -68,6 +75,7 @@ final class Menu {
 	 * @var array<string, array{0:string,1:string,2:string,3:class-string}>
 	 */
 	private const PAGES = array(
+		'cf7ai-inbox'    => array( 'AI Inbox', 'CF7 AI Inbox', Capabilities::VIEW_MESSAGES, InboxListPage::class ),
 		'cf7ai-settings' => array( 'Settings', 'CF7 AI Inbox Settings', Capabilities::MANAGE_SETTINGS, SettingsPage::class ),
 	);
 
@@ -143,7 +151,7 @@ final class Menu {
 			return;
 		}
 
-		$asset_file = CF7AI_INBOX_PATH . 'build/admin.asset.php';
+		$asset_file = CF7AI_INBOX_PATH . 'build/admin/admin.asset.php';
 		$asset      = file_exists( $asset_file )
 			? require $asset_file
 			: array(
@@ -153,7 +161,7 @@ final class Menu {
 
 		wp_enqueue_style(
 			'cf7ai-inbox-admin',
-			CF7AI_INBOX_URL . 'build/admin.css',
+			CF7AI_INBOX_URL . 'build/admin/admin.css',
 			array(),
 			$asset['version']
 		);
@@ -162,7 +170,7 @@ final class Menu {
 
 		wp_enqueue_script(
 			'cf7ai-inbox-admin',
-			CF7AI_INBOX_URL . 'build/admin.js',
+			CF7AI_INBOX_URL . 'build/admin/admin.js',
 			$asset['dependencies'],
 			$asset['version'],
 			true
