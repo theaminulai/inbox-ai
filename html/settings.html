@@ -14,12 +14,12 @@
 
     <section class="cf7-ai-inbox-screen cf7-ai-inbox-is-active" id="screen-ai-settings">
       <div class="cf7-ai-inbox-nav">
-        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html">Contacts</a><a href="analytics.html">Analytics</a><a href="settings.html" class="cf7-ai-inbox-is-active">Settings</a>
+        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html">Contacts</a><a href="analytics.html">Analytics</a><a href="campaign.html">Campaigns</a><a href="settings.html" class="cf7-ai-inbox-is-active">Settings</a>
       </div>
       <div class="cf7-ai-inbox-page-header"><div><h1>AI Provider Settings</h1><p>Connect and configure the AI provider used to analyze submissions.</p></div></div>
       <div class="cf7-ai-inbox-settings__shell">
         <div class="cf7-ai-inbox-settings__tabs" id="settings-tabs">
-          <a data-subnav="ai-settings" class="cf7-ai-inbox-is-active">AI Provider</a><a data-subnav="general-settings">General</a><a data-subnav="prompts">Prompts</a><a data-subnav="usage">Usage & Billing</a><a data-subnav="notifications">Notifications</a><a data-subnav="flamingo">Import & Migration</a>
+          <a data-subnav="ai-settings" class="cf7-ai-inbox-is-active">AI Provider</a><a data-subnav="email-settings">Email Provider</a><a data-subnav="general-settings">General</a><a data-subnav="prompts">Prompts</a><a data-subnav="usage">Usage & Billing</a><a data-subnav="notifications">Notifications</a><a data-subnav="flamingo">Import & Migration</a>
         </div>
         <div class="cf7-ai-inbox-stack">
           <div class="cf7-ai-inbox-card"><div class="cf7-ai-inbox-card__header"><h2>Choose a provider</h2></div>
@@ -54,14 +54,66 @@
       </div>
     </section>
 
+    <section class="cf7-ai-inbox-screen" id="screen-email-settings">
+      <div class="cf7-ai-inbox-nav">
+        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html">Contacts</a><a href="analytics.html">Analytics</a><a href="campaign.html">Campaigns</a><a href="settings.html" class="cf7-ai-inbox-is-active">Settings</a>
+      </div>
+      <div class="cf7-ai-inbox-page-header"><div><h1>Email Provider Settings</h1><p>Connect the transactional/bulk email provider used to send replies and campaigns.</p></div></div>
+      <div class="cf7-ai-inbox-settings__shell">
+        <div class="cf7-ai-inbox-settings__tabs" id="settings-tabs-email">
+          <a data-subnav="ai-settings">AI Provider</a><a data-subnav="email-settings" class="cf7-ai-inbox-is-active">Email Provider</a><a data-subnav="general-settings">General</a><a data-subnav="prompts">Prompts</a><a data-subnav="usage">Usage & Billing</a><a data-subnav="notifications">Notifications</a><a data-subnav="flamingo">Import & Migration</a>
+        </div>
+        <div class="cf7-ai-inbox-stack">
+          <div class="cf7-ai-inbox-card"><div class="cf7-ai-inbox-card__header"><h2>Choose a provider</h2><span class="cf7-ai-inbox-card__muted">Used for individual replies and bulk campaigns</span></div>
+            <div class="cf7-ai-inbox-card__body">
+              <div class="cf7-ai-inbox-provider__option cf7-ai-inbox-is-selected" data-email-provider="sendgrid"><div class="cf7-ai-inbox-provider__logo" style="background:#EAF3FF;color:#1A82E2;">SG</div><div><div style="font-weight:700;font-size:13.5px;">SendGrid</div><div style="font-size:12px;color:var(--text-tertiary);">Good default for transactional + bulk mail</div></div><div class="cf7-ai-inbox-provider__radio cf7-ai-inbox-is-checked"></div></div>
+              <div class="cf7-ai-inbox-provider__option" data-email-provider="postmark"><div class="cf7-ai-inbox-provider__logo" style="background:#FFF1EC;color:#FFCC00;">PM</div><div><div style="font-weight:700;font-size:13.5px;">Postmark</div><div style="font-size:12px;color:var(--text-tertiary);">Strong deliverability, transactional-focused</div></div><div class="cf7-ai-inbox-provider__radio"></div></div>
+              <div class="cf7-ai-inbox-provider__option" data-email-provider="ses"><div class="cf7-ai-inbox-provider__logo" style="background:#FFF6E5;color:#E8890C;">SES</div><div><div style="font-weight:700;font-size:13.5px;">Amazon SES</div><div style="font-size:12px;color:var(--text-tertiary);">Lowest cost at high volume</div></div><div class="cf7-ai-inbox-provider__radio"></div></div>
+              <div class="cf7-ai-inbox-provider__option" style="margin-bottom:0;" data-email-provider="mailgun"><div class="cf7-ai-inbox-provider__logo" style="background:#FBEFE9;color:#C3423F;">MG</div><div><div style="font-weight:700;font-size:13.5px;">Mailgun</div><div style="font-size:12px;color:var(--text-tertiary);">Developer-friendly, good API</div></div><div class="cf7-ai-inbox-provider__radio"></div></div>
+            </div>
+          </div>
+          <div class="cf7-ai-inbox-card">
+            <div class="cf7-ai-inbox-card__header"><h2 id="email-provider-config-title">SendGrid Configuration</h2><span class="cf7-ai-inbox-connected-pill" id="email-provider-pill" style="display:none;"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Connected</span></div>
+            <div class="cf7-ai-inbox-card__body">
+              <div class="cf7-ai-inbox-field"><label>API key</label><input class="cf7-ai-inbox-field__input" type="password" id="email-provider-api-key" placeholder="Paste your API key" style="font-family:var(--mono);"><div class="cf7-ai-inbox-field__hint">Stored encrypted. Needs permission to send mail on your verified sending domain.</div></div>
+              <div class="cf7-ai-inbox-field-row">
+                <div class="cf7-ai-inbox-field" style="margin-bottom:0;"><label>Default from name</label><input class="cf7-ai-inbox-field__input" id="email-provider-from-name" value="Aminul Islam"></div>
+                <div class="cf7-ai-inbox-field" style="margin-bottom:0;"><label>Default from email</label><input class="cf7-ai-inbox-field__input" id="email-provider-from-email" value="aminul@yourcompany.com"></div>
+              </div>
+              <div class="cf7-ai-inbox-field" style="margin-top:16px;margin-bottom:0;"><label>Verified sending domain</label><input class="cf7-ai-inbox-field__input" id="email-provider-domain" placeholder="mail.yourcompany.com"><div class="cf7-ai-inbox-field__hint">Required for bulk sending — unverified domains are heavily rate-limited or blocked by most providers.</div></div>
+              <div style="display:flex;gap:10px;margin-top:18px;">
+                <button class="cf7-ai-inbox-btn--secondary" id="email-provider-test-btn">Test Connection</button>
+                <button class="cf7-ai-inbox-btn--primary" id="email-provider-save-btn">Save Changes</button>
+              </div>
+            </div>
+          </div>
+          <div class="cf7-ai-inbox-card"><div class="cf7-ai-inbox-card__header"><h2>Sending Defaults</h2></div>
+            <div class="cf7-ai-inbox-card__body">
+              <div class="cf7-ai-inbox-field" style="margin-bottom:0;"><label>Default daily send limit</label>
+                <select class="cf7-ai-inbox-field__input" id="email-provider-default-rate">
+                  <option value="500">500 / day</option>
+                  <option value="1000">1,000 / day</option>
+                  <option value="3000">3,000 / day</option>
+                  <option value="5000" selected>5,000 / day</option>
+                </select>
+                <div class="cf7-ai-inbox-field__hint">New campaigns default to this limit — protects your sender reputation. Increase gradually as your domain warms up.</div>
+              </div>
+              <div class="cf7-ai-inbox-switch-row" style="margin-top:14px;"><div><div class="cf7-ai-inbox-switch-row__text">Include unsubscribe link automatically</div><div class="cf7-ai-inbox-switch-row__sub">Required for bulk/campaign email, added to every send</div></div><div class="cf7-ai-inbox-switch cf7-ai-inbox-is-on"></div></div>
+              <div class="cf7-ai-inbox-switch-row" style="border-bottom:none;"><div><div class="cf7-ai-inbox-switch-row__text">Pause sending on high bounce rate</div><div class="cf7-ai-inbox-switch-row__sub">Auto-pauses a campaign if bounces exceed 5%</div></div><div class="cf7-ai-inbox-switch cf7-ai-inbox-is-on"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="cf7-ai-inbox-screen" id="screen-general-settings">
       <div class="cf7-ai-inbox-nav">
-        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html">Contacts</a><a href="analytics.html">Analytics</a><a href="settings.html" class="cf7-ai-inbox-is-active">Settings</a>
+        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html">Contacts</a><a href="analytics.html">Analytics</a><a href="campaign.html">Campaigns</a><a href="settings.html" class="cf7-ai-inbox-is-active">Settings</a>
       </div>
       <div class="cf7-ai-inbox-page-header"><div><h1>General Settings</h1><p>Choose which forms feed the AI Inbox and how new submissions are handled.</p></div></div>
       <div class="cf7-ai-inbox-settings__shell">
         <div class="cf7-ai-inbox-settings__tabs" id="settings-tabs-2">
-          <a data-subnav="ai-settings">AI Provider</a><a data-subnav="general-settings" class="cf7-ai-inbox-is-active">General</a><a data-subnav="prompts">Prompts</a><a data-subnav="usage">Usage & Billing</a><a data-subnav="notifications">Notifications</a><a data-subnav="flamingo">Import & Migration</a>
+          <a data-subnav="ai-settings">AI Provider</a><a data-subnav="email-settings">Email Provider</a><a data-subnav="general-settings" class="cf7-ai-inbox-is-active">General</a><a data-subnav="prompts">Prompts</a><a data-subnav="usage">Usage & Billing</a><a data-subnav="notifications">Notifications</a><a data-subnav="flamingo">Import & Migration</a>
         </div>
         <div class="cf7-ai-inbox-stack">
           <div class="cf7-ai-inbox-card"><div class="cf7-ai-inbox-card__header"><h2>Monitored Forms</h2></div>
@@ -93,12 +145,12 @@
 
     <section class="cf7-ai-inbox-screen" id="screen-prompts">
       <div class="cf7-ai-inbox-nav">
-        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html">Contacts</a><a href="analytics.html">Analytics</a><a href="settings.html" class="cf7-ai-inbox-is-active">Settings</a>
+        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html">Contacts</a><a href="analytics.html">Analytics</a><a href="campaign.html">Campaigns</a><a href="settings.html" class="cf7-ai-inbox-is-active">Settings</a>
       </div>
       <div class="cf7-ai-inbox-page-header"><div><h1>Prompt Configuration</h1><p>Customize the instructions the AI uses to analyze submissions and draft replies.</p></div></div>
       <div class="cf7-ai-inbox-settings__shell">
         <div class="cf7-ai-inbox-settings__tabs" id="settings-tabs-3">
-          <a data-subnav="ai-settings">AI Provider</a><a data-subnav="general-settings">General</a><a data-subnav="prompts" class="cf7-ai-inbox-is-active">Prompts</a><a data-subnav="usage">Usage & Billing</a><a data-subnav="notifications">Notifications</a><a data-subnav="flamingo">Import & Migration</a>
+          <a data-subnav="ai-settings">AI Provider</a><a data-subnav="email-settings">Email Provider</a><a data-subnav="general-settings">General</a><a data-subnav="prompts" class="cf7-ai-inbox-is-active">Prompts</a><a data-subnav="usage">Usage & Billing</a><a data-subnav="notifications">Notifications</a><a data-subnav="flamingo">Import & Migration</a>
         </div>
         <div class="cf7-ai-inbox-stack">
           <div class="cf7-ai-inbox-card"><div class="cf7-ai-inbox-card__header"><h2>Analysis Prompt</h2><span class="cf7-ai-inbox-card__muted">Used to summarize, categorize, and score priority</span></div>
@@ -141,12 +193,12 @@ Signature: {signature}</textarea>
 
     <section class="cf7-ai-inbox-screen" id="screen-usage">
       <div class="cf7-ai-inbox-nav">
-        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html">Contacts</a><a href="analytics.html">Analytics</a><a href="settings.html" class="cf7-ai-inbox-is-active">Settings</a>
+        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html">Contacts</a><a href="analytics.html">Analytics</a><a href="campaign.html">Campaigns</a><a href="settings.html" class="cf7-ai-inbox-is-active">Settings</a>
       </div>
       <div class="cf7-ai-inbox-page-header"><div><h1>Usage Dashboard</h1><p>Track AI requests, tokens, and estimated cost across providers.</p></div><div class="cf7-ai-inbox-page-header__controls"><div class="cf7-ai-inbox-control">This month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div></div></div>
       <div class="cf7-ai-inbox-settings__shell">
         <div class="cf7-ai-inbox-settings__tabs" id="settings-tabs-4">
-          <a data-subnav="ai-settings">AI Provider</a><a data-subnav="general-settings">General</a><a data-subnav="prompts">Prompts</a><a data-subnav="usage" class="cf7-ai-inbox-is-active">Usage & Billing</a><a data-subnav="notifications">Notifications</a><a data-subnav="flamingo">Import & Migration</a>
+          <a data-subnav="ai-settings">AI Provider</a><a data-subnav="email-settings">Email Provider</a><a data-subnav="general-settings">General</a><a data-subnav="prompts">Prompts</a><a data-subnav="usage" class="cf7-ai-inbox-is-active">Usage & Billing</a><a data-subnav="notifications">Notifications</a><a data-subnav="flamingo">Import & Migration</a>
         </div>
         <div class="cf7-ai-inbox-stack">
           <div class="cf7-ai-inbox-kpi__strip" style="margin-bottom:0;">
@@ -177,12 +229,12 @@ Signature: {signature}</textarea>
 
     <section class="cf7-ai-inbox-screen" id="screen-notifications">
       <div class="cf7-ai-inbox-nav">
-        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html">Contacts</a><a href="analytics.html">Analytics</a><a href="settings.html" class="cf7-ai-inbox-is-active">Settings</a>
+        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html">Contacts</a><a href="analytics.html">Analytics</a><a href="campaign.html">Campaigns</a><a href="settings.html" class="cf7-ai-inbox-is-active">Settings</a>
       </div>
       <div class="cf7-ai-inbox-page-header"><div><h1>Notifications</h1><p>Choose how you and your team hear about inbox activity.</p></div></div>
       <div class="cf7-ai-inbox-settings__shell">
         <div class="cf7-ai-inbox-settings__tabs" id="settings-tabs-5">
-          <a data-subnav="ai-settings">AI Provider</a><a data-subnav="general-settings">General</a><a data-subnav="prompts">Prompts</a><a data-subnav="usage">Usage & Billing</a><a data-subnav="notifications" class="cf7-ai-inbox-is-active">Notifications</a><a data-subnav="flamingo">Import & Migration</a>
+          <a data-subnav="ai-settings">AI Provider</a><a data-subnav="email-settings">Email Provider</a><a data-subnav="general-settings">General</a><a data-subnav="prompts">Prompts</a><a data-subnav="usage">Usage & Billing</a><a data-subnav="notifications" class="cf7-ai-inbox-is-active">Notifications</a><a data-subnav="flamingo">Import & Migration</a>
         </div>
         <div class="cf7-ai-inbox-stack">
           <div class="cf7-ai-inbox-card"><div class="cf7-ai-inbox-card__header"><h2>Email Notifications</h2></div>
@@ -206,12 +258,12 @@ Signature: {signature}</textarea>
 
     <section class="cf7-ai-inbox-screen" id="screen-flamingo">
       <div class="cf7-ai-inbox-nav">
-        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html">Contacts</a><a href="analytics.html">Analytics</a><a href="settings.html" class="cf7-ai-inbox-is-active">Settings</a>
+        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html">Contacts</a><a href="analytics.html">Analytics</a><a href="campaign.html">Campaigns</a><a href="settings.html" class="cf7-ai-inbox-is-active">Settings</a>
       </div>
       <div class="cf7-ai-inbox-page-header"><div><h1>Flamingo Import</h1><p>Import data from Flamingo to CF7 AI Inbox.</p></div></div>
       <div class="cf7-ai-inbox-settings__shell">
         <div class="cf7-ai-inbox-settings__tabs" id="settings-tabs-6">
-          <a data-subnav="ai-settings">AI Provider</a><a data-subnav="general-settings">General</a><a data-subnav="prompts">Prompts</a><a data-subnav="usage">Usage & Billing</a><a data-subnav="notifications">Notifications</a><a data-subnav="flamingo" class="cf7-ai-inbox-is-active">Import & Migration</a>
+          <a data-subnav="ai-settings">AI Provider</a><a data-subnav="email-settings">Email Provider</a><a data-subnav="general-settings">General</a><a data-subnav="prompts">Prompts</a><a data-subnav="usage">Usage & Billing</a><a data-subnav="notifications">Notifications</a><a data-subnav="flamingo" class="cf7-ai-inbox-is-active">Import & Migration</a>
         </div>
         <div>
           <div class="cf7-ai-inbox-wizard__steps">

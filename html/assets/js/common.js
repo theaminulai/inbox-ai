@@ -265,6 +265,10 @@ function openRowMenu(anchorEl, kind, key){
   let items;
   if(kind==='contact'){
     items = contactRowMenuItems();
+  } else if(kind==='campaign'){
+    // campaignRowMenuItems()/campaigns are defined locally in campaign.js,
+    // only loaded on campaign.html — guarded so other pages don't error.
+    items = (typeof campaignRowMenuItems === 'function') ? campaignRowMenuItems() : [];
   } else {
     const m = messages.find(x=>x.id===key);
     items = m ? messageRowMenuItems(m) : [];

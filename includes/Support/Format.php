@@ -61,11 +61,25 @@ final class Format {
 	);
 
 	/**
-	 * @param string $priority `urgent`|`high`|`normal`|`low`.
+	 * @param string $priority `urgent`|`high`|`normal`|`low`, or `''` for a
+	 *                         message AI analysis hasn't run for yet — a
+	 *                         real, common state (a fresh submission is
+	 *                         `new`/pending until WP-Cron picks it up), not
+	 *                         an error, so it renders as a plain "—" rather
+	 *                         than silently falling back to "Normal" and
+	 *                         making an unanalyzed row look already scored.
 	 *
-	 * @return string HTML for a `<span class="cf7-ai-inbox-badge">`.
+	 * @return string HTML for a `<span class="cf7-ai-inbox-badge">`, or a
+	 *                bare "—" for the not-yet-analyzed case.
 	 */
 	public static function priority_badge_html( string $priority ): string {
+		if ( '' === $priority ) {
+			return '<span style="color:var(--text-tertiary);">—</span>';
+		}
+
+		// A genuinely unrecognized (but non-empty) value — e.g. old data
+		// from before a priority label changed — still falls back to
+		// "Normal" defensively, rather than showing nothing at all.
 		[ $label, $color, $css_class ] = self::PRIORITY_MAP[ $priority ] ?? self::PRIORITY_MAP['normal'];
 
 		return sprintf(

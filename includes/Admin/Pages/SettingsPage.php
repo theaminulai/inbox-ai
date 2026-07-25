@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use CF7AIInbox\Admin\AjaxController;
+use CF7AIInbox\Database\MessageRepository;
 use CF7AIInbox\Database\UsageRepository;
 use CF7AIInbox\Migration\FlamingoImporter;
 use CF7AIInbox\Security\Capabilities;
@@ -67,7 +68,7 @@ final class SettingsPage {
 			$tab = 'ai-settings';
 		}
 
-		Template::render( 'settings', array_merge( $this->build_view_model(), array( 'active_tab' => $tab ) ) );
+		Template::render( 'settings/settings', array_merge( $this->build_view_model(), array( 'active_tab' => $tab ) ) );
 	}
 
 	/**
@@ -118,7 +119,7 @@ final class SettingsPage {
 	/**
 	 * Every real Contact Form 7 form, for the Monitored Forms list.
 	 *
-	 * @return array<int, array{id:int,title:string,monitored:bool}>
+	 * @return array<int, array{id:int,title:string,monitored:bool,submissions_this_month:int}>
 	 */
 	private function get_cf7_forms(): array {
 		if ( ! class_exists( '\WPCF7_ContactForm' ) ) {
@@ -126,13 +127,15 @@ final class SettingsPage {
 		}
 
 		$monitored = SettingsRepository::get_general()['monitored_forms'];
+		$counts    = MessageRepository::count_this_month_by_form();
 		$list      = array();
 
 		foreach ( \WPCF7_ContactForm::find() as $form ) {
 			$list[] = array(
-				'id'        => $form->id(),
-				'title'     => $form->title(),
-				'monitored' => in_array( $form->id(), $monitored, true ),
+				'id'                     => $form->id(),
+				'title'                  => $form->title(),
+				'monitored'              => in_array( $form->id(), $monitored, true ),
+				'submissions_this_month' => $counts[ $form->id() ] ?? 0,
 			);
 		}
 

@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       CF7 AI Inbox
  * Description:       An AI-powered review inbox for Contact Form 7 submissions — summaries, suggested replies, categorization, and priority scoring, with nothing ever sent automatically.
- * Version:           0.3.0
+ * Version:           0.4.0
  * Requires at least: 6.7
  * Requires PHP:      8.1
  * Author:            theaminulai

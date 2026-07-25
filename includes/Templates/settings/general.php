@@ -4,7 +4,7 @@
  *
  * @var string $active_tab Currently visible tab key.
  * @var array  $general    {@see \CF7AIInbox\Settings\Repository::get_general()}.
- * @var array  $cf7_forms  Real Contact Form 7 forms: array{id:int,title:string,monitored:bool}[].
+ * @var array  $cf7_forms  Real Contact Form 7 forms: array{id:int,title:string,monitored:bool,submissions_this_month:int}[].
  *
  * @package CF7AIInbox\Templates
  */
@@ -50,6 +50,15 @@ $cf7ai_retention_labels = array(
 							<div class="cf7-ai-inbox-switch-row">
 								<div>
 									<div class="cf7-ai-inbox-switch-row__text"><?php echo esc_html( $cf7ai_form['title'] ); ?></div>
+									<div class="cf7-ai-inbox-switch-row__sub">
+										<?php
+										printf(
+											/* translators: %d: number of submissions this calendar month. */
+											esc_html( _n( '%d submission this month', '%d submissions this month', $cf7ai_form['submissions_this_month'], 'cf7-ai-inbox' ) ),
+											absint( $cf7ai_form['submissions_this_month'] )
+										);
+										?>
+									</div>
 								</div>
 								<div
 									class="cf7-ai-inbox-switch<?php echo $cf7ai_form['monitored'] ? ' cf7-ai-inbox-is-on' : ''; ?>"

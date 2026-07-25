@@ -1,8 +1,8 @@
 // Import & Migration tab: the four-step Flamingo wizard, its summary rows,
 // and its progress bar (reuses the `.cf7-ai-inbox-confidence__track/__fill`
-// bar shape from the wider mockup design system — only those two rules are
-// pulled in here since nothing else in `.cf7-ai-inbox-confidence` is used
-// by the Settings page).
+// bar shape — defined once in common/_badges.scss and always compiled into
+// the one shared admin.css bundle regardless of which page is open, so
+// there's no need for a separate copy here).
 
 .cf7-ai-inbox-wizard__steps {
 	display: flex;
@@ -92,17 +92,3 @@
 	}
 }
 
-.cf7-ai-inbox-confidence {
-	&__track {
-		width: 100%;
-		height: 5px;
-		border-radius: 3px;
-		background: var(--surface-2);
-		overflow: hidden;
-	}
-
-	&__fill {
-		height: 100%;
-		border-radius: 3px;
-	}
-}

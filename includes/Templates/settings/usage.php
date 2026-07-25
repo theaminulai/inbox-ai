@@ -22,6 +22,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 $cf7ai_breakdown_colors = array( '#3A5CF6', '#8A7EF0', '#1F9254', '#DA8A2E', '#D93B3B' );
 $cf7ai_breakdown_total  = array_sum( $usage_breakdown );
 
+// Matches AjaxController::USAGE_PERIODS — the page always loads with
+// 30_days server-rendered; switching this select re-fetches the figures
+// below via `cf7ai_get_settings` (see usageBillingTab.js) without a full
+// page reload.
+$cf7ai_period_labels = array(
+	'7_days'     => __( 'Last 7 days', 'cf7-ai-inbox' ),
+	'30_days'    => __( 'Last 30 days', 'cf7-ai-inbox' ),
+	'90_days'    => __( 'Last 90 days', 'cf7-ai-inbox' ),
+	'this_month' => __( 'This month', 'cf7-ai-inbox' ),
+	'1_year'     => __( 'Last 1 year', 'cf7-ai-inbox' ),
+	'2_years'    => __( 'Last 2 years', 'cf7-ai-inbox' ),
+	'3_years'    => __( 'Last 3 years', 'cf7-ai-inbox' ),
+	'5_years'    => __( 'Last 5 years', 'cf7-ai-inbox' ),
+);
+
 ?>
 <section class="cf7-ai-inbox-screen<?php echo 'usage' === $active_tab ? ' cf7-ai-inbox-is-active' : ''; ?>" id="screen-usage">
 	<div class="cf7-ai-inbox-page-header">
@@ -30,7 +45,11 @@ $cf7ai_breakdown_total  = array_sum( $usage_breakdown );
 			<p><?php esc_html_e( 'Track AI requests, tokens, and estimated cost across providers.', 'cf7-ai-inbox' ); ?></p>
 		</div>
 		<div class="cf7-ai-inbox-page-header__controls">
-			<div class="cf7-ai-inbox-control"><?php esc_html_e( 'Last 30 days', 'cf7-ai-inbox' ); ?></div>
+			<select class="cf7-ai-inbox-control" id="usage-period-select">
+				<?php foreach ( $cf7ai_period_labels as $cf7ai_period_value => $cf7ai_period_label ) : ?>
+					<option value="<?php echo esc_attr( $cf7ai_period_value ); ?>" <?php selected( '30_days', $cf7ai_period_value ); ?>><?php echo esc_html( $cf7ai_period_label ); ?></option>
+				<?php endforeach; ?>
+			</select>
 		</div>
 	</div>
 	<div class="cf7-ai-inbox-settings__shell">
@@ -47,13 +66,13 @@ $cf7ai_breakdown_total  = array_sum( $usage_breakdown );
 			<div class="cf7-ai-inbox-kpi__strip" style="margin-bottom:0;">
 				<div class="cf7-ai-inbox-kpi__card">
 					<div class="cf7-ai-inbox-kpi__label"><?php esc_html_e( 'Total requests', 'cf7-ai-inbox' ); ?></div>
-					<div class="cf7-ai-inbox-kpi__value"><?php echo esc_html( number_format_i18n( $usage_totals['total_requests'] ) ); ?></div>
+					<div class="cf7-ai-inbox-kpi__value" id="usage-kpi-requests"><?php echo esc_html( number_format_i18n( $usage_totals['total_requests'] ) ); ?></div>
 					<div class="cf7-ai-inbox-kpi__sub"><?php esc_html_e( 'Analysis + reply generation', 'cf7-ai-inbox' ); ?></div>
 				</div>
 				<div class="cf7-ai-inbox-kpi__card">
 					<div class="cf7-ai-inbox-kpi__label"><?php esc_html_e( 'Tokens used', 'cf7-ai-inbox' ); ?></div>
-					<div class="cf7-ai-inbox-kpi__value"><?php echo esc_html( number_format_i18n( $usage_totals['prompt_tokens'] + $usage_totals['completion_tokens'] ) ); ?></div>
-					<div class="cf7-ai-inbox-kpi__sub">
+					<div class="cf7-ai-inbox-kpi__value" id="usage-kpi-tokens"><?php echo esc_html( number_format_i18n( $usage_totals['prompt_tokens'] + $usage_totals['completion_tokens'] ) ); ?></div>
+					<div class="cf7-ai-inbox-kpi__sub" id="usage-kpi-tokens-sub">
 						<?php
 						printf(
 							/* translators: 1: prompt tokens, 2: completion tokens */
@@ -66,8 +85,16 @@ $cf7ai_breakdown_total  = array_sum( $usage_breakdown );
 				</div>
 				<div class="cf7-ai-inbox-kpi__card">
 					<div class="cf7-ai-inbox-kpi__label"><?php esc_html_e( 'Estimated cost', 'cf7-ai-inbox' ); ?></div>
-					<div class="cf7-ai-inbox-kpi__value">$<?php echo esc_html( number_format_i18n( $usage_totals['estimated_cost'], 2 ) ); ?></div>
-					<div class="cf7-ai-inbox-kpi__sub"><?php esc_html_e( 'Last 30 days, all providers', 'cf7-ai-inbox' ); ?></div>
+					<div class="cf7-ai-inbox-kpi__value" id="usage-kpi-cost">$<?php echo esc_html( number_format_i18n( $usage_totals['estimated_cost'], 2 ) ); ?></div>
+					<div class="cf7-ai-inbox-kpi__sub" id="usage-kpi-cost-sub">
+						<?php
+						printf(
+							/* translators: %s: selected date-range label, e.g. "Last 30 days" */
+							esc_html__( '%s, all providers', 'cf7-ai-inbox' ),
+							esc_html( $cf7ai_period_labels['30_days'] )
+						);
+						?>
+					</div>
 				</div>
 				<div class="cf7-ai-inbox-kpi__card">
 					<div class="cf7-ai-inbox-kpi__label"><?php esc_html_e( 'Monthly budget', 'cf7-ai-inbox' ); ?></div>
@@ -78,7 +105,7 @@ $cf7ai_breakdown_total  = array_sum( $usage_breakdown );
 
 			<div class="cf7-ai-inbox-card">
 				<div class="cf7-ai-inbox-card__header"><h2><?php esc_html_e( 'Cost by Request Type', 'cf7-ai-inbox' ); ?></h2></div>
-				<div class="cf7-ai-inbox-card__body">
+				<div class="cf7-ai-inbox-card__body" id="usage-breakdown-body">
 					<?php if ( array() === $usage_breakdown ) : ?>
 						<p style="color:var(--text-tertiary);font-size:13px;"><?php esc_html_e( 'No AI usage recorded yet. This fills in once the AI Inbox List page starts analyzing submissions.', 'cf7-ai-inbox' ); ?></p>
 					<?php else : ?>

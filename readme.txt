@@ -4,7 +4,7 @@ Tags: contact form 7, ai, inbox, openai, anthropic
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.3.0
+Stable tag: 0.4.0
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -64,6 +64,17 @@ This plugin does not currently connect to any external service — no submission
 None yet — there is no admin UI in this release.
 
 == Changelog ==
+
+= CF7AI Inbox/v0.4.0 - 2026-07-25 =
+**Added**
+* Added a real "Received" date-range filter to the AI Inbox List (7/30/90 days, this month, 1/2/3/5 years) — previously missing from the live page despite being present in the design.
+* Added the same period filter to the Usage & Billing tab, replacing the previously decorative "Last 30 days" control.
+* Added a live "N submissions this month" count under each form in Monitored Forms.
+**Improved**
+* Reorganized admin template files into per-page subfolders (`inbox/`, `settings/`) for maintainability.
+* Removed duplicate/conflicting CSS rules across the settings and shared admin stylesheets.
+**Fixed**
+* Fixed the AI Provider Settings Model dropdown not updating when switching between OpenAI, Anthropic, and Google.
 
 = CF7AI Inbox/v0.3.0 - 2026-07-15 =
 = 0.3.0 - 2026-07-15 =

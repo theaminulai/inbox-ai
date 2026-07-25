@@ -5,7 +5,23 @@
    Requires common.js to be loaded first (shared helpers).
    ===================================================================== */
 
-const SETTINGS_TABS = ['ai-settings','general-settings','prompts','usage','notifications','flamingo'];
+const SETTINGS_TABS = ['ai-settings','email-settings','general-settings','prompts','usage','notifications','flamingo'];
+
+/* ================= EMAIL PROVIDER TAB ================= */
+const EMAIL_PROVIDERS = {
+  sendgrid:'SendGrid', postmark:'Postmark', ses:'Amazon SES', mailgun:'Mailgun'
+};
+const state = {
+  emailProviderSelection:'sendgrid',
+  emailProvider:{key:'sendgrid', name:'SendGrid', connected:false}
+};
+function selectEmailProvider(key){
+  state.emailProviderSelection = key;
+  document.getElementById('email-provider-config-title').textContent = EMAIL_PROVIDERS[key] + ' Configuration';
+  const isCurrentlyConnected = state.emailProvider.connected && state.emailProvider.key===key;
+  document.getElementById('email-provider-pill').style.display = isCurrentlyConnected ? 'inline-flex' : 'none';
+  document.getElementById('email-provider-api-key').value = isCurrentlyConnected ? 'sk-••••••••••••••••••••9c1B' : '';
+}
 
 function showSettingsTab(key){
   if(SETTINGS_TABS.indexOf(key)===-1) key = 'ai-settings';
@@ -29,9 +45,19 @@ document.addEventListener('click', function(e){
 
   const providerOpt = e.target.closest('.cf7-ai-inbox-provider__option');
   if(providerOpt){
-    document.querySelectorAll('.cf7-ai-inbox-provider__option').forEach(o=>{ o.classList.remove('cf7-ai-inbox-is-selected'); o.querySelector('.cf7-ai-inbox-provider__radio').classList.remove('cf7-ai-inbox-is-checked'); });
+    // Scoped to the clicked card's own body — screen-ai-settings and
+    // screen-email-settings each carry their own independent set of
+    // provider cards, both present in the DOM at once (only one screen is
+    // visible), so a document-wide deselect would incorrectly clear the
+    // other tab's selection too.
+    const group = providerOpt.closest('.cf7-ai-inbox-card__body');
+    const scope = group ? group.querySelectorAll('.cf7-ai-inbox-provider__option') : [ providerOpt ];
+    scope.forEach(o=>{ o.classList.remove('cf7-ai-inbox-is-selected'); o.querySelector('.cf7-ai-inbox-provider__radio').classList.remove('cf7-ai-inbox-is-checked'); });
     providerOpt.classList.add('cf7-ai-inbox-is-selected');
     providerOpt.querySelector('.cf7-ai-inbox-provider__radio').classList.add('cf7-ai-inbox-is-checked');
+    if(providerOpt.dataset.emailProvider){
+      selectEmailProvider(providerOpt.dataset.emailProvider);
+    }
     return;
   }
 
@@ -48,6 +74,26 @@ document.addEventListener('click', function(e){
 /* ================= AI PROVIDER TAB ================= */
 document.getElementById('settings-test-connection').addEventListener('click', function(){ testConnection(null, this); });
 document.getElementById('settings-save-provider').addEventListener('click', function(){ showToast('Provider settings saved','success'); });
+
+/* ================= EMAIL PROVIDER TAB (event wiring) ================= */
+document.getElementById('email-provider-test-btn').addEventListener('click', function(){
+  const key = state.emailProviderSelection;
+  const apiKey = document.getElementById('email-provider-api-key').value.trim();
+  if(!apiKey){ showToast('Enter an API key first','error'); return; }
+  const btn = this;
+  const original = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Testing…';
+  showToast('Testing connection to '+EMAIL_PROVIDERS[key]+'…');
+  setTimeout(()=>{
+    btn.disabled = false; btn.textContent = original;
+    state.emailProvider = {key:key, name:EMAIL_PROVIDERS[key], connected:true};
+    document.getElementById('email-provider-pill').style.display = 'inline-flex';
+    showToast('Connected to '+EMAIL_PROVIDERS[key],'success');
+  }, 900);
+});
+document.getElementById('email-provider-save-btn').addEventListener('click', function(){
+  showToast('Email provider settings saved','success');
+});
 
 /* ================= PROMPTS TAB ================= */
 document.getElementById('prompts-save-btn').addEventListener('click', function(){ showToast('Prompts saved','success'); });
@@ -151,4 +197,5 @@ document.getElementById('modal-confirm-import').addEventListener('click', functi
 document.getElementById('flamingo-restart-btn').addEventListener('click', resetFlamingoWizard);
 
 /* ================= INIT ================= */
+selectEmailProvider('sendgrid');
 showSettingsTab(getQueryParam('tab') || 'ai-settings');

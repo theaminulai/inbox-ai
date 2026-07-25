@@ -12,6 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use CF7AIInbox\Admin\Pages\InboxListPage;
 use CF7AIInbox\AI\AnalysisQueue;
 use CF7AIInbox\AI\ProviderFactory;
 use CF7AIInbox\Database\ActivityRepository;
@@ -101,6 +102,16 @@ final class AjaxController {
 	}
 
 	/**
+	 * Period values the Usage & Billing tab's date-range control accepts —
+	 * whatever's not in this list falls back to `30_days`. Kept here (rather
+	 * than reading whatever `UsageRepository::period_to_datetime()` happens
+	 * to parse) so an unrecognized value from the request can never reach it.
+	 *
+	 * @var string[]
+	 */
+	private const USAGE_PERIODS = array( '7_days', '30_days', '90_days', 'this_month', '1_year', '2_years', '3_years', '5_years' );
+
+	/**
 	 * `cf7ai_get_settings` — reads current settings for one tab, or all of
 	 * them, and (for the Usage tab) the read-only usage figures too.
 	 *
@@ -121,9 +132,16 @@ final class AjaxController {
 		);
 
 		if ( 'usage' === $tab ) {
+			$period = isset( $_POST['period'] ) ? sanitize_key( wp_unslash( $_POST['period'] ) ) : '30_days'; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above; phpcs can't trace verification through a helper method call.
+
+			if ( ! in_array( $period, self::USAGE_PERIODS, true ) ) {
+				$period = '30_days';
+			}
+
 			$data['usage'] = array(
-				'totals'    => UsageRepository::get_period_totals( '30_days' ),
-				'breakdown' => UsageRepository::get_cost_breakdown( '30_days' ),
+				'period'    => $period,
+				'totals'    => UsageRepository::get_period_totals( $period ),
+				'breakdown' => UsageRepository::get_cost_breakdown( $period ),
 			);
 		}
 
@@ -345,6 +363,12 @@ final class AjaxController {
 		$this->check( Capabilities::VIEW_MESSAGES, self::INBOX_NONCE_ACTION );
 
 		// Nonce already verified in self::check() above; phpcs can't trace verification through a helper method call, hence the per-line ignore comments below.
+		$period = isset( $_POST['period'] ) ? sanitize_key( wp_unslash( $_POST['period'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+
+		if ( ! in_array( $period, InboxListPage::PERIODS, true ) ) {
+			$period = '';
+		}
+
 		$filters = array(
 			'status'           => isset( $_POST['status'] ) ? sanitize_key( wp_unslash( $_POST['status'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			'priority'         => isset( $_POST['priority'] ) ? sanitize_key( wp_unslash( $_POST['priority'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Missing
@@ -352,6 +376,7 @@ final class AjaxController {
 			'form'             => isset( $_POST['form'] ) ? sanitize_text_field( wp_unslash( $_POST['form'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			'confidence_below' => isset( $_POST['confidence_below'] ) && '' !== $_POST['confidence_below'] ? absint( wp_unslash( $_POST['confidence_below'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			'search'           => isset( $_POST['search'] ) ? sanitize_text_field( wp_unslash( $_POST['search'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'period'           => $period,
 		);
 
 		$page     = isset( $_POST['page'] ) ? max( 1, absint( wp_unslash( $_POST['page'] ) ) ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above.

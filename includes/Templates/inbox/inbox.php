@@ -2,9 +2,9 @@
 /**
  * AI Inbox List page shell.
  *
- * Routes to exactly one of `inbox-list.php` (the message table) or
- * `inbox-detail.php` (one submission, including its "AI analysis failed"
- * state) per request, decided server-side by
+ * Routes to exactly one of `list.php` (the message table) or `detail.php`
+ * (one submission, including its "AI analysis failed" state) per request,
+ * decided server-side by
  * {@see \CF7AIInbox\Admin\Pages\InboxListPage::render()} — there is a real
  * page load between the list and a submission's detail, not a client-side
  * screen swap, so both views' data is always rendered fresh from the
@@ -20,9 +20,9 @@
  * @var bool   $can_delete Whether the current user holds `DELETE_MESSAGES`.
  *
  * List view also gets: $messages, $total, $page, $per_page, $filters,
- * $form_titles, $categories (see `inbox-list.php`).
+ * $form_titles, $categories (see `list.php`).
  *
- * Detail view also gets: $message, $activities (see `inbox-detail.php`).
+ * Detail view also gets: $message, $activities (see `detail.php`).
  *
  * @package CF7AIInbox\Templates
  */
@@ -42,7 +42,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php
 		if ( 'detail' === $view ) {
 			\CF7AIInbox\Support\Template::render(
-				'inbox-detail',
+				'inbox/detail',
 				array(
 					'message'    => $message,
 					'activities' => $activities,
@@ -62,7 +62,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php
 		} else {
 			\CF7AIInbox\Support\Template::render(
-				'inbox-list',
+				'inbox/list',
 				array(
 					'messages'    => $messages,
 					'total'       => $total,
