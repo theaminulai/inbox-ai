@@ -70,6 +70,7 @@ None yet — there is no admin UI in this release.
 * Added a real "Received" date-range filter to the AI Inbox List (7/30/90 days, this month, 1/2/3/5 years) — previously missing from the live page despite being present in the design.
 * Added the same period filter to the Usage & Billing tab, replacing the previously decorative "Last 30 days" control.
 * Added a live "N submissions this month" count under each form in Monitored Forms.
+* Added a full step-by-step user guide (`docs-platform/`) covering setup, every Settings tab, the AI Inbox list, submission replies, and troubleshooting.
 **Improved**
 * Reorganized admin template files into per-page subfolders (`inbox/`, `settings/`) for maintainability.
 * Removed duplicate/conflicting CSS rules across the settings and shared admin stylesheets.
