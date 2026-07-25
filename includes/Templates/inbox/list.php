@@ -40,6 +40,25 @@ $cf7ai_has_active_filters = array() !== array_filter(
 $cf7ai_base_url  = remove_query_arg( array( 'paged' ) );
 $cf7ai_clear_url = add_query_arg( array( 'page' => 'cf7ai-inbox' ), admin_url( 'admin.php' ) );
 
+// Matches InboxListPage::PERIODS — '' (the default) means every message,
+// same behavior as before this control existed. Selecting a range is a
+// real GET param (`period`), so it's just as bookmarkable/shareable as
+// every other filter on this page; `inbox-period-select` lives outside
+// `#inbox-filter-form` (it's in the page header, not the filter toolbar)
+// so `src/admin/componets/inbox/list.js` wires its own change handler for
+// it rather than reusing the generic `.cf7-ai-inbox-filter-select` one.
+$cf7ai_period_labels = array(
+	''           => __( 'All time', 'cf7-ai-inbox' ),
+	'7_days'     => __( 'Last 7 days', 'cf7-ai-inbox' ),
+	'30_days'    => __( 'Last 30 days', 'cf7-ai-inbox' ),
+	'90_days'    => __( 'Last 90 days', 'cf7-ai-inbox' ),
+	'this_month' => __( 'This month', 'cf7-ai-inbox' ),
+	'1_year'     => __( 'Last 1 year', 'cf7-ai-inbox' ),
+	'2_years'    => __( 'Last 2 years', 'cf7-ai-inbox' ),
+	'3_years'    => __( 'Last 3 years', 'cf7-ai-inbox' ),
+	'5_years'    => __( 'Last 5 years', 'cf7-ai-inbox' ),
+);
+
 /**
  * @param int $id
  * @return string
@@ -62,6 +81,11 @@ $cf7ai_detail_url = static function ( int $id ) {
 			<p><?php esc_html_e( 'All Contact Form 7 submissions, sorted by priority and confidence.', 'cf7-ai-inbox' ); ?></p>
 		</div>
 		<div class="cf7-ai-inbox-page-header__controls">
+			<select class="cf7-ai-inbox-control" id="inbox-period-select">
+				<?php foreach ( $cf7ai_period_labels as $cf7ai_period_value => $cf7ai_period_label ) : ?>
+					<option value="<?php echo esc_attr( $cf7ai_period_value ); ?>" <?php selected( $filters['period'], $cf7ai_period_value ); ?>><?php echo esc_html( $cf7ai_period_label ); ?></option>
+				<?php endforeach; ?>
+			</select>
 			<a class="cf7-ai-inbox-btn--icon" href="<?php echo esc_url( $cf7ai_base_url ); ?>" id="inbox-refresh-btn" title="<?php esc_attr_e( 'Refresh', 'cf7-ai-inbox' ); ?>">
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
 			</a>

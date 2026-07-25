@@ -42,6 +42,21 @@ use CF7AIInbox\Support\Template;
 final class InboxListPage {
 
 	/**
+	 * Values the "Received" date-range control accepts — anything else in
+	 * the request is treated as no filter at all (every message, matching
+	 * this page's long-standing default). Same period vocabulary as the
+	 * Settings page's Usage & Billing tab (see
+	 * `AjaxController::USAGE_PERIODS`) for a consistent set of choices
+	 * across the plugin, resolved the same way by
+	 * {@see \CF7AIInbox\Database\MessageRepository::period_to_datetime()}.
+	 * Public: also read by {@see \CF7AIInbox\Admin\AjaxController::list_messages()}
+	 * so the CSV export AJAX call validates against the same whitelist.
+	 *
+	 * @var string[]
+	 */
+	public const PERIODS = array( '7_days', '30_days', '90_days', 'this_month', '1_year', '2_years', '3_years', '5_years' );
+
+	/**
 	 * Hooks this page's data into {@see \CF7AIInbox\Admin\Menu::enqueue_assets()}.
 	 */
 	public function __construct() {
@@ -72,7 +87,7 @@ final class InboxListPage {
 
 	/**
 	 * Renders the message list: reads filters + pagination straight from
-	 * `$_GET` (a plain GET form — see `includes/Templates/inbox-list.php` —
+	 * `$_GET` (a plain GET form — see `includes/Templates/inbox/list.php` —
 	 * so every filtered/paginated state is its own real URL) and queries
 	 * {@see \CF7AIInbox\Database\MessageRepository::get_filtered()} once,
 	 * server-side.
@@ -87,7 +102,7 @@ final class InboxListPage {
 		$result = MessageRepository::get_filtered( $filters, $page, $per_page );
 
 		Template::render(
-			'inbox',
+			'inbox/inbox',
 			array(
 				'view'        => 'list',
 				'messages'    => $result['items'],
@@ -106,7 +121,7 @@ final class InboxListPage {
 
 	/**
 	 * Renders one submission's detail screen (folding in the "AI analysis
-	 * failed" state — see `includes/Templates/inbox-detail.php` — rather than
+	 * failed" state — see `includes/Templates/inbox/detail.php` — rather than
 	 * a separate screen/URL, since it's the same submission either way).
 	 *
 	 * @param int $id Message row id.
@@ -118,7 +133,7 @@ final class InboxListPage {
 
 		if ( null === $message ) {
 			Template::render(
-				'inbox',
+				'inbox/inbox',
 				array(
 					'view'       => 'not-found',
 					'can_reply'  => current_user_can( Capabilities::SEND_REPLIES ),
@@ -130,7 +145,7 @@ final class InboxListPage {
 		}
 
 		Template::render(
-			'inbox',
+			'inbox/inbox',
 			array(
 				'view'       => 'detail',
 				'message'    => $message,
@@ -151,6 +166,12 @@ final class InboxListPage {
 	 * @return array<string, mixed>
 	 */
 	private function get_filters_from_request(): array {
+		$period = isset( $_GET['period'] ) ? sanitize_key( wp_unslash( $_GET['period'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only list filter, not a state-changing request.
+
+		if ( ! in_array( $period, self::PERIODS, true ) ) {
+			$period = '';
+		}
+
 		return array(
 			'status'           => isset( $_GET['status'] ) ? sanitize_key( wp_unslash( $_GET['status'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only list filter, not a state-changing request.
 			'priority'         => isset( $_GET['priority'] ) ? sanitize_key( wp_unslash( $_GET['priority'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -158,6 +179,7 @@ final class InboxListPage {
 			'form'             => isset( $_GET['form'] ) ? sanitize_text_field( wp_unslash( $_GET['form'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			'confidence_below' => isset( $_GET['confidence_below'] ) && '' !== $_GET['confidence_below'] ? absint( wp_unslash( $_GET['confidence_below'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			'search'           => isset( $_GET['search'] ) ? sanitize_text_field( wp_unslash( $_GET['search'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			'period'           => $period,
 		);
 	}
 

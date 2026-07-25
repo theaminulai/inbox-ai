@@ -15,6 +15,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// The 'models' lists here are the same fallback ids each provider class
+// returns from get_models() when a live "list models" API call hasn't
+// been made yet (see OpenAIProvider::get_models(),
+// AnthropicProvider::get_models(), GeminiProvider::get_models()) — kept
+// here too so the Model dropdown shows the right provider's models
+// immediately on switching cards, before "Test Connection" replaces them
+// with the real, live list for that key.
 $cf7ai_providers = array(
 	'openai'    => array(
 		'label'  => 'OpenAI',
@@ -22,6 +29,7 @@ $cf7ai_providers = array(
 		'bg'     => '#EAF3FF',
 		'fg'     => '#10A37F',
 		'letter' => 'AI',
+		'models' => array( 'gpt-4.1-mini', 'gpt-4.1', 'gpt-4o' ),
 	),
 	'anthropic' => array(
 		'label'  => 'Anthropic',
@@ -29,6 +37,7 @@ $cf7ai_providers = array(
 		'bg'     => '#FBEFE9',
 		'fg'     => '#D97757',
 		'letter' => 'AN',
+		'models' => array( 'claude-sonnet-4-5', 'claude-haiku-4-5' ),
 	),
 	'google'    => array(
 		'label'  => 'Google',
@@ -36,6 +45,7 @@ $cf7ai_providers = array(
 		'bg'     => '#EEF3FF',
 		'fg'     => '#4285F4',
 		'letter' => 'G',
+		'models' => array( 'gemini-2.5-flash', 'gemini-2.5-pro' ),
 	),
 );
 
@@ -68,6 +78,8 @@ $cf7ai_provider_label    = $cf7ai_providers[ $cf7ai_selected_provider ]['label']
 						<div
 							class="cf7-ai-inbox-provider__option<?php echo $cf7ai_id === $cf7ai_selected_provider ? ' cf7-ai-inbox-is-selected' : ''; ?>"
 							data-provider="<?php echo esc_attr( $cf7ai_id ); ?>"
+							data-provider-label="<?php echo esc_attr( $cf7ai_meta['label'] ); ?>"
+							data-models="<?php echo esc_attr( wp_json_encode( $cf7ai_meta['models'] ) ); ?>"
 						>
 							<div class="cf7-ai-inbox-provider__logo" style="background:<?php echo esc_attr( $cf7ai_meta['bg'] ); ?>;color:<?php echo esc_attr( $cf7ai_meta['fg'] ); ?>;"><?php echo esc_html( $cf7ai_meta['letter'] ); ?></div>
 							<div>
@@ -82,7 +94,7 @@ $cf7ai_provider_label    = $cf7ai_providers[ $cf7ai_selected_provider ]['label']
 
 			<div class="cf7-ai-inbox-card">
 				<div class="cf7-ai-inbox-card__header">
-					<h2><?php echo esc_html( $cf7ai_provider_label ); ?> <?php esc_html_e( 'Configuration', 'cf7-ai-inbox' ); ?></h2>
+					<h2><span id="settings-provider-config-label"><?php echo esc_html( $cf7ai_provider_label ); ?></span> <?php esc_html_e( 'Configuration', 'cf7-ai-inbox' ); ?></h2>
 					<span class="cf7-ai-inbox-connected-pill" id="settings-provider-pill" style="<?php echo $has_api_key ? '' : 'display:none;'; ?>">
 						<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
 						<?php esc_html_e( 'Connected', 'cf7-ai-inbox' ); ?>

@@ -50,12 +50,12 @@ $cf7ai_settings_vars = array(
 	<div class="cf7-ai-inbox-main" id="main" data-page="settings">
 
 		<?php
-		\CF7AIInbox\Support\Template::render( 'settings-ai-provider', $cf7ai_settings_vars );
-		\CF7AIInbox\Support\Template::render( 'settings-general', $cf7ai_settings_vars );
-		\CF7AIInbox\Support\Template::render( 'settings-prompts', $cf7ai_settings_vars );
-		\CF7AIInbox\Support\Template::render( 'settings-usage', $cf7ai_settings_vars );
-		\CF7AIInbox\Support\Template::render( 'settings-notifications', $cf7ai_settings_vars );
-		\CF7AIInbox\Support\Template::render( 'settings-flamingo', $cf7ai_settings_vars );
+		\CF7AIInbox\Support\Template::render( 'settings/ai-provider', $cf7ai_settings_vars );
+		\CF7AIInbox\Support\Template::render( 'settings/general', $cf7ai_settings_vars );
+		\CF7AIInbox\Support\Template::render( 'settings/prompts', $cf7ai_settings_vars );
+		\CF7AIInbox\Support\Template::render( 'settings/usage', $cf7ai_settings_vars );
+		\CF7AIInbox\Support\Template::render( 'settings/notifications', $cf7ai_settings_vars );
+		\CF7AIInbox\Support\Template::render( 'settings/flamingo', $cf7ai_settings_vars );
 		?>
 
 	</div>

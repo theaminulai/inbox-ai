@@ -40,6 +40,15 @@ export function initAiProviderTab() {
 		return;
 	}
 
+	const apiKeyInput = screen.querySelector( '[data-field="api_key"]' );
+	const modelSelect = screen.querySelector( '[data-field="model"]' );
+
+	// The provider/model actually saved and rendered on page load — used so
+	// clicking back to that same card restores its real saved model instead
+	// of resetting to that provider's first default option.
+	const savedProvider = selectedProviderId( screen );
+	const savedModel = modelSelect ? modelSelect.value : null;
+
 	screen.addEventListener( 'click', ( e ) => {
 		const option = e.target.closest( '.cf7-ai-inbox-provider__option' );
 
@@ -66,10 +75,41 @@ export function initAiProviderTab() {
 		if ( radio ) {
 			radio.classList.add( 'cf7-ai-inbox-is-checked' );
 		}
-	} );
 
-	const apiKeyInput = screen.querySelector( '[data-field="api_key"]' );
-	const modelSelect = screen.querySelector( '[data-field="model"]' );
+		// Keep the "<Provider> Configuration" card header in sync with
+		// whichever card was just clicked — otherwise it keeps showing
+		// whatever provider was active on page load, making it look like
+		// Anthropic/Google can't actually be configured.
+		const configLabel = screen.querySelector(
+			'#settings-provider-config-label'
+		);
+
+		if ( configLabel && option.dataset.providerLabel ) {
+			configLabel.textContent = option.dataset.providerLabel;
+		}
+
+		// Swap the Model dropdown to this provider's own models — left
+		// alone it kept showing whatever model belonged to whichever
+		// provider was active on page load (e.g. an OpenAI model id while
+		// Anthropic is selected), which isn't a valid model for this
+		// provider at all.
+		if ( modelSelect && option.dataset.models ) {
+			try {
+				const models = JSON.parse( option.dataset.models );
+				const isSavedProvider =
+					option.dataset.provider === savedProvider;
+
+				populateModels(
+					modelSelect,
+					models,
+					isSavedProvider ? savedModel : null
+				);
+			} catch ( err ) {
+				// Malformed data-models JSON — leave the dropdown as-is
+				// rather than clearing it.
+			}
+		}
+	} );
 
 	const testBtn = document.getElementById( 'settings-test-connection' );
 

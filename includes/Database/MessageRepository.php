@@ -136,13 +136,44 @@ final class MessageRepository {
 	}
 
 	/**
+	 * Submission counts for the current calendar month, grouped by form —
+	 * powers the Settings page's Monitored Forms list (see
+	 * `includes/Templates/settings/general.php`). One grouped query rather
+	 * than one per form.
+	 *
+	 * @return array<int, int> form_id => submission count this month.
+	 */
+	public static function count_this_month_by_form(): array {
+		global $wpdb;
+
+		$table = self::table();
+		$since = current_time( 'Y-m-01 00:00:00' );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom table; a form's monthly count can change between requests, so not cached.
+		$rows = $wpdb->get_results(
+			$wpdb->prepare( "SELECT form_id, COUNT(*) AS total FROM {$table} WHERE deleted_at IS NULL AND created_at >= %s GROUP BY form_id", $since ), // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $table is $wpdb->prefix + a hardcoded class constant, never user input.
+			ARRAY_A
+		);
+
+		$counts = array();
+
+		foreach ( (array) $rows as $row ) {
+			$counts[ (int) $row['form_id'] ] = (int) $row['total'];
+		}
+
+		return $counts;
+	}
+
+	/**
 	 * Returns a filtered, paginated page of messages, most recent first.
 	 *
 	 * @param array<string, mixed> $filters  `status`, `priority`, `category` (exact
 	 *                                       match), `form` (exact match against
 	 *                                       `form_title`), `confidence_below` (int),
 	 *                                       `search` (matched against sender name/
-	 *                                       email/subject/message).
+	 *                                       email/subject/message), `period`
+	 *                                       (`created_at` cutoff — see
+	 *                                       {@see self::period_to_datetime()}).
 	 * @param int                  $page     1-indexed page number.
 	 * @param int                  $per_page Rows per page.
 	 *
@@ -239,7 +270,42 @@ final class MessageRepository {
 			array_push( $values, $like, $like, $like, $like, $like );
 		}
 
+		if ( ! empty( $filters['period'] ) && 'all' !== $filters['period'] ) {
+			$clauses[] = 'created_at >= %s';
+			$values[]  = self::period_to_datetime( (string) $filters['period'] );
+		}
+
 		return array( 'WHERE ' . implode( ' AND ', $clauses ), $values );
+	}
+
+	/**
+	 * Resolves a `period` filter value (`7_days`, `30_days`, `90_days`,
+	 * `this_month`, `{n}_year`/`{n}_years`) to a `created_at >=` cutoff.
+	 * Mirrors {@see \CF7AIInbox\Database\UsageRepository::period_to_datetime()}
+	 * — kept separately rather than shared, matching this table's own
+	 * self-contained read methods.
+	 *
+	 * @param string $period Raw period value; anything unrecognized falls
+	 *                       back to 30 days.
+	 *
+	 * @return string MySQL datetime.
+	 */
+	private static function period_to_datetime( string $period ): string {
+		if ( 'this_month' === $period ) {
+			return gmdate( 'Y-m-01 00:00:00' );
+		}
+
+		if ( preg_match( '/^(\d+)_years?$/', $period, $matches ) ) {
+			return gmdate( 'Y-m-d H:i:s', strtotime( '-' . (int) $matches[1] . ' years' ) );
+		}
+
+		$days = 30;
+
+		if ( preg_match( '/^(\d+)_days$/', $period, $matches ) ) {
+			$days = (int) $matches[1];
+		}
+
+		return gmdate( 'Y-m-d H:i:s', strtotime( "-{$days} days" ) );
 	}
 
 	/**

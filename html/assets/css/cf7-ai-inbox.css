@@ -117,6 +117,7 @@ select.cf7-ai-inbox-filter-select:focus{outline:2px solid var(--accent-soft-bord
 .cf7-ai-inbox-grid-table{display:grid;font-size:13px;width:100%;}
 .cf7-ai-inbox-grid-table--messages{grid-template-columns:minmax(200px,1.6fr) minmax(180px,2.6fr) minmax(110px,0.9fr) minmax(90px,0.75fr) minmax(90px,0.75fr) minmax(120px,1fr) minmax(110px,0.9fr) minmax(80px,0.7fr) minmax(96px,0.8fr);}
 .cf7-ai-inbox-grid-table--contacts{grid-template-columns:minmax(170px,1.6fr) minmax(160px,2.2fr) minmax(100px,1fr) minmax(90px,0.9fr) minmax(80px,0.7fr) minmax(80px,0.7fr) minmax(100px,0.9fr) minmax(64px,0.6fr);}
+.cf7-ai-inbox-grid-table--campaigns{grid-template-columns:minmax(200px,2.2fr) minmax(140px,1.4fr) minmax(90px,0.7fr) minmax(100px,0.8fr) minmax(90px,0.7fr) minmax(110px,0.9fr) minmax(64px,0.6fr);}
 .cf7-ai-inbox-grid-table__row{display:contents;}
 .cf7-ai-inbox-grid-table__body{display:contents;}
 .cf7-ai-inbox-grid-table__cell{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;min-width:0;}
@@ -150,6 +151,10 @@ select.cf7-ai-inbox-filter-select:focus{outline:2px solid var(--accent-soft-bord
 .cf7-ai-inbox-status--replied{background:var(--conf-good-soft);color:var(--conf-good);border-color:#BEE7CD;}
 .cf7-ai-inbox-status--failed{background:var(--urgent-soft);color:var(--urgent);border-color:#F3C6C6;}
 .cf7-ai-inbox-status--archived{background:var(--low-soft);color:var(--low);border-color:var(--border-strong);}
+.cf7-ai-inbox-status--draft{background:var(--low-soft);color:var(--low);border-color:var(--border-strong);}
+.cf7-ai-inbox-status--scheduled{background:var(--conf-mid-soft);color:var(--conf-mid);border-color:#F3DFAE;}
+.cf7-ai-inbox-status--sending{background:var(--accent-soft);color:var(--accent-deep);border-color:var(--accent-soft-border);}
+.cf7-ai-inbox-status--sent{background:var(--conf-good-soft);color:var(--conf-good);border-color:#BEE7CD;}
 
 .cf7-ai-inbox-confidence{display:flex;flex-direction:column;gap:4px;min-width:90px;}
 .cf7-ai-inbox-confidence__value{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:12px;font-weight:600;}

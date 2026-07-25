@@ -1,13 +1,13 @@
 // The `<h1>` + description + right-aligned controls row every real page
-// (AI Inbox List, and later Contacts/Analytics/Overview) opens with —
-// ported from html/assets/css/cf7-ai-inbox.css. The Settings page uses its
-// own near-identical per-tab header instead (see settings/_layout.scss), so
-// this wasn't needed until now.
+// (Settings, AI Inbox List, and later Contacts/Analytics/Overview) opens
+// with — ported from html/assets/css/cf7-ai-inbox.css. Used to also have a
+// near-identical copy in settings/_layout.scss; consolidated here since
+// every page shares the exact same header.
 
 .cf7-ai-inbox-page-header {
 	display: flex;
 	justify-content: space-between;
-	align-items: flex-start;
+	align-items: flex-center;
 	gap: 20px;
 	margin-bottom: 22px;
 	flex-wrap: wrap;
@@ -50,5 +50,31 @@
 		&__controls {
 			flex-wrap: wrap;
 		}
+	}
+}
+
+// The date-range dropdown in a page header's `&__controls` — used by the
+// Settings page's Usage & Billing tab and the AI Inbox List page.
+.cf7-ai-inbox-control {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	background: var(--surface);
+	border: 1px solid var(--border-strong);
+	padding: 7px 12px;
+	border-radius: 8px;
+	font-size: 13px;
+	color: var(--text-primary);
+	cursor: pointer;
+	box-shadow: var(--shadow-sm);
+
+	&:hover {
+		border-color: var(--accent);
+	}
+
+	svg {
+		width: 14px;
+		height: 14px;
+		color: var(--text-secondary);
 	}
 }

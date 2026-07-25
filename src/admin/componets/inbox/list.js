@@ -91,6 +91,7 @@ function currentFiltersFromUrl() {
 		form: params.get( 'form' ) || '',
 		confidence_below: params.get( 'confidence_below' ) || '',
 		search: params.get( 'search' ) || '',
+		period: params.get( 'period' ) || '',
 	};
 }
 
@@ -159,6 +160,29 @@ export function initListScreen() {
 
 	if ( ! screen ) {
 		return;
+	}
+
+	// The date-range control lives in the page header, not inside
+	// `#inbox-filter-form`'s toolbar (see `inbox/list.php`), so it can't
+	// reuse that form's generic `.cf7-ai-inbox-filter-select` auto-submit
+	// below — it navigates directly, carrying over every other filter
+	// already in the URL and resetting pagination, same as changing any
+	// other filter does.
+	const periodSelect = document.getElementById( 'inbox-period-select' );
+
+	if ( periodSelect ) {
+		periodSelect.addEventListener( 'change', () => {
+			const params = new URLSearchParams( window.location.search );
+
+			if ( periodSelect.value ) {
+				params.set( 'period', periodSelect.value );
+			} else {
+				params.delete( 'period' );
+			}
+
+			params.delete( 'paged' );
+			window.location.search = params.toString();
+		} );
 	}
 
 	// Auto-submit the filter form on any change, and after a short debounce
