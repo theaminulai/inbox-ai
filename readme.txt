@@ -4,7 +4,7 @@ Tags: contact form 7, wpcf7, ai, inbox, openai, anthropic, gemini, flamingo
 Requires at least: 6.7
 Tested up to: 7.2
 Requires PHP: 8.1
-Stable tag: 0.6.0
+Stable tag: 0.7.0
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -153,6 +153,11 @@ Only one provider is contacted per request — whichever one is currently select
 5. Settings — General tab, Monitored Forms and Automatic Processing.
 
 == Changelog ==
+
+= 0.7.0 =
+* Merge pull request #10 from theaminulai/development
+* Merge pull request #9 from theaminulai/Added-the-Contacts-List-page,-grouped-by-sender
+* Added the Contacts List page, grouped by sender.
 
 = Inbox AI/v0.7.0 - 2026-07-28 =
 
