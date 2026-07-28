@@ -75,22 +75,6 @@ Provider terms of service and privacy policy:
 
 == Changelog ==
 
-= 0.6.0 =
-* Merge pull request #7 from theaminulai/development
-* Merge pull request #6 from theaminulai/new-feature
-* Fix version issue
-* Merge pull request #5 from theaminulai/development
-* Merge pull request #4 from theaminulai/new-feature
-* Fix
-* Merge pull request #3 from theaminulai/development
-* Merge pull request #2 from theaminulai/new-feature
-* Fix name issue
-* Fix
-* All issue fix
-* Merge pull request #1 from theaminulai/new-feature
-* Added a full step-by-step user guide (`docs-platform/`) covering setup, every Settings tab, the AI Inbox list, submission replies, and troubleshooting.
-* Reorganized admin template files into per-page subfolders (`inbox/`, `settings/`) for maintainability.
-
 = Inbox AI/v0.6.0 - 2026-07-28 =
 
 **Changed**
