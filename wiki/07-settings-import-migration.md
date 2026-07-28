@@ -2,7 +2,7 @@
 
 **Where to find it:** Contact → Settings → **Import & Migration** tab.
 
-If you were previously using the **Flamingo** plugin to store your Contact Form 7 submissions, this tool lets you bring that older history into CF7 AI Inbox — as copies, so nothing in Flamingo itself is ever changed or deleted. You can safely run this more than once; it won't create duplicates.
+If you were previously using the **Flamingo** plugin to store your Contact Form 7 submissions, this tool lets you bring that older history into Inbox AI — as copies, so nothing in Flamingo itself is ever changed or deleted. You can safely run this more than once; it won't create duplicates.
 
 ## Step 1: Choose a Source
 
@@ -30,4 +30,4 @@ Once done, you'll see a summary of what was imported. From here you can:
 
 ## Good to know
 
-Your original Flamingo entries are left completely untouched — this process only ever creates new copies inside CF7 AI Inbox.
+Your original Flamingo entries are left completely untouched — this process only ever creates new copies inside Inbox AI.

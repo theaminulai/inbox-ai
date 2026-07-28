@@ -1,5 +1,5 @@
 /* =====================================================================
-   CF7 AI Inbox — Contacts page script.
+   Inbox AI — Contacts page script.
    Requires common.js to be loaded first (messages data + shared helpers).
    ===================================================================== */
 
@@ -44,17 +44,17 @@ function renderContacts(){
   const list = fullList.slice(start, start + CONTACTS_PAGE_SIZE);
 
   tbody.innerHTML = list.length ? list.map(c=>
-    '<div class="cf7-ai-inbox-grid-table__row" role="row">'
-    +'<div class="cf7-ai-inbox-grid-table__cell cf7-ai-inbox-customer__cell" role="cell"><div class="cf7-ai-inbox-avatar" style="background:'+c.color+';">'+c.initials+'</div><a class="cf7-ai-inbox-customer__name cf7-ai-inbox-customer__link" href="inbox.html?search='+encodeURIComponent(c.email)+'">'+c.name+'</a></div>'
-    +'<a class="cf7-ai-inbox-grid-table__cell cf7-ai-inbox-customer__link" href="inbox.html?search='+encodeURIComponent(c.email)+'" role="cell" style="color:var(--text-secondary);">'+c.email+'</a>'
-    +'<div class="cf7-ai-inbox-grid-table__cell" role="cell">'+c.category+'</div>'
-    +'<div class="cf7-ai-inbox-grid-table__cell" role="cell">'+priorityBadgeHtml(c.priority)+'</div>'
-    +'<div class="cf7-ai-inbox-grid-table__cell" role="cell"><span style="font-family:var(--mono);">'+c.count+'</span></div>'
-    +'<div class="cf7-ai-inbox-grid-table__cell" role="cell"><span style="font-family:var(--mono);">'+c.replied+'</span></div>'
-    +'<div class="cf7-ai-inbox-grid-table__cell" role="cell"><span style="font-family:var(--mono);color:var(--text-secondary);">'+c.received+'</span></div>'
-    +'<div class="cf7-ai-inbox-grid-table__cell" role="cell"><div class="cf7-ai-inbox-row-actions"><div class="cf7-ai-inbox-btn--icon" data-action="more" data-key="'+c.email+'" title="More actions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></div></div></div>'
+    '<div class="inboxai-grid-table__row" role="row">'
+    +'<div class="inboxai-grid-table__cell inboxai-customer__cell" role="cell"><div class="inboxai-avatar" style="background:'+c.color+';">'+c.initials+'</div><a class="inboxai-customer__name inboxai-customer__link" href="inbox.html?search='+encodeURIComponent(c.email)+'">'+c.name+'</a></div>'
+    +'<a class="inboxai-grid-table__cell inboxai-customer__link" href="inbox.html?search='+encodeURIComponent(c.email)+'" role="cell" style="color:var(--text-secondary);">'+c.email+'</a>'
+    +'<div class="inboxai-grid-table__cell" role="cell">'+c.category+'</div>'
+    +'<div class="inboxai-grid-table__cell" role="cell">'+priorityBadgeHtml(c.priority)+'</div>'
+    +'<div class="inboxai-grid-table__cell" role="cell"><span style="font-family:var(--mono);">'+c.count+'</span></div>'
+    +'<div class="inboxai-grid-table__cell" role="cell"><span style="font-family:var(--mono);">'+c.replied+'</span></div>'
+    +'<div class="inboxai-grid-table__cell" role="cell"><span style="font-family:var(--mono);color:var(--text-secondary);">'+c.received+'</span></div>'
+    +'<div class="inboxai-grid-table__cell" role="cell"><div class="inboxai-row-actions"><div class="inboxai-btn--icon" data-action="more" data-key="'+c.email+'" title="More actions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></div></div></div>'
     +'</div>'
-  ).join('') : '<div class="cf7-ai-inbox-grid-table__cell cf7-ai-inbox-grid-table__cell--empty">No contacts match your filters.<button class="cf7-ai-inbox-btn--secondary cf7-ai-inbox-btn--clear" id="clear-contacts-filters-btn">Clear filters</button></div>';
+  ).join('') : '<div class="inboxai-grid-table__cell inboxai-grid-table__cell--empty">No contacts match your filters.<button class="inboxai-btn--secondary inboxai-btn--clear" id="clear-contacts-filters-btn">Clear filters</button></div>';
 
   const rangeStart = fullList.length===0 ? 0 : start+1;
   const rangeEnd = Math.min(start+CONTACTS_PAGE_SIZE, fullList.length);
@@ -86,7 +86,7 @@ function exportContactsCsv(){
 
 /* ================= EVENT DELEGATION ================= */
 document.addEventListener('click', function(e){
-  const menuItemEl = e.target.closest('.cf7-ai-inbox-row-menu__item[data-menu-action]');
+  const menuItemEl = e.target.closest('.inboxai-row-menu__item[data-menu-action]');
   if(menuItemEl){
     const action = menuItemEl.dataset.menuAction;
     const key = menuItemEl.dataset.key;
@@ -108,7 +108,7 @@ document.addEventListener('click', function(e){
     return;
   }
 
-  const pagerBtn = e.target.closest('.cf7-ai-inbox-pager__btn');
+  const pagerBtn = e.target.closest('.inboxai-pager__btn');
   if(pagerBtn && !pagerBtn.disabled){
     state.contactsPage = parseInt(pagerBtn.dataset.page, 10);
     renderContacts();
@@ -123,7 +123,7 @@ document.addEventListener('input', function(e){
   if(e.target.id==='contacts-search'){ state.contactsFilters.search = e.target.value; state.contactsPage = 1; renderContacts(); }
 });
 document.addEventListener('change', function(e){
-  if(e.target.classList.contains('cf7-ai-inbox-filter-select') && e.target.id.indexOf('contacts-filter-')===0){
+  if(e.target.classList.contains('inboxai-filter-select') && e.target.id.indexOf('contacts-filter-')===0){
     state.contactsFilters[e.target.dataset.filter] = e.target.value;
     state.contactsPage = 1;
     renderContacts();

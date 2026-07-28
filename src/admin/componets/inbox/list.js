@@ -16,15 +16,15 @@ import { markReviewed, archiveMessage, retryAnalysis, deleteMessage } from './ap
 import { openRowMenu, closeRowMenu } from '../shared/rowMenu.js';
 import { showToast } from '../shared/toast.js';
 import { downloadCsv } from '../shared/csv.js';
-import { cf7aiAjax } from '../shared/api.js';
+import { inboxaiAjax } from '../shared/api.js';
 
 // Read once from `#main`'s `data-can-delete` attribute (see
 // `includes/Templates/inbox.php`) — the row-menu's "Delete" item is only
 // ever built for users who actually hold `DELETE_MESSAGES`, mirroring how
 // the Submission Detail screen's Reply Composer card is only rendered at
 // all for `EDIT_MESSAGES` holders.
-const cf7aiMainEl = document.getElementById( 'main' );
-const canDelete = !! cf7aiMainEl && '1' === cf7aiMainEl.dataset.canDelete;
+const inboxaiMainEl = document.getElementById( 'main' );
+const canDelete = !! inboxaiMainEl && '1' === inboxaiMainEl.dataset.canDelete;
 
 /**
  * Builds the row-menu items contextual to one row's current status — read
@@ -76,7 +76,7 @@ function rowMenuItemsFor( status ) {
  * Reads the list's current filters straight from the URL's query string
  * (the filter form is a plain GET form, so the URL is always the single
  * source of truth for "what's currently filtered") for the CSV export
- * request, which still goes through `wp_ajax_cf7ai_list_messages` with a
+ * request, which still goes through `wp_ajax_inboxai_list_messages` with a
  * large `per_page` rather than a dedicated export endpoint.
  *
  * @return {Object}
@@ -96,7 +96,7 @@ function currentFiltersFromUrl() {
 }
 
 function exportCsv() {
-	cf7aiAjax( 'cf7ai_list_messages', {
+	inboxaiAjax( 'inboxai_list_messages', {
 		...currentFiltersFromUrl(),
 		page: 1,
 		per_page: 10000,
@@ -164,7 +164,7 @@ export function initListScreen() {
 
 	// The date-range control lives in the page header, not inside
 	// `#inbox-filter-form`'s toolbar (see `inbox/list.php`), so it can't
-	// reuse that form's generic `.cf7-ai-inbox-filter-select` auto-submit
+	// reuse that form's generic `.inboxai-filter-select` auto-submit
 	// below — it navigates directly, carrying over every other filter
 	// already in the URL and resetting pagination, same as changing any
 	// other filter does.
@@ -192,7 +192,7 @@ export function initListScreen() {
 	const filterForm = document.getElementById( 'inbox-filter-form' );
 
 	if ( filterForm ) {
-		filterForm.querySelectorAll( '.cf7-ai-inbox-filter-select' ).forEach( ( select ) => {
+		filterForm.querySelectorAll( '.inboxai-filter-select' ).forEach( ( select ) => {
 			select.addEventListener( 'change', () => filterForm.submit() );
 		} );
 
@@ -241,7 +241,7 @@ export function initListScreen() {
 	// the table, so this needs its own listener.
 	document.addEventListener( 'click', ( e ) => {
 		const item = e.target.closest(
-			'.cf7-ai-inbox-row-menu__item[data-menu-action]'
+			'.inboxai-row-menu__item[data-menu-action]'
 		);
 
 		if ( ! item || 'message' !== item.dataset.kind ) {

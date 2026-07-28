@@ -15,23 +15,23 @@
  *                          actions need a specific field JSON-encoded and
  *                          others plain).
  * @param {Object} settings Localized bootstrap data — defaults to the
- *                          shared `cf7aiInboxAdmin` global every admin page
+ *                          shared `inboxaiAdmin` global every admin page
  *                          gets from `wp_localize_script()` (enqueued once,
- *                          in {@see \CF7AIInbox\Admin\Menu::enqueue_assets()});
+ *                          in {@see \InboxAI\Admin\Menu::enqueue_assets()});
  *                          each page's own nonce is merged in via that
- *                          page's `cf7ai_inbox_localize_{$slug}` filter.
+ *                          page's `inboxai_localize_data` filter.
  * @return {Promise<Object>} Resolves with the response's `data` object,
  *                            rejects with an Error on failure or a non-2xx
  *                            response.
  */
-export function cf7aiAjax(
+export function inboxaiAjax(
 	action,
 	data = {},
-	settings = window.cf7aiInboxAdmin
+	settings = window.inboxaiAdmin
 ) {
 	if ( ! settings || ! settings.ajaxUrl ) {
 		return Promise.reject(
-			new Error( 'CF7 AI Inbox: missing localized settings.' )
+			new Error( 'Inbox AI: missing localized settings.' )
 		);
 	}
 
@@ -63,24 +63,24 @@ export function cf7aiAjax(
 }
 
 /**
- * Same contract as {@see cf7aiAjax}, but for the one action that needs to
- * carry a real uploaded file (`cf7ai_flamingo_upload_csv`) rather than
- * plain fields — `cf7aiAjax`'s `URLSearchParams` body can't carry a `File`,
+ * Same contract as {@see inboxaiAjax}, but for the one action that needs to
+ * carry a real uploaded file (`inboxai_flamingo_upload_csv`) rather than
+ * plain fields — `inboxaiAjax`'s `URLSearchParams` body can't carry a `File`,
  * so this builds a `FormData` body (multipart) instead.
  *
  * @param {string} action   The registered `wp_ajax_{action}` name.
  * @param {File}   file     The file to upload, under the `file` field —
  *                           matching what `AjaxController::flamingo_upload_csv()`
  *                           reads from `$_FILES['file']`.
- * @param {Object} settings Localized bootstrap data — see {@see cf7aiAjax}.
+ * @param {Object} settings Localized bootstrap data — see {@see inboxaiAjax}.
  * @return {Promise<Object>} Resolves with the response's `data` object,
  *                            rejects with an Error on failure or a non-2xx
  *                            response.
  */
-export function cf7aiUpload( action, file, settings = window.cf7aiInboxAdmin ) {
+export function inboxaiUpload( action, file, settings = window.inboxaiAdmin ) {
 	if ( ! settings || ! settings.ajaxUrl ) {
 		return Promise.reject(
-			new Error( 'CF7 AI Inbox: missing localized settings.' )
+			new Error( 'Inbox AI: missing localized settings.' )
 		);
 	}
 

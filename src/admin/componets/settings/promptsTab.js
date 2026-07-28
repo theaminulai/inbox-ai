@@ -2,7 +2,7 @@
  * Settings page — Prompts tab.
  */
 
-import { cf7aiAjax } from '../shared/api.js';
+import { inboxaiAjax } from '../shared/api.js';
 import { showToast } from '../shared/toast.js';
 import { collectFields, populateFields } from '../shared/fields.js';
 
@@ -19,7 +19,7 @@ export function initPromptsTab() {
 		saveBtn.addEventListener( 'click', () => {
 			const values = collectFields( screen );
 
-			cf7aiAjax( 'cf7ai_save_settings', {
+			inboxaiAjax( 'inboxai_save_settings', {
 				tab: 'prompts',
 				values: JSON.stringify( values ),
 			} )
@@ -32,7 +32,7 @@ export function initPromptsTab() {
 
 	if ( resetBtn ) {
 		resetBtn.addEventListener( 'click', () => {
-			cf7aiAjax( 'cf7ai_save_settings', {
+			inboxaiAjax( 'inboxai_save_settings', {
 				tab: 'prompts',
 				values: JSON.stringify( { reset: true } ),
 			} )

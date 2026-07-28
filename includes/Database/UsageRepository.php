@@ -2,10 +2,10 @@
 /**
  * Read access to the AI usage/cost table.
  *
- * @package CF7AIInbox\Database
+ * @package InboxAI\Database
  */
 
-namespace CF7AIInbox\Database;
+namespace InboxAI\Database;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -26,7 +26,7 @@ final class UsageRepository {
 	/**
 	 * Records one AI request's token usage and estimated cost.
 	 *
-	 * Written by {@see \CF7AIInbox\AI\AnalysisQueue} for both the analysis
+	 * Written by {@see \InboxAI\AI\AnalysisQueue} for both the analysis
 	 * call and (if it ran) the reply-draft call — `$request_status`
 	 * distinguishes the two for the Settings page's Usage & Billing "Cost by
 	 * Request Type" breakdown (see docs/plans/05-settings-plan.md, section 3.5).

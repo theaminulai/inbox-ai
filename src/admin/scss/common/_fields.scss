@@ -1,7 +1,7 @@
 // Form fields: text/password/range inputs, selects, and textareas — every
 // `[data-field]` control the Settings tab modules read/write.
 
-.cf7-ai-inbox-field {
+.inboxai-field {
 	margin-bottom: 20px;
 
 	label {
@@ -34,7 +34,7 @@
 	}
 }
 
-textarea.cf7-ai-inbox-field__input {
+textarea.inboxai-field__input {
 	resize: vertical;
 	min-height: 90px;
 	font-family: var(--mono);
@@ -42,7 +42,7 @@ textarea.cf7-ai-inbox-field__input {
 	line-height: 1.6;
 }
 
-.cf7-ai-inbox-field-row {
+.inboxai-field-row {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: 16px;

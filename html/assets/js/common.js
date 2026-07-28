@@ -1,10 +1,10 @@
 /* =====================================================================
-   CF7 AI Inbox — shared mock data + helpers used across multiple pages.
+   Inbox AI — shared mock data + helpers used across multiple pages.
    Load this file BEFORE any page-specific script (dashboard.js, inbox.js,
    contacts.js, analytics.js, settings.js).
 
    This is still a static, client-side mockup — the same role the original
-   single-file docs/cf7-ai-inbox-connected.html played. Data does not
+   single-file docs/inboxai-connected.html played. Data does not
    persist or sync across pages (each page is a real, separate document
    now); that will come once this is wired to the real WordPress backend.
    ===================================================================== */
@@ -137,14 +137,14 @@ function showToast(msg, type){
   const c = document.getElementById('toast-container');
   if(!c) return;
   const el = document.createElement('div');
-  el.className = 'cf7-ai-inbox-toast' + (type ? ' cf7-ai-inbox-toast--'+type : '');
+  el.className = 'inboxai-toast' + (type ? ' inboxai-toast--'+type : '');
   const icon = type==='success' ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>'
              : type==='error' ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>'
              : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>';
   el.innerHTML = icon + '<span>' + msg + '</span>';
   c.appendChild(el);
-  requestAnimationFrame(()=> el.classList.add('cf7-ai-inbox-is-visible'));
-  setTimeout(()=>{ el.classList.remove('cf7-ai-inbox-is-visible'); setTimeout(()=> el.remove(), 250); }, 3000);
+  requestAnimationFrame(()=> el.classList.add('inboxai-is-visible'));
+  setTimeout(()=>{ el.classList.remove('inboxai-is-visible'); setTimeout(()=> el.remove(), 250); }, 3000);
 }
 
 /* ================= "TEST CONNECTION" BUTTON (dashboard + settings) ============= */
@@ -160,36 +160,36 @@ function testConnection(lastCheckedId, btn){
 
 /* ================= BADGES / CELLS ================= */
 function priorityBadgeHtml(p){
-  const map = {urgent:['Urgent','var(--urgent)','cf7-ai-inbox-badge--urgent'], high:['High','var(--high)','cf7-ai-inbox-badge--high'], normal:['Normal','var(--normal)','cf7-ai-inbox-badge--normal'], low:['Low','var(--low)','cf7-ai-inbox-badge--low']};
+  const map = {urgent:['Urgent','var(--urgent)','inboxai-badge--urgent'], high:['High','var(--high)','inboxai-badge--high'], normal:['Normal','var(--normal)','inboxai-badge--normal'], low:['Low','var(--low)','inboxai-badge--low']};
   const m = map[p] || map.normal;
-  return '<span class="cf7-ai-inbox-badge '+m[2]+'"><span class="cf7-ai-inbox-badge__dot" style="background:'+m[1]+';"></span>'+m[0]+'</span>';
+  return '<span class="inboxai-badge '+m[2]+'"><span class="inboxai-badge__dot" style="background:'+m[1]+';"></span>'+m[0]+'</span>';
 }
 function statusBadgeHtml(s){
-  const map = {new:['New','cf7-ai-inbox-status--new'], review:['Needs Review','cf7-ai-inbox-status--review'], reviewed:['Reviewed','cf7-ai-inbox-status--reviewed'], drafted:['Drafted','cf7-ai-inbox-status--drafted'], replied:['Replied','cf7-ai-inbox-status--replied'], failed:['Failed','cf7-ai-inbox-status--failed'], archived:['Archived','cf7-ai-inbox-status--archived']};
+  const map = {new:['New','inboxai-status--new'], review:['Needs Review','inboxai-status--review'], reviewed:['Reviewed','inboxai-status--reviewed'], drafted:['Drafted','inboxai-status--drafted'], replied:['Replied','inboxai-status--replied'], failed:['Failed','inboxai-status--failed'], archived:['Archived','inboxai-status--archived']};
   const m = map[s] || map.new;
-  return '<span class="cf7-ai-inbox-status '+m[1]+'">'+m[0]+'</span>';
+  return '<span class="inboxai-status '+m[1]+'">'+m[0]+'</span>';
 }
 function setPriorityBadge(elId, p){
-  const map = {urgent:['Urgent','var(--urgent)','cf7-ai-inbox-badge--urgent'], high:['High','var(--high)','cf7-ai-inbox-badge--high'], normal:['Normal','var(--normal)','cf7-ai-inbox-badge--normal'], low:['Low','var(--low)','cf7-ai-inbox-badge--low']};
+  const map = {urgent:['Urgent','var(--urgent)','inboxai-badge--urgent'], high:['High','var(--high)','inboxai-badge--high'], normal:['Normal','var(--normal)','inboxai-badge--normal'], low:['Low','var(--low)','inboxai-badge--low']};
   const m = map[p] || map.normal;
   const el = document.getElementById(elId);
   if(!el) return;
-  el.className = 'cf7-ai-inbox-badge '+m[2];
-  el.innerHTML = '<span class="cf7-ai-inbox-badge__dot" style="background:'+m[1]+';"></span>'+m[0];
+  el.className = 'inboxai-badge '+m[2];
+  el.innerHTML = '<span class="inboxai-badge__dot" style="background:'+m[1]+';"></span>'+m[0];
 }
 function setStatusBadge(elId, s){
-  const map = {new:['New','cf7-ai-inbox-status--new'], review:['Needs Review','cf7-ai-inbox-status--review'], reviewed:['Reviewed','cf7-ai-inbox-status--reviewed'], drafted:['Drafted','cf7-ai-inbox-status--drafted'], replied:['Replied','cf7-ai-inbox-status--replied'], failed:['Failed','cf7-ai-inbox-status--failed'], archived:['Archived','cf7-ai-inbox-status--archived']};
+  const map = {new:['New','inboxai-status--new'], review:['Needs Review','inboxai-status--review'], reviewed:['Reviewed','inboxai-status--reviewed'], drafted:['Drafted','inboxai-status--drafted'], replied:['Replied','inboxai-status--replied'], failed:['Failed','inboxai-status--failed'], archived:['Archived','inboxai-status--archived']};
   const m = map[s] || map.new;
   const el = document.getElementById(elId);
   if(!el) return;
-  el.className = 'cf7-ai-inbox-status '+m[1];
+  el.className = 'inboxai-status '+m[1];
   el.textContent = m[0];
 }
 function confidenceCellHtml(c){
-  if(c===null || c===undefined) return '<div class="cf7-ai-inbox-confidence"><div class="cf7-ai-inbox-confidence__value" style="color:var(--text-tertiary);">—</div><div class="cf7-ai-inbox-confidence__track"><div class="cf7-ai-inbox-confidence__fill" style="width:0%;"></div></div></div>';
+  if(c===null || c===undefined) return '<div class="inboxai-confidence"><div class="inboxai-confidence__value" style="color:var(--text-tertiary);">—</div><div class="inboxai-confidence__track"><div class="inboxai-confidence__fill" style="width:0%;"></div></div></div>';
   const color = c>=70 ? 'var(--conf-good)' : c>=40 ? 'var(--conf-mid)' : 'var(--conf-low)';
   const warn = c<70 ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>' : '';
-  return '<div class="cf7-ai-inbox-confidence"><div class="cf7-ai-inbox-confidence__value" style="color:'+color+';">'+warn+c+'%</div><div class="cf7-ai-inbox-confidence__track"><div class="cf7-ai-inbox-confidence__fill" style="width:'+c+'%;background:'+color+';"></div></div></div>';
+  return '<div class="inboxai-confidence"><div class="inboxai-confidence__value" style="color:'+color+';">'+warn+c+'%</div><div class="inboxai-confidence__track"><div class="inboxai-confidence__fill" style="width:'+c+'%;background:'+color+';"></div></div></div>';
 }
 
 /* ================= PAGINATION ================= */
@@ -199,7 +199,7 @@ function paginationHtml(pagerId, totalItems, currentPage, pageSize){
   const prevIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>';
   const nextIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>';
   const btn = (label, page, disabled, active) =>
-    '<button class="cf7-ai-inbox-pager__btn'+(active ? ' cf7-ai-inbox-is-active' : '')+'"'+(disabled ? ' disabled' : '')+' data-pager="'+pagerId+'" data-page="'+page+'">'+label+'</button>';
+    '<button class="inboxai-pager__btn'+(active ? ' inboxai-is-active' : '')+'"'+(disabled ? ' disabled' : '')+' data-pager="'+pagerId+'" data-page="'+page+'">'+label+'</button>';
 
   let pages = [];
   if(totalPages <= 7){
@@ -212,10 +212,10 @@ function paginationHtml(pagerId, totalItems, currentPage, pageSize){
     pages.push(totalPages);
   }
 
-  let html = '<div class="cf7-ai-inbox-pager">';
+  let html = '<div class="inboxai-pager">';
   html += btn(prevIcon, currentPage-1, currentPage<=1, false);
   pages.forEach(p=>{
-    html += p==='…' ? '<span class="cf7-ai-inbox-pager__ellipsis">…</span>' : btn(String(p), p, false, p===currentPage);
+    html += p==='…' ? '<span class="inboxai-pager__ellipsis">…</span>' : btn(String(p), p, false, p===currentPage);
   });
   html += btn(nextIcon, currentPage+1, currentPage>=totalPages, false);
   html += '</div>';
@@ -225,10 +225,10 @@ function paginationHtml(pagerId, totalItems, currentPage, pageSize){
 /* ================= ROW ACTIONS / ROW MENUS (messages + contacts) ============= */
 function rowActionsHtml(m){
   const icons =
-      '<div class="cf7-ai-inbox-btn--icon" data-action="view" data-id="'+m.id+'" title="View"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></div>'
-    + '<div class="cf7-ai-inbox-btn--icon" data-action="reply" data-id="'+m.id+'" title="Reply"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v14H4z"/><path d="M4 6l8 7 8-7"/></svg></div>'
-    + '<div class="cf7-ai-inbox-btn--icon" data-action="more" data-kind="message" data-id="'+m.id+'" title="More actions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></div>';
-  return '<div class="cf7-ai-inbox-row-actions">'+icons+'</div>';
+      '<div class="inboxai-btn--icon" data-action="view" data-id="'+m.id+'" title="View"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></div>'
+    + '<div class="inboxai-btn--icon" data-action="reply" data-id="'+m.id+'" title="Reply"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v14H4z"/><path d="M4 6l8 7 8-7"/></svg></div>'
+    + '<div class="inboxai-btn--icon" data-action="more" data-kind="message" data-id="'+m.id+'" title="More actions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></div>';
+  return '<div class="inboxai-row-actions">'+icons+'</div>';
 }
 
 /* Extra actions live inside the "more" dropdown, contextual to status */
@@ -274,8 +274,8 @@ function openRowMenu(anchorEl, kind, key){
     items = m ? messageRowMenuItems(m) : [];
   }
   existing.innerHTML = items.length
-    ? items.map(it=>'<div class="cf7-ai-inbox-row-menu__item'+(it.danger ? ' cf7-ai-inbox-row-menu__item--danger' : '')+'" data-menu-action="'+it.action+'" data-kind="'+kind+'" data-key="'+key+'">'+it.icon+'<span>'+it.label+'</span></div>').join('')
-    : '<div class="cf7-ai-inbox-row-menu__item" style="color:var(--text-tertiary);cursor:default;">No further actions</div>';
+    ? items.map(it=>'<div class="inboxai-row-menu__item'+(it.danger ? ' inboxai-row-menu__item--danger' : '')+'" data-menu-action="'+it.action+'" data-kind="'+kind+'" data-key="'+key+'">'+it.icon+'<span>'+it.label+'</span></div>').join('')
+    : '<div class="inboxai-row-menu__item" style="color:var(--text-tertiary);cursor:default;">No further actions</div>';
   const rect = anchorEl.getBoundingClientRect();
   existing.style.display = 'block';
   existing.dataset.openFor = openKey;
@@ -291,16 +291,16 @@ function closeRowMenu(){
   menu.dataset.openFor = '';
 }
 document.addEventListener('click', function(e){
-  if(!e.target.closest('[data-action="more"]') && !e.target.closest('.cf7-ai-inbox-row-menu__item')){
+  if(!e.target.closest('[data-action="more"]') && !e.target.closest('.inboxai-row-menu__item')){
     closeRowMenu();
   }
 });
 
 function rowHtml(m){
-  const cell = (content, extra) => '<div class="cf7-ai-inbox-grid-table__cell'+(extra?' '+extra:'')+'" role="cell">'+content+'</div>';
-  return '<div class="cf7-ai-inbox-grid-table__row'+(m.status==='archived' ? ' cf7-ai-inbox-is-archived' : '')+'" role="row">'
-    + cell('<div class="cf7-ai-inbox-avatar" style="background:'+m.color+';">'+m.initials+'</div><div><div class="cf7-ai-inbox-customer__name cf7-ai-inbox-customer__link" data-action="view" data-id="'+m.id+'">'+m.name+'</div><div class="cf7-ai-inbox-customer__email cf7-ai-inbox-customer__link" data-action="view" data-id="'+m.id+'">'+m.email+'</div></div>', 'cf7-ai-inbox-customer__cell')
-    + cell('<span class="cf7-ai-inbox-message-preview">'+m.preview+'</span>')
+  const cell = (content, extra) => '<div class="inboxai-grid-table__cell'+(extra?' '+extra:'')+'" role="cell">'+content+'</div>';
+  return '<div class="inboxai-grid-table__row'+(m.status==='archived' ? ' inboxai-is-archived' : '')+'" role="row">'
+    + cell('<div class="inboxai-avatar" style="background:'+m.color+';">'+m.initials+'</div><div><div class="inboxai-customer__name inboxai-customer__link" data-action="view" data-id="'+m.id+'">'+m.name+'</div><div class="inboxai-customer__email inboxai-customer__link" data-action="view" data-id="'+m.id+'">'+m.email+'</div></div>', 'inboxai-customer__cell')
+    + cell('<span class="inboxai-message-preview">'+m.preview+'</span>')
     + cell(m.form)
     + cell(priorityBadgeHtml(m.priority))
     + cell(m.category)

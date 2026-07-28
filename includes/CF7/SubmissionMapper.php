@@ -1,18 +1,18 @@
 <?php
 /**
- * Maps a Contact Form 7 submission onto the `cf7ai_messages` schema.
+ * Maps a Contact Form 7 submission onto the `inboxai_messages` schema.
  *
- * @package CF7AIInbox\CF7
+ * @package InboxAI\CF7
  */
 
-namespace CF7AIInbox\CF7;
+namespace InboxAI\CF7;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use CF7AIInbox\AI\PromptBuilder;
+use InboxAI\AI\PromptBuilder;
 
 /**
  * Class SubmissionMapper
@@ -36,7 +36,7 @@ final class SubmissionMapper {
 	private const SKIP_BASETYPES = array( 'file', 'file*', 'acceptance', 'quiz', 'captchar', 'captchac' );
 
 	/**
-	 * Maps one submission to the array {@see \CF7AIInbox\Database\MessageRepository::insert()}
+	 * Maps one submission to the array {@see \InboxAI\Database\MessageRepository::insert()}
 	 * expects (minus `submission_hash`, added separately by the caller).
 	 *
 	 * @param \WPCF7_ContactForm $contact_form The form that was submitted.
@@ -93,7 +93,7 @@ final class SubmissionMapper {
 		if ( '' === $subject_text ) {
 			$subject_text = sprintf(
 				/* translators: %s: form title */
-				__( 'New submission via %s', 'cf7-ai-inbox' ),
+				__( 'New submission via %s', 'inbox-ai' ),
 				$contact_form->title()
 			);
 		}

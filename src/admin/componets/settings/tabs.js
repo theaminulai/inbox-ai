@@ -24,7 +24,7 @@ export function getQueryParam( name ) {
 }
 
 /**
- * Shows one tab's `.cf7-ai-inbox-screen` section and hides the rest,
+ * Shows one tab's `.inboxai-screen` section and hides the rest,
  * updates the subnav's active state, and syncs `?tab=` in the URL.
  *
  * @param {string} key One of the six tab keys.
@@ -35,18 +35,18 @@ export function showSettingsTab( key ) {
 	}
 
 	document
-		.querySelectorAll( '.cf7-ai-inbox-screen' )
-		.forEach( ( s ) => s.classList.remove( 'cf7-ai-inbox-is-active' ) );
+		.querySelectorAll( '.inboxai-screen' )
+		.forEach( ( s ) => s.classList.remove( 'inboxai-is-active' ) );
 
 	const el = document.getElementById( 'screen-' + key );
 
 	if ( el ) {
-		el.classList.add( 'cf7-ai-inbox-is-active' );
+		el.classList.add( 'inboxai-is-active' );
 	}
 
 	document.querySelectorAll( '[data-subnav]' ).forEach( ( a ) => {
 		a.classList.toggle(
-			'cf7-ai-inbox-is-active',
+			'inboxai-is-active',
 			a.dataset.subnav === key
 		);
 	} );

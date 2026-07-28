@@ -2,20 +2,20 @@
 /**
  * Routes Contact Form 7 submissions into message capture + AI analysis.
  *
- * @package CF7AIInbox\CF7
+ * @package InboxAI\CF7
  */
 
-namespace CF7AIInbox\CF7;
+namespace InboxAI\CF7;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use CF7AIInbox\AI\AnalysisQueue;
-use CF7AIInbox\Database\ActivityRepository;
-use CF7AIInbox\Database\MessageRepository;
-use CF7AIInbox\Settings\Repository as SettingsRepository;
+use InboxAI\AI\AnalysisQueue;
+use InboxAI\Database\ActivityRepository;
+use InboxAI\Database\MessageRepository;
+use InboxAI\Settings\Repository as SettingsRepository;
 
 /**
  * Class SubmissionHandler

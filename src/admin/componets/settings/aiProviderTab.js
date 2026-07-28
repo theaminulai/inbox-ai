@@ -2,13 +2,13 @@
  * Settings page — AI Provider tab.
  */
 
-import { cf7aiAjax } from '../shared/api.js';
+import { inboxaiAjax } from '../shared/api.js';
 import { showToast } from '../shared/toast.js';
 import { collectFields } from '../shared/fields.js';
 
 function selectedProviderId( screen ) {
 	const selected = screen.querySelector(
-		'.cf7-ai-inbox-provider__option.cf7-ai-inbox-is-selected'
+		'.inboxai-provider__option.inboxai-is-selected'
 	);
 	return selected ? selected.dataset.provider : 'openai';
 }
@@ -50,30 +50,30 @@ export function initAiProviderTab() {
 	const savedModel = modelSelect ? modelSelect.value : null;
 
 	screen.addEventListener( 'click', ( e ) => {
-		const option = e.target.closest( '.cf7-ai-inbox-provider__option' );
+		const option = e.target.closest( '.inboxai-provider__option' );
 
 		if ( ! option ) {
 			return;
 		}
 
 		screen
-			.querySelectorAll( '.cf7-ai-inbox-provider__option' )
+			.querySelectorAll( '.inboxai-provider__option' )
 			.forEach( ( o ) => {
-				o.classList.remove( 'cf7-ai-inbox-is-selected' );
+				o.classList.remove( 'inboxai-is-selected' );
 				const radio = o.querySelector(
-					'.cf7-ai-inbox-provider__radio'
+					'.inboxai-provider__radio'
 				);
 
 				if ( radio ) {
-					radio.classList.remove( 'cf7-ai-inbox-is-checked' );
+					radio.classList.remove( 'inboxai-is-checked' );
 				}
 			} );
 
-		option.classList.add( 'cf7-ai-inbox-is-selected' );
-		const radio = option.querySelector( '.cf7-ai-inbox-provider__radio' );
+		option.classList.add( 'inboxai-is-selected' );
+		const radio = option.querySelector( '.inboxai-provider__radio' );
 
 		if ( radio ) {
-			radio.classList.add( 'cf7-ai-inbox-is-checked' );
+			radio.classList.add( 'inboxai-is-checked' );
 		}
 
 		// Keep the "<Provider> Configuration" card header in sync with
@@ -122,7 +122,7 @@ export function initAiProviderTab() {
 			const provider = selectedProviderId( screen );
 			const apiKey = apiKeyInput ? apiKeyInput.value : '';
 
-			cf7aiAjax( 'cf7ai_test_connection', { provider, api_key: apiKey } )
+			inboxaiAjax( 'inboxai_test_connection', { provider, api_key: apiKey } )
 				.then( () => {
 					showToast( 'Connection successful', 'success' );
 
@@ -134,7 +134,7 @@ export function initAiProviderTab() {
 						pill.style.display = '';
 					}
 
-					return cf7aiAjax( 'cf7ai_list_models', {
+					return inboxaiAjax( 'inboxai_list_models', {
 						provider,
 						api_key: apiKey,
 					} );
@@ -165,7 +165,7 @@ export function initAiProviderTab() {
 				collectFields( screen )
 			);
 
-			cf7aiAjax( 'cf7ai_save_settings', {
+			inboxaiAjax( 'inboxai_save_settings', {
 				tab: 'ai-settings',
 				values: JSON.stringify( values ),
 			} )

@@ -2,10 +2,10 @@
 /**
  * Parses and normalizes a raw AI analysis response.
  *
- * @package CF7AIInbox\AI
+ * @package InboxAI\AI
  */
 
-namespace CF7AIInbox\AI;
+namespace InboxAI\AI;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class ResponseValidator
  *
  * Categories have no fixed vocabulary — every form owns its own
- * admin-editable list (see {@see \CF7AIInbox\CF7\CategoryTaxonomy}), so
+ * admin-editable list (see {@see \InboxAI\CF7\CategoryTaxonomy}), so
  * there is deliberately no `CATEGORIES` constant or default category here
  * any more; {@see self::normalize_category()} is only ever as permissive as
  * whatever list the caller actually passes it. Priorities remain a fixed,
@@ -62,8 +62,8 @@ final class ResponseValidator {
 
 	/**
 	 * Normalizes a raw category value to one of `$allowed` — the submitting
-	 * form's own {@see \CF7AIInbox\CF7\CategoryTaxonomy} terms, as passed by
-	 * {@see \CF7AIInbox\AI\AnalysisQueue::process()}.
+	 * form's own {@see \InboxAI\CF7\CategoryTaxonomy} terms, as passed by
+	 * {@see \InboxAI\AI\AnalysisQueue::process()}.
 	 *
 	 * There is no fallback/default category to fall back to: a value that
 	 * doesn't case-insensitively match anything in `$allowed` (including the

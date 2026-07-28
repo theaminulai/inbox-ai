@@ -2,10 +2,10 @@
 /**
  * Contract every AI provider (OpenAI, Anthropic, Google, ...) implements.
  *
- * @package CF7AIInbox\Interfaces
+ * @package InboxAI\Interfaces
  */
 
-namespace CF7AIInbox\Interfaces;
+namespace InboxAI\Interfaces;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -63,7 +63,7 @@ interface AIProviderInterface {
 	/**
 	 * Runs one AI generation call (submission analysis or reply drafting —
 	 * both use this same generic method, with different prompts built by
-	 * {@see \CF7AIInbox\AI\PromptBuilder}).
+	 * {@see \InboxAI\AI\PromptBuilder}).
 	 *
 	 * Implementations must never log the API key or the raw prompt content.
 	 *

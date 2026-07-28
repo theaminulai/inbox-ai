@@ -2,17 +2,17 @@
 /**
  * Instantiates the right AI provider class for a stored provider id.
  *
- * @package CF7AIInbox\AI
+ * @package InboxAI\AI
  */
 
-namespace CF7AIInbox\AI;
+namespace InboxAI\AI;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use CF7AIInbox\Interfaces\AIProviderInterface;
+use InboxAI\Interfaces\AIProviderInterface;
 
 /**
  * Class ProviderFactory

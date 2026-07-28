@@ -15,18 +15,18 @@
 	'use strict';
 
 	function init() {
-		var box = document.querySelector( '.cf7ai-categories' );
+		var box = document.querySelector( '.inboxai-categories' );
 
 		if ( ! box ) {
 			return;
 		}
 
-		var list = document.getElementById( 'cf7ai-category-list' );
-		var empty = document.getElementById( 'cf7ai-category-empty' );
-		var toggle = document.getElementById( 'cf7ai-add-toggle' );
-		var addBox = document.getElementById( 'cf7ai-add-new' );
-		var input = document.getElementById( 'cf7ai-add-input' );
-		var submit = document.getElementById( 'cf7ai-add-submit' );
+		var list = document.getElementById( 'inboxai-category-list' );
+		var empty = document.getElementById( 'inboxai-category-empty' );
+		var toggle = document.getElementById( 'inboxai-add-toggle' );
+		var addBox = document.getElementById( 'inboxai-add-new' );
+		var input = document.getElementById( 'inboxai-add-input' );
+		var submit = document.getElementById( 'inboxai-add-submit' );
 
 		function existingCheckbox( name ) {
 			var checkboxes = list.querySelectorAll( 'input[type="checkbox"]' );
@@ -65,7 +65,7 @@
 
 				var checkbox = document.createElement( 'input' );
 				checkbox.type = 'checkbox';
-				checkbox.name = 'cf7ai_categories[]';
+				checkbox.name = 'inboxai_categories[]';
 				checkbox.value = name;
 				checkbox.checked = true;
 

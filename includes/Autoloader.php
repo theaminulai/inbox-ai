@@ -1,21 +1,21 @@
 <?php
 /**
- * PSR-4-style autoloader for the CF7AIInbox namespace.
+ * PSR-4-style autoloader for the InboxAI namespace.
  *
- * Maps the `CF7AIInbox\` namespace root to the `includes/` directory. Every
+ * Maps the `InboxAI\` namespace root to the `includes/` directory. Every
  * sub-namespace segment corresponds directly to a subdirectory, and the
  * final segment to a file of the same name — matching the `psr-4` mapping
  * declared in composer.json, so the plugin works identically whether or not
  * `composer install` has been run.
  *
  * Example:
- *   CF7AIInbox\Database\Migrator     => includes/Database/Migrator.php
- *   CF7AIInbox\Security\Capabilities => includes/Security/Capabilities.php
+ *   InboxAI\Database\Migrator     => includes/Database/Migrator.php
+ *   InboxAI\Security\Capabilities => includes/Security/Capabilities.php
  *
- * @package CF7AIInbox
+ * @package InboxAI
  */
 
-namespace CF7AIInbox;
+namespace InboxAI;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Class Autoloader
  *
- * Registers a PSR-4-compatible autoloader for the CF7AIInbox namespace. No
+ * Registers a PSR-4-compatible autoloader for the InboxAI namespace. No
  * third-party dependency manager is required to run the plugin.
  */
 final class Autoloader {
@@ -35,7 +35,7 @@ final class Autoloader {
 	 *
 	 * @var string
 	 */
-	private const NAMESPACE_PREFIX = 'CF7AIInbox\\';
+	private const NAMESPACE_PREFIX = 'InboxAI\\';
 
 	/**
 	 * Absolute path to the `includes/` directory the namespace maps to.
@@ -61,7 +61,7 @@ final class Autoloader {
 	 * Loads the class file corresponding to a fully-qualified class name.
 	 *
 	 * Called automatically by PHP whenever an undefined class, interface,
-	 * or trait belonging to the `CF7AIInbox\` namespace is referenced.
+	 * or trait belonging to the `InboxAI\` namespace is referenced.
 	 *
 	 * @param string $class_name Fully-qualified class name.
 	 *

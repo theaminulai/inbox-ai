@@ -1,5 +1,5 @@
 /* =====================================================================
-   CF7 AI Inbox — Campaigns page script (campaigns list + new-campaign
+   Inbox AI — Campaigns page script (campaigns list + new-campaign
    wizard — these two views share one page/URL, switched via JS, since
    the wizard is a drill-down of the list rather than a separate
    top-level destination — same pattern as inbox.js's list/detail split).
@@ -27,9 +27,9 @@ const state = {
 
 /* ================= IN-PAGE SCREEN SWITCH (list / wizard) ============= */
 function showCampaignScreen( key ) {
-	document.querySelectorAll( '.cf7-ai-inbox-screen' ).forEach( ( s ) => s.classList.remove( 'cf7-ai-inbox-is-active' ) );
+	document.querySelectorAll( '.inboxai-screen' ).forEach( ( s ) => s.classList.remove( 'inboxai-is-active' ) );
 	const el = document.getElementById( 'screen-' + key );
-	if ( el ) el.classList.add( 'cf7-ai-inbox-is-active' );
+	if ( el ) el.classList.add( 'inboxai-is-active' );
 	document.getElementById( 'main' ).scrollTo( { top: 0, behavior: 'instant' } );
 	window.scrollTo( { top: 0, behavior: 'instant' } );
 }
@@ -114,9 +114,9 @@ function audienceDescription() {
 
 /* ================= CAMPAIGNS: LIST ================= */
 function campaignStatusBadge( s ) {
-	const map = { draft: [ 'Draft', 'cf7-ai-inbox-status--draft' ], scheduled: [ 'Scheduled', 'cf7-ai-inbox-status--scheduled' ], sending: [ 'Sending', 'cf7-ai-inbox-status--sending' ], sent: [ 'Sent', 'cf7-ai-inbox-status--sent' ] };
+	const map = { draft: [ 'Draft', 'inboxai-status--draft' ], scheduled: [ 'Scheduled', 'inboxai-status--scheduled' ], sending: [ 'Sending', 'inboxai-status--sending' ], sent: [ 'Sent', 'inboxai-status--sent' ] };
 	const m = map[ s ] || map.draft;
-	return '<span class="cf7-ai-inbox-status ' + m[ 1 ] + '">' + m[ 0 ] + '</span>';
+	return '<span class="inboxai-status ' + m[ 1 ] + '">' + m[ 0 ] + '</span>';
 }
 function renderCampaigns() {
 	const tbody = document.getElementById( 'campaigns-table-body' );
@@ -126,14 +126,14 @@ function renderCampaigns() {
 
 	tbody.innerHTML = campaigns.map( ( c ) => {
 		const audience = c.audienceType === 'all' ? 'All contacts' : ( AUDIENCE_LABELS[ c.audienceType ].label + ': ' + c.audienceValue );
-		return '<div class="cf7-ai-inbox-grid-table__row" role="row">'
-			+ '<div class="cf7-ai-inbox-grid-table__cell" role="cell"><div><div style="font-weight:600;font-size:13px;">' + c.name + '</div><div style="font-size:11.5px;color:var(--text-tertiary);">' + c.subject + '</div></div></div>'
-			+ '<div class="cf7-ai-inbox-grid-table__cell" role="cell">' + audience + '</div>'
-			+ '<div class="cf7-ai-inbox-grid-table__cell" role="cell"><span style="font-family:var(--mono);">' + c.recipientCount + '</span></div>'
-			+ '<div class="cf7-ai-inbox-grid-table__cell" role="cell">' + campaignStatusBadge( c.status ) + '</div>'
-			+ '<div class="cf7-ai-inbox-grid-table__cell" role="cell">' + ( c.status === 'sent' ? '<span style="font-family:var(--mono);color:var(--conf-good);">' + c.openRate + '%</span>' : '<span style="color:var(--text-tertiary);">—</span>' ) + '</div>'
-			+ '<div class="cf7-ai-inbox-grid-table__cell" role="cell"><span style="font-family:var(--mono);color:var(--text-secondary);">' + ( c.sentDate || '—' ) + '</span></div>'
-			+ '<div class="cf7-ai-inbox-grid-table__cell" role="cell"><div class="cf7-ai-inbox-row-actions"><div class="cf7-ai-inbox-btn--icon" data-action="more" data-key="' + c.id + '" title="More actions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></div></div></div>'
+		return '<div class="inboxai-grid-table__row" role="row">'
+			+ '<div class="inboxai-grid-table__cell" role="cell"><div><div style="font-weight:600;font-size:13px;">' + c.name + '</div><div style="font-size:11.5px;color:var(--text-tertiary);">' + c.subject + '</div></div></div>'
+			+ '<div class="inboxai-grid-table__cell" role="cell">' + audience + '</div>'
+			+ '<div class="inboxai-grid-table__cell" role="cell"><span style="font-family:var(--mono);">' + c.recipientCount + '</span></div>'
+			+ '<div class="inboxai-grid-table__cell" role="cell">' + campaignStatusBadge( c.status ) + '</div>'
+			+ '<div class="inboxai-grid-table__cell" role="cell">' + ( c.status === 'sent' ? '<span style="font-family:var(--mono);color:var(--conf-good);">' + c.openRate + '%</span>' : '<span style="color:var(--text-tertiary);">—</span>' ) + '</div>'
+			+ '<div class="inboxai-grid-table__cell" role="cell"><span style="font-family:var(--mono);color:var(--text-secondary);">' + ( c.sentDate || '—' ) + '</span></div>'
+			+ '<div class="inboxai-grid-table__cell" role="cell"><div class="inboxai-row-actions"><div class="inboxai-btn--icon" data-action="more" data-key="' + c.id + '" title="More actions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></div></div></div>'
 			+ '</div>';
 	} ).join( '' );
 
@@ -154,13 +154,13 @@ function resetCampaignWizard() {
 	state.campaignStep = 1;
 	state.campaignAudienceType = 'all';
 	state.campaignAudienceValue = '';
-	document.querySelectorAll( '#campaign-panel-1 .cf7-ai-inbox-provider__option' ).forEach( ( o ) => {
-		o.classList.remove( 'cf7-ai-inbox-is-selected' );
-		o.querySelector( '.cf7-ai-inbox-provider__radio' ).classList.remove( 'cf7-ai-inbox-is-checked' );
+	document.querySelectorAll( '#campaign-panel-1 .inboxai-provider__option' ).forEach( ( o ) => {
+		o.classList.remove( 'inboxai-is-selected' );
+		o.querySelector( '.inboxai-provider__radio' ).classList.remove( 'inboxai-is-checked' );
 	} );
 	const allOpt = document.querySelector( '#campaign-panel-1 [data-audience-type="all"]' );
-	allOpt.classList.add( 'cf7-ai-inbox-is-selected' );
-	allOpt.querySelector( '.cf7-ai-inbox-provider__radio' ).classList.add( 'cf7-ai-inbox-is-checked' );
+	allOpt.classList.add( 'inboxai-is-selected' );
+	allOpt.querySelector( '.inboxai-provider__radio' ).classList.add( 'inboxai-is-checked' );
 	updateCampaignSegmentOptions();
 
 	document.getElementById( 'campaign-from-name' ).value = 'Aminul Islam';
@@ -169,9 +169,9 @@ function resetCampaignWizard() {
 	document.getElementById( 'campaign-body' ).innerText = '';
 	document.getElementById( 'campaign-send-rate' ).value = '5000';
 	updateCampaignProviderDisplay();
-	document.getElementById( 'campaign-send-now-toggle' ).classList.add( 'cf7-ai-inbox-is-on' );
+	document.getElementById( 'campaign-send-now-toggle' ).classList.add( 'inboxai-is-on' );
 	document.getElementById( 'campaign-schedule-row' ).style.display = 'none';
-	document.getElementById( 'campaign-consent-toggle' ).classList.remove( 'cf7-ai-inbox-is-on' );
+	document.getElementById( 'campaign-consent-toggle' ).classList.remove( 'inboxai-is-on' );
 	document.getElementById( 'campaign-consent-warning' ).style.display = 'none';
 	document.getElementById( 'campaign-progress-wrap' ).style.display = 'none';
 	document.getElementById( 'campaign-progress-fill' ).style.width = '0%';
@@ -189,21 +189,21 @@ function goCampaignStep( n ) {
 		const panel = document.getElementById( 'campaign-panel-' + i );
 		if ( panel ) panel.style.display = ( i === n ) ? '' : 'none';
 	}
-	document.querySelectorAll( '#screen-campaign-new .cf7-ai-inbox-wizard__step' ).forEach( ( el ) => {
+	document.querySelectorAll( '#screen-campaign-new .inboxai-wizard__step' ).forEach( ( el ) => {
 		const step = parseInt( el.dataset.wizardStep, 10 );
-		el.classList.toggle( 'cf7-ai-inbox-is-active', step === n );
-		el.classList.toggle( 'cf7-ai-inbox-is-done', step < n );
+		el.classList.toggle( 'inboxai-is-active', step === n );
+		el.classList.toggle( 'inboxai-is-done', step < n );
 	} );
-	document.querySelectorAll( '#screen-campaign-new .cf7-ai-inbox-wizard__line' ).forEach( ( el, idx ) => {
-		el.classList.toggle( 'cf7-ai-inbox-is-done', ( idx + 1 ) < n );
+	document.querySelectorAll( '#screen-campaign-new .inboxai-wizard__line' ).forEach( ( el, idx ) => {
+		el.classList.toggle( 'inboxai-is-done', ( idx + 1 ) < n );
 	} );
 	document.getElementById( 'main' ).scrollTo( { top: 0, behavior: 'smooth' } );
 }
 function fillCampaignReview() {
 	const list = computeAudience( state.campaignAudienceType, state.campaignAudienceValue );
 	const rate = parseInt( document.getElementById( 'campaign-send-rate' ).value, 10 );
-	const sendNow = document.getElementById( 'campaign-send-now-toggle' ).classList.contains( 'cf7-ai-inbox-is-on' );
-	const consent = document.getElementById( 'campaign-consent-toggle' ).classList.contains( 'cf7-ai-inbox-is-on' );
+	const sendNow = document.getElementById( 'campaign-send-now-toggle' ).classList.contains( 'inboxai-is-on' );
+	const consent = document.getElementById( 'campaign-consent-toggle' ).classList.contains( 'inboxai-is-on' );
 
 	document.getElementById( 'campaign-review-audience' ).textContent = audienceDescription();
 	document.getElementById( 'campaign-review-count' ).textContent = list.length;
@@ -292,19 +292,19 @@ document.getElementById( 'campaign-back-4' ).addEventListener( 'click', () => go
 
 document.getElementById( 'campaign-send-now-toggle' ).addEventListener( 'click', function () {
 	setTimeout( () => {
-		const isOn = this.classList.contains( 'cf7-ai-inbox-is-on' );
+		const isOn = this.classList.contains( 'inboxai-is-on' );
 		document.getElementById( 'campaign-schedule-row' ).style.display = isOn ? 'none' : 'flex';
 	}, 0 );
 } );
 
 document.querySelectorAll( '#campaign-panel-1 [data-audience-type]' ).forEach( ( opt ) => {
 	opt.addEventListener( 'click', function () {
-		document.querySelectorAll( '#campaign-panel-1 .cf7-ai-inbox-provider__option' ).forEach( ( o ) => {
-			o.classList.remove( 'cf7-ai-inbox-is-selected' );
-			o.querySelector( '.cf7-ai-inbox-provider__radio' ).classList.remove( 'cf7-ai-inbox-is-checked' );
+		document.querySelectorAll( '#campaign-panel-1 .inboxai-provider__option' ).forEach( ( o ) => {
+			o.classList.remove( 'inboxai-is-selected' );
+			o.querySelector( '.inboxai-provider__radio' ).classList.remove( 'inboxai-is-checked' );
 		} );
-		this.classList.add( 'cf7-ai-inbox-is-selected' );
-		this.querySelector( '.cf7-ai-inbox-provider__radio' ).classList.add( 'cf7-ai-inbox-is-checked' );
+		this.classList.add( 'inboxai-is-selected' );
+		this.querySelector( '.inboxai-provider__radio' ).classList.add( 'inboxai-is-checked' );
 		state.campaignAudienceType = this.dataset.audienceType;
 		updateCampaignSegmentOptions();
 	} );
@@ -315,7 +315,7 @@ document.getElementById( 'campaign-send-btn' ).addEventListener( 'click', functi
 		showToast( 'Connect an email provider in Settings before sending', 'error' );
 		return;
 	}
-	const consent = document.getElementById( 'campaign-consent-toggle' ).classList.contains( 'cf7-ai-inbox-is-on' );
+	const consent = document.getElementById( 'campaign-consent-toggle' ).classList.contains( 'inboxai-is-on' );
 	if ( state.campaignAudienceType !== 'all' && ! consent ) {
 		document.getElementById( 'campaign-consent-warning' ).style.display = 'block';
 		showToast( 'Confirm recipient consent before sending', 'error' );
@@ -323,7 +323,7 @@ document.getElementById( 'campaign-send-btn' ).addEventListener( 'click', functi
 	}
 	const list = computeAudience( state.campaignAudienceType, state.campaignAudienceValue );
 	const rate = parseInt( document.getElementById( 'campaign-send-rate' ).value, 10 );
-	const sendNow = document.getElementById( 'campaign-send-now-toggle' ).classList.contains( 'cf7-ai-inbox-is-on' );
+	const sendNow = document.getElementById( 'campaign-send-now-toggle' ).classList.contains( 'inboxai-is-on' );
 
 	if ( ! sendNow ) {
 		const newCampaign = {
@@ -377,7 +377,7 @@ document.getElementById( 'campaign-send-btn' ).addEventListener( 'click', functi
 
 /* ================= ROW MENU (list screen) ================= */
 document.addEventListener( 'click', function ( e ) {
-	const menuItemEl = e.target.closest( '.cf7-ai-inbox-row-menu__item[data-menu-action]' );
+	const menuItemEl = e.target.closest( '.inboxai-row-menu__item[data-menu-action]' );
 	if ( menuItemEl ) {
 		const action = menuItemEl.dataset.menuAction;
 		const cId = parseInt( menuItemEl.dataset.key, 10 );

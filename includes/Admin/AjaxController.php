@@ -2,27 +2,27 @@
 /**
  * admin-ajax.php handlers for every admin page's write/read actions.
  *
- * @package CF7AIInbox\Admin
+ * @package InboxAI\Admin
  */
 
-namespace CF7AIInbox\Admin;
+namespace InboxAI\Admin;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use CF7AIInbox\Admin\Pages\InboxListPage;
-use CF7AIInbox\AI\AnalysisQueue;
-use CF7AIInbox\AI\ProviderFactory;
-use CF7AIInbox\Database\ActivityRepository;
-use CF7AIInbox\Database\MessageRepository;
-use CF7AIInbox\Database\UsageRepository;
-use CF7AIInbox\Migration\FlamingoCsvImporter;
-use CF7AIInbox\Migration\FlamingoImporter;
-use CF7AIInbox\Security\Capabilities;
-use CF7AIInbox\Services\ReplyService;
-use CF7AIInbox\Settings\Repository as SettingsRepository;
+use InboxAI\Admin\Pages\InboxListPage;
+use InboxAI\AI\AnalysisQueue;
+use InboxAI\AI\ProviderFactory;
+use InboxAI\Database\ActivityRepository;
+use InboxAI\Database\MessageRepository;
+use InboxAI\Database\UsageRepository;
+use InboxAI\Migration\FlamingoCsvImporter;
+use InboxAI\Migration\FlamingoImporter;
+use InboxAI\Security\Capabilities;
+use InboxAI\Services\ReplyService;
+use InboxAI\Settings\Repository as SettingsRepository;
 
 /**
  * Class AjaxController
@@ -44,14 +44,14 @@ final class AjaxController {
 	 *
 	 * @var string
 	 */
-	public const SETTINGS_NONCE_ACTION = 'cf7ai_inbox_settings';
+	public const SETTINGS_NONCE_ACTION = 'inboxai_settings';
 
 	/**
 	 * Nonce action name shared by every AI Inbox List page AJAX call.
 	 *
 	 * @var string
 	 */
-	public const INBOX_NONCE_ACTION = 'cf7ai_inbox_messages';
+	public const INBOX_NONCE_ACTION = 'inboxai_messages';
 
 	/**
 	 * Registers every `wp_ajax_*` hook this controller handles.
@@ -59,23 +59,23 @@ final class AjaxController {
 	 * @return void
 	 */
 	public function init(): void {
-		add_action( 'wp_ajax_cf7ai_get_settings', array( $this, 'get_settings' ) );
-		add_action( 'wp_ajax_cf7ai_save_settings', array( $this, 'save_settings' ) );
-		add_action( 'wp_ajax_cf7ai_test_connection', array( $this, 'test_connection' ) );
-		add_action( 'wp_ajax_cf7ai_list_models', array( $this, 'list_models' ) );
-		add_action( 'wp_ajax_cf7ai_flamingo_detect', array( $this, 'flamingo_detect' ) );
-		add_action( 'wp_ajax_cf7ai_flamingo_import_batch', array( $this, 'flamingo_import_batch' ) );
-		add_action( 'wp_ajax_cf7ai_flamingo_upload_csv', array( $this, 'flamingo_upload_csv' ) );
-		add_action( 'wp_ajax_cf7ai_flamingo_import_csv_batch', array( $this, 'flamingo_import_csv_batch' ) );
+		add_action( 'wp_ajax_inboxai_get_settings', array( $this, 'get_settings' ) );
+		add_action( 'wp_ajax_inboxai_save_settings', array( $this, 'save_settings' ) );
+		add_action( 'wp_ajax_inboxai_test_connection', array( $this, 'test_connection' ) );
+		add_action( 'wp_ajax_inboxai_list_models', array( $this, 'list_models' ) );
+		add_action( 'wp_ajax_inboxai_flamingo_detect', array( $this, 'flamingo_detect' ) );
+		add_action( 'wp_ajax_inboxai_flamingo_import_batch', array( $this, 'flamingo_import_batch' ) );
+		add_action( 'wp_ajax_inboxai_flamingo_upload_csv', array( $this, 'flamingo_upload_csv' ) );
+		add_action( 'wp_ajax_inboxai_flamingo_import_csv_batch', array( $this, 'flamingo_import_csv_batch' ) );
 
-		add_action( 'wp_ajax_cf7ai_list_messages', array( $this, 'list_messages' ) );
-		add_action( 'wp_ajax_cf7ai_get_message', array( $this, 'get_message' ) );
-		add_action( 'wp_ajax_cf7ai_save_draft', array( $this, 'save_draft' ) );
-		add_action( 'wp_ajax_cf7ai_send_reply', array( $this, 'send_reply' ) );
-		add_action( 'wp_ajax_cf7ai_mark_reviewed', array( $this, 'mark_reviewed' ) );
-		add_action( 'wp_ajax_cf7ai_archive_message', array( $this, 'archive_message' ) );
-		add_action( 'wp_ajax_cf7ai_delete_message', array( $this, 'delete_message' ) );
-		add_action( 'wp_ajax_cf7ai_retry_analysis', array( $this, 'retry_analysis' ) );
+		add_action( 'wp_ajax_inboxai_list_messages', array( $this, 'list_messages' ) );
+		add_action( 'wp_ajax_inboxai_get_message', array( $this, 'get_message' ) );
+		add_action( 'wp_ajax_inboxai_save_draft', array( $this, 'save_draft' ) );
+		add_action( 'wp_ajax_inboxai_send_reply', array( $this, 'send_reply' ) );
+		add_action( 'wp_ajax_inboxai_mark_reviewed', array( $this, 'mark_reviewed' ) );
+		add_action( 'wp_ajax_inboxai_archive_message', array( $this, 'archive_message' ) );
+		add_action( 'wp_ajax_inboxai_delete_message', array( $this, 'delete_message' ) );
+		add_action( 'wp_ajax_inboxai_retry_analysis', array( $this, 'retry_analysis' ) );
 	}
 
 	/**
@@ -95,7 +95,7 @@ final class AjaxController {
 
 		if ( ! current_user_can( $capability ) ) {
 			wp_send_json_error(
-				array( 'message' => __( 'You do not have permission to do this.', 'cf7-ai-inbox' ) ),
+				array( 'message' => __( 'You do not have permission to do this.', 'inbox-ai' ) ),
 				403
 			);
 		}
@@ -112,7 +112,7 @@ final class AjaxController {
 	private const USAGE_PERIODS = array( '7_days', '30_days', '90_days', 'this_month', '1_year', '2_years', '3_years', '5_years' );
 
 	/**
-	 * `cf7ai_get_settings` — reads current settings for one tab, or all of
+	 * `inboxai_get_settings` — reads current settings for one tab, or all of
 	 * them, and (for the Usage tab) the read-only usage figures too.
 	 *
 	 * @return void
@@ -149,7 +149,7 @@ final class AjaxController {
 	}
 
 	/**
-	 * `cf7ai_save_settings` — persists one tab's fields. `$_POST['values']`
+	 * `inboxai_save_settings` — persists one tab's fields. `$_POST['values']`
 	 * is a JSON-encoded object; every field inside it is sanitized by the
 	 * matching `Settings\Repository::save_*()` method, never trusted as-is.
 	 *
@@ -207,12 +207,12 @@ final class AjaxController {
 				break;
 
 			default:
-				wp_send_json_error( array( 'message' => __( 'Unknown settings tab.', 'cf7-ai-inbox' ) ), 400 );
+				wp_send_json_error( array( 'message' => __( 'Unknown settings tab.', 'inbox-ai' ) ), 400 );
 		}
 	}
 
 	/**
-	 * `cf7ai_test_connection` — validates a (possibly not-yet-saved) API
+	 * `inboxai_test_connection` — validates a (possibly not-yet-saved) API
 	 * key against the selected provider. Never persists anything.
 	 *
 	 * @return void
@@ -223,7 +223,7 @@ final class AjaxController {
 		$provider = ProviderFactory::create( $this->posted_provider_id() );
 
 		if ( null === $provider ) {
-			wp_send_json_error( array( 'message' => __( 'Unknown provider.', 'cf7-ai-inbox' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Unknown provider.', 'inbox-ai' ) ), 400 );
 		}
 
 		$result = $provider->validate_credentials( $this->posted_api_key() );
@@ -236,7 +236,7 @@ final class AjaxController {
 	}
 
 	/**
-	 * `cf7ai_list_models` — lists live models for the selected provider +
+	 * `inboxai_list_models` — lists live models for the selected provider +
 	 * (possibly not-yet-saved) API key.
 	 *
 	 * @return void
@@ -247,7 +247,7 @@ final class AjaxController {
 		$provider = ProviderFactory::create( $this->posted_provider_id() );
 
 		if ( null === $provider ) {
-			wp_send_json_error( array( 'message' => __( 'Unknown provider.', 'cf7-ai-inbox' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Unknown provider.', 'inbox-ai' ) ), 400 );
 		}
 
 		$models = $provider->get_models( $this->posted_api_key() );
@@ -260,7 +260,7 @@ final class AjaxController {
 	}
 
 	/**
-	 * `cf7ai_flamingo_detect` — Import & Migration wizard step 1.
+	 * `inboxai_flamingo_detect` — Import & Migration wizard step 1.
 	 *
 	 * @return void
 	 */
@@ -271,7 +271,7 @@ final class AjaxController {
 	}
 
 	/**
-	 * `cf7ai_flamingo_import_batch` — Import & Migration wizard step 3,
+	 * `inboxai_flamingo_import_batch` — Import & Migration wizard step 3,
 	 * called repeatedly with an increasing offset until `done` is true.
 	 *
 	 * @return void
@@ -286,10 +286,10 @@ final class AjaxController {
 	}
 
 	/**
-	 * `cf7ai_flamingo_upload_csv` — Import & Migration wizard's alternate
+	 * `inboxai_flamingo_upload_csv` — Import & Migration wizard's alternate
 	 * "Upload a CSV export" path, step 1: validates and parses the
 	 * uploaded file, stages its rows, and reports back what was detected
-	 * (mirroring `cf7ai_flamingo_detect`'s response shape) without
+	 * (mirroring `inboxai_flamingo_detect`'s response shape) without
 	 * touching this plugin's own tables yet.
 	 *
 	 * @return void
@@ -298,7 +298,7 @@ final class AjaxController {
 		$this->check( Capabilities::MANAGE_SETTINGS );
 
 		if ( empty( $_FILES['file']['tmp_name'] ) || ! is_uploaded_file( $_FILES['file']['tmp_name'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce already verified in self::check() above; $_FILES['file']['tmp_name'] is only used with is_uploaded_file()/wp_handle_upload(), which validate the path themselves; never echoed or used in a filesystem call directly.
-			wp_send_json_error( array( 'message' => __( 'No file was uploaded.', 'cf7-ai-inbox' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'No file was uploaded.', 'inbox-ai' ) ), 400 );
 		}
 
 		require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -313,7 +313,7 @@ final class AjaxController {
 
 		if ( ! isset( $moved['file'] ) ) {
 			wp_send_json_error(
-				array( 'message' => $moved['error'] ?? __( 'The file could not be uploaded.', 'cf7-ai-inbox' ) ),
+				array( 'message' => $moved['error'] ?? __( 'The file could not be uploaded.', 'inbox-ai' ) ),
 				400
 			);
 		}
@@ -332,10 +332,10 @@ final class AjaxController {
 	}
 
 	/**
-	 * `cf7ai_flamingo_import_csv_batch` — Import & Migration wizard step
+	 * `inboxai_flamingo_import_csv_batch` — Import & Migration wizard step
 	 * 3's batch loop for the CSV-upload path, called repeatedly
 	 * (increasing offset) until `done` is true, exactly like
-	 * `cf7ai_flamingo_import_batch`.
+	 * `inboxai_flamingo_import_batch`.
 	 *
 	 * @return void
 	 */
@@ -347,14 +347,14 @@ final class AjaxController {
 		$run_ai = ! empty( $_POST['run_ai'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above.
 
 		if ( '' === $token ) {
-			wp_send_json_error( array( 'message' => __( 'This import session has expired. Please upload the file again.', 'cf7-ai-inbox' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'This import session has expired. Please upload the file again.', 'inbox-ai' ) ), 400 );
 		}
 
 		wp_send_json_success( FlamingoCsvImporter::import_batch( $token, $offset, 25, $run_ai ) );
 	}
 
 	/**
-	 * `cf7ai_list_messages` — the AI Inbox List screen's filtered, paginated
+	 * `inboxai_list_messages` — the AI Inbox List screen's filtered, paginated
 	 * table.
 	 *
 	 * @return void
@@ -386,7 +386,7 @@ final class AjaxController {
 	}
 
 	/**
-	 * `cf7ai_get_message` — the Submission Detail screen's data, including
+	 * `inboxai_get_message` — the Submission Detail screen's data, including
 	 * its activity timeline.
 	 *
 	 * @return void
@@ -398,7 +398,7 @@ final class AjaxController {
 		$message = MessageRepository::find( $id );
 
 		if ( null === $message ) {
-			wp_send_json_error( array( 'message' => __( 'This submission could not be found.', 'cf7-ai-inbox' ) ), 404 );
+			wp_send_json_error( array( 'message' => __( 'This submission could not be found.', 'inbox-ai' ) ), 404 );
 		}
 
 		wp_send_json_success(
@@ -410,7 +410,7 @@ final class AjaxController {
 	}
 
 	/**
-	 * `cf7ai_save_draft` — persists an edited reply draft without sending it.
+	 * `inboxai_save_draft` — persists an edited reply draft without sending it.
 	 *
 	 * @return void
 	 */
@@ -423,7 +423,7 @@ final class AjaxController {
 		$body = isset( $_POST['body'] ) ? wp_kses_post( wp_unslash( $_POST['body'] ) ) : '';
 
 		if ( 0 === $id || ! MessageRepository::save_draft( $id, $subject, $body ) ) {
-			wp_send_json_error( array( 'message' => __( 'The draft could not be saved.', 'cf7-ai-inbox' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'The draft could not be saved.', 'inbox-ai' ) ), 400 );
 		}
 
 		ActivityRepository::log( $id, 'draft_saved', array(), get_current_user_id() );
@@ -432,7 +432,7 @@ final class AjaxController {
 	}
 
 	/**
-	 * `cf7ai_send_reply` — sends the reply (saved draft, or an edited
+	 * `inboxai_send_reply` — sends the reply (saved draft, or an edited
 	 * subject/body passed along with the request) to the visitor.
 	 *
 	 * @return void
@@ -455,7 +455,7 @@ final class AjaxController {
 	}
 
 	/**
-	 * `cf7ai_mark_reviewed` — clears a `review`-status row without drafting
+	 * `inboxai_mark_reviewed` — clears a `review`-status row without drafting
 	 * or sending a reply (e.g. the admin handled it another way).
 	 *
 	 * @return void
@@ -466,7 +466,7 @@ final class AjaxController {
 		$id = isset( $_POST['id'] ) ? absint( wp_unslash( $_POST['id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above.
 
 		if ( 0 === $id || ! MessageRepository::update_status( $id, 'reviewed' ) ) {
-			wp_send_json_error( array( 'message' => __( 'This submission could not be updated.', 'cf7-ai-inbox' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'This submission could not be updated.', 'inbox-ai' ) ), 400 );
 		}
 
 		ActivityRepository::log( $id, 'reviewed', array(), get_current_user_id() );
@@ -475,7 +475,7 @@ final class AjaxController {
 	}
 
 	/**
-	 * `cf7ai_archive_message` — moves a row to `archived` (used for both the
+	 * `inboxai_archive_message` — moves a row to `archived` (used for both the
 	 * row-menu action and manually archiving a false-positive-spam row).
 	 *
 	 * @return void
@@ -486,7 +486,7 @@ final class AjaxController {
 		$id = isset( $_POST['id'] ) ? absint( wp_unslash( $_POST['id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above.
 
 		if ( 0 === $id || ! MessageRepository::update_status( $id, 'archived' ) ) {
-			wp_send_json_error( array( 'message' => __( 'This submission could not be archived.', 'cf7-ai-inbox' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'This submission could not be archived.', 'inbox-ai' ) ), 400 );
 		}
 
 		ActivityRepository::log( $id, 'archived', array(), get_current_user_id() );
@@ -495,7 +495,7 @@ final class AjaxController {
 	}
 
 	/**
-	 * `cf7ai_delete_message` — soft-deletes a row (list queries always
+	 * `inboxai_delete_message` — soft-deletes a row (list queries always
 	 * exclude these; nothing is permanently removed from this screen).
 	 *
 	 * @return void
@@ -506,14 +506,14 @@ final class AjaxController {
 		$id = isset( $_POST['id'] ) ? absint( wp_unslash( $_POST['id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already verified in self::check() above.
 
 		if ( 0 === $id || ! MessageRepository::soft_delete( $id ) ) {
-			wp_send_json_error( array( 'message' => __( 'This submission could not be deleted.', 'cf7-ai-inbox' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'This submission could not be deleted.', 'inbox-ai' ) ), 400 );
 		}
 
 		wp_send_json_success( array( 'deleted' => true ) );
 	}
 
 	/**
-	 * `cf7ai_retry_analysis` — the Submission Failure screen's "Retry"
+	 * `inboxai_retry_analysis` — the Submission Failure screen's "Retry"
 	 * action: re-enqueues the message for analysis exactly as its original
 	 * capture did, without re-inserting a row.
 	 *
@@ -526,7 +526,7 @@ final class AjaxController {
 		$message = MessageRepository::find( $id );
 
 		if ( null === $message ) {
-			wp_send_json_error( array( 'message' => __( 'This submission could not be found.', 'cf7-ai-inbox' ) ), 404 );
+			wp_send_json_error( array( 'message' => __( 'This submission could not be found.', 'inbox-ai' ) ), 404 );
 		}
 
 		MessageRepository::update_status( $id, 'new' );

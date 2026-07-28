@@ -1,8 +1,8 @@
 // Pagination controls, row-level hover actions, and the "more actions"
-// dropdown — ported from html/assets/css/cf7-ai-inbox.css. Rendered by
+// dropdown — ported from html/assets/css/inboxai.css. Rendered by
 // `src/admin/componets/shared/pagination.js` and `.../rowMenu.js`.
 
-.cf7-ai-inbox-pager {
+.inboxai-pager {
 	display: flex;
 	align-items: center;
 	gap: 4px;
@@ -31,7 +31,7 @@
 			cursor: default;
 		}
 
-		&.cf7-ai-inbox-is-active {
+		&.inboxai-is-active {
 			background: var(--accent);
 			border-color: var(--accent-deep);
 			color: #fff;
@@ -49,12 +49,12 @@
 	}
 }
 
-.cf7-ai-inbox-row-actions {
+.inboxai-row-actions {
 	display: flex;
 	gap: 4px;
 	align-items: center;
 
-	.cf7-ai-inbox-btn--icon {
+	.inboxai-btn--icon {
 		width: 26px;
 		height: 26px;
 		border-radius: 6px;
@@ -66,7 +66,7 @@
 	}
 }
 
-.cf7-ai-inbox-row-menu {
+.inboxai-row-menu {
 	position: fixed;
 	display: none;
 	z-index: 150;
@@ -109,7 +109,7 @@
 	}
 }
 
-.cf7-ai-inbox-btn--icon.cf7-ai-inbox-is-active {
+.inboxai-btn--icon.inboxai-is-active {
 	background: var(--accent-soft);
 	color: var(--accent-deep);
 
@@ -118,11 +118,11 @@
 	}
 }
 
-.cf7-ai-inbox-btn--icon.cf7-ai-inbox-is-spinning svg {
-	animation: cf7ai-spin .7s linear infinite;
+.inboxai-btn--icon.inboxai-is-spinning svg {
+	animation: inboxai-spin .7s linear infinite;
 }
 
-@keyframes cf7ai-spin {
+@keyframes inboxai-spin {
 	from {
 		transform: rotate(0deg);
 	}

@@ -1,16 +1,16 @@
 // The two-column Settings shell (subnav sidebar + content stack) shared by
-// all six subtab templates. The page header row and its `.cf7-ai-inbox-control`
+// all six subtab templates. The page header row and its `.inboxai-control`
 // date-range dropdown live in common/_page-header.scss instead — every real
-// page uses that same header, not just Settings — and `.cf7-ai-inbox-stack`
+// page uses that same header, not just Settings — and `.inboxai-stack`
 // lives in common/_layout.scss for the same reason (both used to have their
 // own near-identical copies here; removed to stop the two versions drifting
 // out of sync, e.g. different responsive breakpoints for the same component).
 
 // Two-column grid: the subnav sidebar (200px) + whichever tab's card stack
-// (1fr). Each tab template repeats its own copy of `.cf7-ai-inbox-settings__tabs`
+// (1fr). Each tab template repeats its own copy of `.inboxai-settings__tabs`
 // because it's the grid's own first column, not just navigation — see the
 // note in includes/Templates/settings/settings.php.
-.cf7-ai-inbox-settings__shell {
+.inboxai-settings__shell {
 	display: grid;
 	grid-template-columns: 200px 1fr;
 	gap: 20px;
@@ -24,7 +24,7 @@
 	}
 }
 
-.cf7-ai-inbox-settings__tabs {
+.inboxai-settings__tabs {
 	display: flex;
 	flex-direction: column;
 	gap: 2px;
@@ -37,13 +37,13 @@
 		color: var(--text-secondary);
 		cursor: pointer;
 
-		&.cf7-ai-inbox-is-active {
+		&.inboxai-is-active {
 			background: var(--accent-soft);
 			color: var(--accent-deep);
 			font-weight: 700;
 		}
 
-		&:hover:not(.cf7-ai-inbox-is-active) {
+		&:hover:not(.inboxai-is-active) {
 			background: var(--surface-2);
 			color: var(--text-primary);
 		}

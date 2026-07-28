@@ -2,10 +2,10 @@
 /**
  * Read/write access to the captured-submission table.
  *
- * @package CF7AIInbox\Database
+ * @package InboxAI\Database
  */
 
-namespace CF7AIInbox\Database;
+namespace InboxAI\Database;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,9 +17,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * One row per captured Contact Form 7 submission (see
  * docs/plans/02-ai-inbox-list-plan.md, section 2). Owned by the AI Inbox
- * List page — {@see \CF7AIInbox\CF7\SubmissionHandler} writes the initial
- * row, {@see \CF7AIInbox\AI\AnalysisQueue} fills in the AI columns, and
- * {@see \CF7AIInbox\Admin\AjaxController} reads/writes everything else via
+ * List page — {@see \InboxAI\CF7\SubmissionHandler} writes the initial
+ * row, {@see \InboxAI\AI\AnalysisQueue} fills in the AI columns, and
+ * {@see \InboxAI\Admin\AjaxController} reads/writes everything else via
  * this class. Only the read/write methods this page's own plan needs are
  * built here; Plans 1/3/4 add their own aggregate read methods on top of
  * this same table/class later without needing to touch what's here.
@@ -113,7 +113,7 @@ final class MessageRepository {
 	/**
 	 * Finds an existing, non-deleted row by its dedup hash.
 	 *
-	 * @param string $hash Value from {@see \CF7AIInbox\CF7\SubmissionMapper::compute_hash()}.
+	 * @param string $hash Value from {@see \InboxAI\CF7\SubmissionMapper::compute_hash()}.
 	 *
 	 * @return array<string, mixed>|null
 	 */
@@ -281,7 +281,7 @@ final class MessageRepository {
 	/**
 	 * Resolves a `period` filter value (`7_days`, `30_days`, `90_days`,
 	 * `this_month`, `{n}_year`/`{n}_years`) to a `created_at >=` cutoff.
-	 * Mirrors {@see \CF7AIInbox\Database\UsageRepository::period_to_datetime()}
+	 * Mirrors {@see \InboxAI\Database\UsageRepository::period_to_datetime()}
 	 * — kept separately rather than shared, matching this table's own
 	 * self-contained read methods.
 	 *

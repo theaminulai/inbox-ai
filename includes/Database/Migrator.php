@@ -2,10 +2,10 @@
 /**
  * Creates and upgrades the plugin's custom database tables.
  *
- * @package CF7AIInbox\Database
+ * @package InboxAI\Database
  */
 
-namespace CF7AIInbox\Database;
+namespace InboxAI\Database;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -18,9 +18,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Owns the plugin's custom tables described in docs/CF7_AI_Inbox_RnD.md
  * (section 6): messages, activities, usage, and contacts. Custom tables were
  * chosen over post types/postmeta for indexed filtering, cleaner analytics,
- * and easier retention/deletion at volume. `cf7ai_contacts` was originally
+ * and easier retention/deletion at volume. `inboxai_contacts` was originally
  * deferred past the first pass, but is needed now that
- * {@see \CF7AIInbox\Migration\FlamingoImporter} imports Flamingo's Contact/
+ * {@see \InboxAI\Migration\FlamingoImporter} imports Flamingo's Contact/
  * Address Book records (not just its inbound messages) as real rows of
  * their own, rather than only merging their details into a message.
  */
@@ -31,10 +31,10 @@ final class Migrator {
 	 *
 	 * @var string
 	 */
-	public const MESSAGES_TABLE   = 'cf7ai_messages';
-	public const ACTIVITIES_TABLE = 'cf7ai_activities';
-	public const USAGE_TABLE      = 'cf7ai_usage';
-	public const CONTACTS_TABLE   = 'cf7ai_contacts';
+	public const MESSAGES_TABLE   = 'inboxai_messages';
+	public const ACTIVITIES_TABLE = 'inboxai_activities';
+	public const USAGE_TABLE      = 'inboxai_usage';
+	public const CONTACTS_TABLE   = 'inboxai_contacts';
 
 	/**
 	 * Current schema version. Bumping this triggers {@see self::maybe_migrate()}
@@ -49,7 +49,7 @@ final class Migrator {
 	 *
 	 * @var string
 	 */
-	private const VERSION_OPTION = 'cf7ai_inbox_db_version';
+	private const VERSION_OPTION = 'inboxai_db_version';
 
 	/**
 	 * Creates the tables (via `dbDelta()`) and records the current schema

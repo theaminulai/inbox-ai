@@ -1,5 +1,5 @@
 /**
- * Shared entry point for every CF7 AI Inbox admin page.
+ * Shared entry point for every Inbox AI admin page.
  *
  * Enqueued as a native ES module (`type="module"`) on each of the plugin's
  * five admin pages — see includes/Admin/Pages/*.php. Reads the page shell's

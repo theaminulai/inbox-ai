@@ -1,5 +1,5 @@
 /**
- * The `.cf7-ai-inbox-switch` toggle control, shared across every tab.
+ * The `.inboxai-switch` toggle control, shared across every tab.
  */
 
 /**
@@ -11,15 +11,15 @@
  */
 export function initSwitches( root = document ) {
 	root.addEventListener( 'click', ( e ) => {
-		const el = e.target.closest( '.cf7-ai-inbox-switch' );
+		const el = e.target.closest( '.inboxai-switch' );
 
 		if ( ! el ) {
 			return;
 		}
 
-		el.classList.toggle( 'cf7-ai-inbox-is-on' );
+		el.classList.toggle( 'inboxai-is-on' );
 		el.dispatchEvent(
-			new CustomEvent( 'cf7ai:switch-toggled', { bubbles: true } )
+			new CustomEvent( 'inboxai:switch-toggled', { bubbles: true } )
 		);
 	} );
 }
@@ -29,7 +29,7 @@ export function initSwitches( root = document ) {
  * @return {boolean}
  */
 export function isSwitchOn( el ) {
-	return !! el && el.classList.contains( 'cf7-ai-inbox-is-on' );
+	return !! el && el.classList.contains( 'inboxai-is-on' );
 }
 
 /**
@@ -38,6 +38,6 @@ export function isSwitchOn( el ) {
  */
 export function setSwitch( el, on ) {
 	if ( el ) {
-		el.classList.toggle( 'cf7-ai-inbox-is-on', !! on );
+		el.classList.toggle( 'inboxai-is-on', !! on );
 	}
 }

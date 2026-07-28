@@ -1,6 +1,6 @@
 {
-    "name": "theaminulai/cf7-ai-inbox",
-    "description": "CF7 AI Inbox for Contact Form 7",
+    "name": "theaminuldev/inbox-ai",
+    "description": "Inbox AI - an AI-powered review inbox for Contact Form 7 submissions",
     "type": "wordpress-plugin",
     "license": "GPL-3.0-or-later",
     "require": {
@@ -23,12 +23,12 @@
     },
     "autoload": {
         "psr-4": {
-            "CF7AIInbox\\": "includes/"
+            "InboxAI\\": "includes/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "CF7AIInbox\\Tests\\": "tests/"
+            "InboxAI\\Tests\\": "tests/"
         }
     },
     "scripts": {

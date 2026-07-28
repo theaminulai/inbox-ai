@@ -1,10 +1,10 @@
 // Empty states and inline error boxes — ported from
-// html/assets/css/cf7-ai-inbox.css. `#inbox-empty` (AI Inbox List, truly no
+// html/assets/css/inboxai.css. `#inbox-empty` (AI Inbox List, truly no
 // data yet), the "Submission not found" state (`includes/Templates/inbox.php`),
 // and the detail screen's "AI analysis failed" error card
 // (`includes/Templates/inbox-detail.php`) all use these.
 
-.cf7-ai-inbox-state {
+.inboxai-state {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -35,7 +35,7 @@
 	}
 }
 
-.cf7-ai-inbox-error {
+.inboxai-error {
 	display: flex;
 	gap: 16px;
 	background: var(--urgent-soft);

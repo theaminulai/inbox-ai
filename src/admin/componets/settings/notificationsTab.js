@@ -2,7 +2,7 @@
  * Settings page — Notifications tab.
  */
 
-import { cf7aiAjax } from '../shared/api.js';
+import { inboxaiAjax } from '../shared/api.js';
 import { showToast } from '../shared/toast.js';
 import { collectFields } from '../shared/fields.js';
 
@@ -19,7 +19,7 @@ export function initNotificationsTab() {
 		saveBtn.addEventListener( 'click', () => {
 			const values = collectFields( screen );
 
-			cf7aiAjax( 'cf7ai_save_settings', {
+			inboxaiAjax( 'inboxai_save_settings', {
 				tab: 'notifications',
 				values: JSON.stringify( values ),
 			} )

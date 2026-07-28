@@ -1,5 +1,5 @@
 /* =====================================================================
-   CF7 AI Inbox — Settings page script (AI Provider / General / Prompts /
+   Inbox AI — Settings page script (AI Provider / General / Prompts /
    Usage & Billing / Notifications / Import & Migration — six subtabs
    sharing one page, switched via JS since they're all "Settings").
    Requires common.js to be loaded first (shared helpers).
@@ -25,11 +25,11 @@ function selectEmailProvider(key){
 
 function showSettingsTab(key){
   if(SETTINGS_TABS.indexOf(key)===-1) key = 'ai-settings';
-  document.querySelectorAll('.cf7-ai-inbox-screen').forEach(s=>s.classList.remove('cf7-ai-inbox-is-active'));
+  document.querySelectorAll('.inboxai-screen').forEach(s=>s.classList.remove('inboxai-is-active'));
   const el = document.getElementById('screen-'+key);
-  if(el) el.classList.add('cf7-ai-inbox-is-active');
+  if(el) el.classList.add('inboxai-is-active');
   document.querySelectorAll('[data-subnav]').forEach(a=>{
-    a.classList.toggle('cf7-ai-inbox-is-active', a.dataset.subnav === key);
+    a.classList.toggle('inboxai-is-active', a.dataset.subnav === key);
   });
   document.getElementById('main').scrollTo({top:0, behavior:'instant'});
   window.scrollTo({top:0, behavior:'instant'});
@@ -43,27 +43,27 @@ document.addEventListener('click', function(e){
   const subnavEl = e.target.closest('[data-subnav]');
   if(subnavEl){ showSettingsTab(subnavEl.dataset.subnav); return; }
 
-  const providerOpt = e.target.closest('.cf7-ai-inbox-provider__option');
+  const providerOpt = e.target.closest('.inboxai-provider__option');
   if(providerOpt){
     // Scoped to the clicked card's own body — screen-ai-settings and
     // screen-email-settings each carry their own independent set of
     // provider cards, both present in the DOM at once (only one screen is
     // visible), so a document-wide deselect would incorrectly clear the
     // other tab's selection too.
-    const group = providerOpt.closest('.cf7-ai-inbox-card__body');
-    const scope = group ? group.querySelectorAll('.cf7-ai-inbox-provider__option') : [ providerOpt ];
-    scope.forEach(o=>{ o.classList.remove('cf7-ai-inbox-is-selected'); o.querySelector('.cf7-ai-inbox-provider__radio').classList.remove('cf7-ai-inbox-is-checked'); });
-    providerOpt.classList.add('cf7-ai-inbox-is-selected');
-    providerOpt.querySelector('.cf7-ai-inbox-provider__radio').classList.add('cf7-ai-inbox-is-checked');
+    const group = providerOpt.closest('.inboxai-card__body');
+    const scope = group ? group.querySelectorAll('.inboxai-provider__option') : [ providerOpt ];
+    scope.forEach(o=>{ o.classList.remove('inboxai-is-selected'); o.querySelector('.inboxai-provider__radio').classList.remove('inboxai-is-checked'); });
+    providerOpt.classList.add('inboxai-is-selected');
+    providerOpt.querySelector('.inboxai-provider__radio').classList.add('inboxai-is-checked');
     if(providerOpt.dataset.emailProvider){
       selectEmailProvider(providerOpt.dataset.emailProvider);
     }
     return;
   }
 
-  const switchEl = e.target.closest('.cf7-ai-inbox-switch');
+  const switchEl = e.target.closest('.inboxai-switch');
   if(switchEl){
-    switchEl.classList.toggle('cf7-ai-inbox-is-on');
+    switchEl.classList.toggle('inboxai-is-on');
     if(switchEl.dataset.formToggle){
       showToast('Form settings updated','success');
     }
@@ -107,13 +107,13 @@ function goFlamingoStep(n){
     const panel = document.getElementById('flamingo-panel-'+i);
     if(panel) panel.style.display = (i===n) ? '' : 'none';
   }
-  document.querySelectorAll('.cf7-ai-inbox-wizard__step').forEach(el=>{
+  document.querySelectorAll('.inboxai-wizard__step').forEach(el=>{
     const step = parseInt(el.dataset.wizardStep, 10);
-    el.classList.toggle('cf7-ai-inbox-is-active', step===n);
-    el.classList.toggle('cf7-ai-inbox-is-done', step<n);
+    el.classList.toggle('inboxai-is-active', step===n);
+    el.classList.toggle('inboxai-is-done', step<n);
   });
-  document.querySelectorAll('.cf7-ai-inbox-wizard__line').forEach((el, idx)=>{
-    el.classList.toggle('cf7-ai-inbox-is-done', (idx+1) < n);
+  document.querySelectorAll('.inboxai-wizard__line').forEach((el, idx)=>{
+    el.classList.toggle('inboxai-is-done', (idx+1) < n);
   });
   document.getElementById('main').scrollTo({top:0, behavior:'smooth'});
 }
@@ -154,9 +154,9 @@ document.getElementById('flamingo-guide-link').addEventListener('click', functio
 document.getElementById('flamingo-next-1').addEventListener('click', ()=> goFlamingoStep(2));
 document.getElementById('flamingo-back-2').addEventListener('click', ()=> goFlamingoStep(1));
 document.getElementById('flamingo-next-2').addEventListener('click', function(){
-  const messagesOn = document.getElementById('flamingo-toggle-messages').classList.contains('cf7-ai-inbox-is-on');
-  const attachmentsOn = document.getElementById('flamingo-toggle-attachments').classList.contains('cf7-ai-inbox-is-on');
-  const aiOn = document.getElementById('flamingo-toggle-ai').classList.contains('cf7-ai-inbox-is-on');
+  const messagesOn = document.getElementById('flamingo-toggle-messages').classList.contains('inboxai-is-on');
+  const attachmentsOn = document.getElementById('flamingo-toggle-attachments').classList.contains('inboxai-is-on');
+  const aiOn = document.getElementById('flamingo-toggle-ai').classList.contains('inboxai-is-on');
   document.getElementById('flamingo-summary-messages').textContent = messagesOn ? '1,204' : '0';
   document.getElementById('flamingo-summary-attachments').textContent = attachmentsOn ? '318' : '0';
   document.getElementById('flamingo-summary-cost').textContent = aiOn ? '≈ $18.60' : '$0.00 (AI analysis off)';
