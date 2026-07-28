@@ -4,7 +4,7 @@ Tags: contact form 7, ai, inbox, openai, anthropic
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.6.0
+Stable tag: 0.5.0
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -34,12 +34,6 @@ A full step-by-step user guide is included with the plugin under `docs-platform/
 1. Install and activate Contact Form 7 (required).
 2. Upload and activate Inbox AI.
 3. Go to **Contact → Settings** to connect an AI provider and choose which forms to monitor, then check **Contact → AI Inbox**. See the included user guide (`docs-platform/`) for full setup steps.
-
-== Source Code ==
-
-This plugin's compiled/minified admin assets (`build/admin/admin.js`, `build/admin/admin.css`, `build/cf7/category.js`) are generated from the human-readable source in `src/` using `@wordpress/scripts` (webpack). The full source, including these build tools and instructions to regenerate the compiled files (`npm install && npm run build`), is publicly available at:
-
-https://github.com/theaminulai/cf7-ai-inbox
 
 == Frequently Asked Questions ==
 
