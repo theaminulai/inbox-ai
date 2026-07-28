@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use InboxAI\Admin\AjaxController;
+use InboxAI\Admin\Ajax\SettingsAjaxController;
 use InboxAI\Database\MessageRepository;
 use InboxAI\Database\UsageRepository;
 use InboxAI\Migration\FlamingoImporter;
@@ -91,7 +91,7 @@ final class SettingsPage {
 			return $data;
 		}
 
-		$data['nonce'] = wp_create_nonce( AjaxController::SETTINGS_NONCE_ACTION );
+		$data['nonce'] = wp_create_nonce( SettingsAjaxController::SETTINGS_NONCE_ACTION );
 
 		return $data;
 	}

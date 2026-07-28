@@ -12,6 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use InboxAI\Admin\Pages\ContactsListPage;
 use InboxAI\Admin\Pages\InboxListPage;
 use InboxAI\Admin\Pages\SettingsPage;
 use InboxAI\Security\Capabilities;
@@ -34,17 +35,14 @@ use InboxAI\Security\Capabilities;
  * Only pages with a real, finished, data-backed renderer are registered in
  * {@see self::PAGES} — currently AI Inbox List
  * ({@see \InboxAI\Admin\Pages\InboxListPage}, see
- * docs/plans/02-ai-inbox-list-plan.md) and Settings
+ * docs/plans/02-ai-inbox-list-plan.md), Contacts List
+ * ({@see \InboxAI\Admin\Pages\ContactsListPage}, see
+ * docs/plans/03-contacts-list-plan.md), and Settings
  * ({@see \InboxAI\Admin\Pages\SettingsPage}, see
  * docs/plans/05-settings-plan.md). There is no more static-mockup iframe
- * preview fallback: Overview, Contacts, and Analytics
- * (docs/plans/01,03,04-*.md) are added to {@see self::PAGES} — with their
- * own page class, the same way these are — once each one's own build pass
- * is actually complete. A minimal Contacts page and a Flamingo contacts
- * importer were built and then deliberately reverted (kept out of this list
- * and out of the Flamingo import wizard) so the full docs/plans/03 design
- * can be built from scratch later, per its own plan, without an in-between
- * page to reconcile.
+ * preview fallback: Overview and Analytics (docs/plans/01,04-*.md) are
+ * added to {@see self::PAGES} — with their own page class, the same way
+ * these are — once each one's own build pass is actually complete.
  *
  * This class also owns every page's asset loading. `enqueue_assets()`
  * enqueues the one shared `build/admin.js` / `build/admin.css` bundle
@@ -76,6 +74,7 @@ final class Menu {
 	 */
 	private const PAGES = array(
 		'inboxai-inbox'    => array( 'AI Inbox', 'Inbox AI', Capabilities::VIEW_MESSAGES, InboxListPage::class ),
+		'inboxai-contacts' => array( 'Contacts', 'Inbox AI Contacts', Capabilities::VIEW_MESSAGES, ContactsListPage::class ),
 		'inboxai-settings' => array( 'Settings', 'Inbox AI Settings', Capabilities::MANAGE_SETTINGS, SettingsPage::class ),
 	);
 

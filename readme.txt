@@ -1,57 +1,140 @@
 === Inbox AI ===
 Contributors: theaminuldev
-Tags: contact form 7, ai, inbox, openai, anthropic
+Tags: contact form 7, wpcf7, ai, inbox, openai, anthropic, gemini, flamingo
 Requires at least: 6.7
-Tested up to: 7.0
+Tested up to: 7.2
 Requires PHP: 8.1
 Stable tag: 0.6.0
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-AI-powered review inbox for Contact Form 7: AI drafts summaries, replies, and priority — you review and send, nothing is automatic.
+Turn Contact Form 7 submissions into an AI-powered inbox: AI drafts the summary, database, category, priority, and reply — you review and send.
 
 == Description ==
 
-Inbox AI adds a unified review inbox on top of your Contact Form 7 forms, without modifying Contact Form 7 itself. It combines:
+**Inbox AI** adds a unified, searchable Contact Form 7 (CF7) inbox on top of your existing forms — without modifying Contact Form 7 itself. Every submission is stored, analyzed by your chosen AI provider, and turned into something your team can actually work from: a plain-language AI email summary, a suggested category and priority, a confidence score, and a ready-to-edit draft reply.
 
-* Persistent local storage of every submission to your chosen forms.
-* An AI-drafted summary, suggested reply, category, priority, and confidence score for each submission.
-* A searchable, filterable inbox and a per-submission review screen.
-* A manual, confirmed **Send Reply** action — the AI drafts, you decide. Nothing is ever sent automatically.
-* Bring-your-own-key support for OpenAI, Anthropic, and Google Gemini.
+If you've ever dug through email notifications trying to figure out which contact form submissions actually need a reply, Inbox AI is built for exactly that problem. Think of it as a Contact Form 7 AI layer: a lightweight support inbox, contact form management tool, and lead management layer that turns what your forms already collect into a focused, triage-ready queue.
 
-= Current status =
+= How it works =
 
-The plugin is under active development. Built and working today:
+1. A visitor submits one of your monitored Contact Form 7 forms.
+2. Inbox AI stores the submission locally in your WordPress database.
+3. Your connected AI provider (OpenAI, Anthropic, or Google Gemini) analyzes it in the background and returns a summary, category, priority, confidence score, and a suggested reply.
+4. You review everything in the AI Inbox screen and, when you're happy with it, send the reply yourself. Nothing is ever sent to a visitor automatically.
 
-* AI Inbox: a searchable, filterable list of every captured submission (by form, status, priority, category, and date range), with a per-submission detail screen, AI summary/category/priority/confidence, an AI-drafted reply composer, retry-on-failure, and CSV export.
-* Settings: AI Provider connection (OpenAI, Anthropic, Google), Monitored Forms, Automatic Processing rules, customizable AI prompts, a Usage & Billing dashboard, Notifications (email + Slack), and a Flamingo import wizard for migrating older submissions.
+= Who it's for =
 
-A full step-by-step user guide is included with the plugin under `docs-platform/`.
+* Small businesses and agencies using Contact Form 7 who want a real support inbox instead of scattered email notifications.
+* Support and sales teams that want an AI customer support layer for day-to-day customer inquiry management, triaging contact form submissions by priority and category automatically.
+* Anyone already using Flamingo to store Contact Form 7 submissions who wants AI categorization and an AI-drafted reply on top of that same data.
+
+= AI Features =
+
+* AI-generated summary for every submission, so you don't have to read the full message to know what it's about.
+* AI prioritization and category suggestions (Urgent, High, Normal, Low), with a confidence score for each AI analysis.
+* AI-drafted reply you can edit before sending — an AI email assistant for drafting replies, not an autoresponder.
+* Bring your own API key: OpenAI, Anthropic (Claude), or Google Gemini. You choose the provider and control the cost.
+* Automatic retry for any submission whose AI analysis failed, with a clear failure state instead of a silent gap.
+
+= Inbox & Submission Management =
+
+* A searchable, filterable AI inbox: filter by form, status, priority, category, AI confidence, and date range.
+* Full-text search across sender name, email, subject, and message.
+* A per-submission detail screen with the full AI analysis and an activity timeline (who did what, and when) — closer to a support ticket assistant than a plain message list.
+* CSV export of the current filtered view, for reporting or import into another contact form database or CRM.
+* Manual "Mark reviewed," "Archive," and "Delete" actions, each gated behind its own WordPress capability.
+
+= Contacts =
+
+* Every sender automatically grouped into a single Contacts row — a lightweight contact form CRM view built directly from your existing submissions, no separate import needed.
+* Search plus category and priority filters, matching the main inbox.
+* One click from a contact straight to every message from that sender.
+* CSV export and an archive-based delete, so removing a contact never destroys the underlying message history.
+
+= Notifications =
+
+* Email and Slack notifications so your team knows when a new submission — or one flagged urgent by the AI — needs attention, keeping AI customer service response times fast.
+
+= Import & Migration =
+
+* A guided import wizard for existing Flamingo submissions, so switching from Flamingo to Inbox AI doesn't mean losing your submission history.
+* A CSV upload path for a Flamingo export, for sites that can't run the direct import wizard.
+
+= Privacy & Security =
+
+* Your AI provider API key is encrypted in the database and only ever shown masked (e.g. `sk-••••••7f2A`) after saving.
+* Custom WordPress capabilities control who can view, edit, reply to, delete, or export messages — no blanket admin-only access.
+* No data reaches any AI provider until you've connected one and explicitly turned on at least one monitored form.
+
+= Performance =
+
+* AI analysis runs as a background AI workflow via WP-Cron — a visitor's form submission is never delayed waiting on an AI response.
+
+= Developer Friendly =
+
+* Built to WordPress coding standards, with its own custom capabilities (filterable via `inboxai_capabilities`) instead of overloading core roles.
+* Integrates with Contact Form 7 (wpcf7) exclusively through its own public hooks — `wpcf7_before_send_mail`, `wpcf7_mail_sent`, and `wpcf7_mail_failed` for capturing submissions, plus `wpcf7_admin_misc_pub_section`/`wpcf7_after_save` for per-form AI categories — so Contact Form 7 core files and its own outgoing mail are never touched.
+* Lifecycle action hooks (e.g. `inboxai_loaded`) for developers who want to extend the plugin.
 
 == Installation ==
 
-1. Install and activate Contact Form 7 (required).
+1. Install and activate Contact Form 7 (required — Inbox AI is a Contact Form 7 add-on, not a standalone form builder).
 2. Upload and activate Inbox AI.
-3. Go to **Contact → Settings** to connect an AI provider and choose which forms to monitor, then check **Contact → AI Inbox**. See the included user guide (`docs-platform/`) for full setup steps.
+3. Go to **Contact → Settings** to connect an AI provider (OpenAI, Anthropic, or Google Gemini) and choose which forms to monitor.
+4. Open **Contact → AI Inbox** to see submissions arrive, get analyzed, and become ready to review.
+
+A full step-by-step user guide is included with the plugin under `docs-platform/`.
 
 == Frequently Asked Questions ==
 
-= Is this ready to use? =
+= Does this work with Contact Form 7? =
 
-Yes. AI Inbox (list, filters, submission detail, AI-drafted replies) and Settings (AI Provider, General, Prompts, Usage & Billing, Notifications, Import & Migration) are built and working. A Campaigns (bulk email) feature is still in development and not yet available.
+Yes — Contact Form 7 is a required dependency, and Inbox AI is built specifically as a contact form inbox layer for it. Submissions are captured through Contact Form 7's own public hooks; Inbox AI never modifies Contact Form 7 core files or its mail handling.
 
-= Will this modify Contact Form 7? =
+= Can I import my existing Flamingo submissions? =
 
-No. It's designed to integrate only through Contact Form 7's public hooks and will never edit CF7 core files or its outgoing mail.
+Yes. Settings → Import & Migration includes a guided wizard for Flamingo's stored submissions, plus a CSV upload path for exports from Flamingo or another Contact Form 7 database/entries plugin.
 
 = Will replies ever be sent automatically? =
 
-No. The AI drafts a summary and reply, and a human reviews and explicitly confirms before anything is sent to a visitor.
+No. The AI drafts a summary and a suggested reply; a human always reviews and explicitly clicks Send before anything reaches a visitor.
 
-= Where will my API key be stored? =
+= Which AI providers are supported? =
 
-Your AI provider API key is stored encrypted in the WordPress options table and is never exposed in any frontend page, script, or REST response — only a masked version (e.g. `sk-••••••7f2A`) is ever displayed after saving.
+OpenAI, Anthropic (Claude), and Google Gemini. You choose one in Settings → AI Provider and supply your own API key.
+
+= Where is my API key stored, and is it secure? =
+
+Encrypted in your WordPress database. It's never exposed in any frontend page, script, or REST response — only a masked version is ever displayed after saving.
+
+= Does this plugin store my form submissions? =
+
+Yes. Every submission to a monitored form is stored locally in your own WordPress database (not sent to a third party for storage) — the same local-storage approach as a typical Contact Form 7 db/database add-on, with AI analysis layered on top.
+
+= Can I export my submissions or contacts? =
+
+Yes. Both the AI Inbox and the Contacts page support CSV export of the current filtered view.
+
+= Does this modify Contact Form 7 or its emails? =
+
+No. Inbox AI only reads from Contact Form 7's public hooks; it never edits Contact Form 7 core files or interferes with Contact Form 7's own outgoing mail.
+
+= Can I control who sees or replies to messages? =
+
+Yes. Inbox AI defines its own capabilities (view, edit, delete, reply, export, manage settings, view analytics) so you can grant a support agent narrower access than a full administrator.
+
+= Can I disable AI analysis? =
+
+Yes. AI analysis only runs for forms listed under Settings → General → Monitored Forms. Remove a form from that list (or leave it out to begin with) and Inbox AI stops sending its submissions to any AI provider — the submission is still stored locally, just without AI analysis.
+
+= How much does OpenAI, Anthropic, or Gemini cost? =
+
+That's set entirely by the provider, not by Inbox AI — see each provider's own published pricing (for example OpenAI's or Anthropic's API pricing pages) since rates vary by model and change over time. Inbox AI itself doesn't charge anything or mark up provider costs; you pay the provider directly for what your usage consumes, and the Usage & Billing tab tracks your estimated spend inside WordPress so there are no surprises.
+
+= Is this ready to use? =
+
+Yes. AI Inbox, Contacts, and Settings (AI Provider, General, Prompts, Usage & Billing, Notifications, Import & Migration) are built and working. An Overview dashboard, Analytics, and Campaigns (bulk email) are still in development.
 
 == External services ==
 
@@ -61,19 +144,30 @@ What data is sent, and when: each time a monitored form is submitted (or an admi
 
 Only one provider is contacted per request — whichever one is currently selected in Settings → AI Provider. The plugin never uses a shared or proxy key; the site owner must supply and pay for their own API key directly with the provider.
 
-Provider terms of service and privacy policy:
-* OpenAI — https://openai.com/policies/business-terms/ (Business Terms, which govern API use) and https://openai.com/policies/privacy-policy/
-* Anthropic — https://www.anthropic.com/legal/commercial-terms (Commercial Terms of Service, which govern API use) and https://www.anthropic.com/legal/privacy
-* Google Gemini — https://ai.google.dev/gemini-api/terms (Gemini API Additional Terms of Service) and https://policies.google.com/privacy
-
 == Screenshots ==
 
 1. AI Inbox — the filterable, searchable list of Contact Form 7 submissions.
 2. Submission detail — AI summary, category, priority, confidence, and the AI-drafted reply composer.
-3. Settings — AI Provider connection screen.
-4. Settings — General tab, Monitored Forms and Automatic Processing.
+3. Contacts — every sender grouped into one row, with search and filters.
+4. Settings — AI Provider connection screen.
+5. Settings — General tab, Monitored Forms and Automatic Processing.
 
 == Changelog ==
+
+= Inbox AI/v0.7.0 - 2026-07-28 =
+
+**Added**
+* Added the Contacts List page, grouped by sender.
+* Added search, category, and priority filters, plus CSV export.
+* Added a "Delete contact" action that archives that sender's messages.
+
+**Improved**
+* Split the shared AJAX handler into one controller per page.
+* Consolidated repeated field-reading code into shared helpers.
+* Reorganized Contacts templates into their own folder.
+
+**Fixed**
+* Fixed the version-bump script crashing on a first release.
 
 = Inbox AI/v0.6.0 - 2026-07-28 =
 
@@ -152,6 +246,9 @@ Provider terms of service and privacy policy:
 * Added user capabilities and uninstall cleanup.
 
 == Upgrade Notice ==
+
+= 0.7.0 =
+Adds the Contacts page (senders grouped, filterable, exportable). Internal-only refactor otherwise — no action needed.
 
 = 0.1.0 =
 Initial foundation release — no user-facing features yet.

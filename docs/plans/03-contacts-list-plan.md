@@ -1,6 +1,8 @@
 # End-to-End Plan: Contacts List Page (`inboxai-contacts`, `html/contacts.html`)
 
-**Note:** the shared admin-page architecture referenced throughout this plan (Menu-centralized enqueuing, the `inboxai_inbox_localize_data` filter, the JS loader/SCSS folder conventions) was established while building the Settings page — see `docs/plans/05-settings-plan.md` §10 for the full explanation and a code example. This plan has been updated to match; sections below now describe that real architecture instead of the original per-page-enqueue assumption.
+**Status: built.** This page shipped — `includes/Admin/Pages/ContactsListPage.php`, `includes/Templates/contacts/{contacts,list}.php`, `includes/Admin/Ajax/ContactsAjaxController.php`, and `src/admin/componets/contacts/` all exist and are registered in `Menu::PAGES`. The rest of this document is kept as the original design record; a few sections below are annotated where the actual build diverged from what's written here (mostly: the shared `inboxai_localize_data` filter/`window.inboxaiAdmin` global names this plan still calls `inboxai_inbox_localize_data`/`window.inboxaiInboxAdmin` in a couple of places predate a later project-wide identifier cleanup, and the single shared `AjaxController` this plan assumed was later split into one controller class per page).
+
+**Note:** the shared admin-page architecture referenced throughout this plan (Menu-centralized enqueuing, the `inboxai_localize_data` filter, the JS loader/SCSS folder conventions) was established while building the Settings page — see `docs/plans/05-settings-plan.md` §10 for the full explanation and a code example. This plan has been updated to match; sections below now describe that real architecture instead of the original per-page-enqueue assumption.
 
 Standalone build plan for the third of five admin pages. This page has no data of its own — it's a grouped view over the same `inboxai_messages` rows Plan 2 (AI Inbox List) captures, aggregated by sender email.
 
@@ -27,6 +29,8 @@ WHERE deleted_at IS NULL
 GROUP BY sender_email
 ```
 
+**As built,** `MessageRepository::get_contacts()` avoids `ANY_VALUE()` (a MySQL 8/MariaDB 10.2.4+ extension the rest of this codebase doesn't otherwise rely on) and a window function alike, in favor of a portable self-join: an inner `GROUP BY sender_email` aggregate computing `MAX(id)` (this codebase's existing recency proxy — see `get_filtered()`'s `ORDER BY id DESC`), `message_count`, and `replied_count`, joined back to the same table on `agg.latest_id = m.id` to pull that one row's own `sender_name`/`category`/`priority`/`created_at`. Same result, no engine-version assumption.
+
 ("Category" and "priority" shown per contact are the most recent message's values, matching the mockup's derivation exactly — not a separate aggregate.)
 
 ## 3. Design decision: what "Delete contact" means
@@ -43,28 +47,29 @@ There is deliberately no dedicated `inboxai_contacts` table (R&D §6 marks it op
 - `includes/Database/MessageRepository.php` (shared with Plan 2, extended here):
   - `get_contacts( array $filters, int $page, int $per_page ): array{items, total}` — the aggregate query above, with `category`/`priority`/`search` (name or email) filters applied identically to `contacts.js`'s `filteredContacts()`.
   - `archive_by_email( string $email ): int` (returns rows affected) — powers the "Delete contact" decision above.
-- `includes/Admin/AjaxController.php` (shared with Plans 1, 2, and 4 — one controller class for every admin-page AJAX action) — three new actions:
+- `includes/Admin/Ajax/ContactsAjaxController.php` (as built: this page's own controller class extending a shared `BaseAjaxController` — see `docs/plans/05-settings-plan.md` §10's note; this plan originally assumed one `AjaxController` class for every admin page, which is no longer how the codebase is organized) — two new actions:
 
 | Action | Capability | Notes |
 |---|---|---|
-| `inboxai_list_contacts` | `inboxai_view_messages` | filters + pagination |
+| `inboxai_list_contacts` | `inboxai_view_messages` | filters + pagination — the initial page load renders server-side, so this action is only ever called by the client's CSV export (see section 5) |
 | `inboxai_delete_contact` | `inboxai_delete_messages` | calls `archive_by_email()` per section 3 |
-| `inboxai_export_contacts` | `inboxai_export_messages` | mirrors `exportContactsCsv()` |
 
-- No AI, no queue, no new activity event types beyond what Plan 2 already logs (an `archive_by_email` action can reuse Plan 2's existing per-message `status_changed` activity insert, looped, or a single summary event — either is fine since this isn't surfaced anywhere granular).
-- `includes/Admin/Pages/ContactsListPage.php` — same thin shape as Plans 1 and 2: capability check, assemble the contacts view model, call `Support\Template::render( 'contacts-list', $view_model )` — markup in `includes/Templates/contacts-list.php`, ported near-verbatim from `html/contacts.html`. **No enqueue call**: `Menu.php` enqueues the shared bundle for every registered page; this class's constructor instead hooks `inboxai_inbox_localize_data`, checking `$slug === 'inboxai-contacts'`, to add its own nonce — see `docs/plans/05-settings-plan.md` §10.
+  As built, there is no separate `inboxai_export_contacts` action — CSV export reuses `inboxai_list_contacts` with a large `per_page`, the same "one list action, no dedicated export endpoint" pattern the AI Inbox List's own export already established (see `docs/plans/02-ai-inbox-list-plan.md`); this plan's original table above listed a third, separate export action that was never actually built.
+- No AI, no queue; `delete_contact()` logs the same per-message `archived` activity event `InboxAjaxController::archive_message()` already logs, once per message id `archive_by_email()` affected (the repository method returns those ids for exactly this reason).
+- `includes/Admin/Pages/ContactsListPage.php` — same thin shape as Plans 1 and 2: capability check, assemble the contacts view model, call `Support\Template::render( 'contacts/contacts', $view_model )` — the page shell in `includes/Templates/contacts/contacts.php`, which in turn renders `contacts/list.php` for the actual page-header/toolbar/table markup (the same two-file shell/list split as `includes/Templates/inbox/{inbox,list}.php` — a flat `contacts-list.php` was the first build, later split into this folder). **No enqueue call**: `Menu.php` enqueues the shared bundle for every registered page; this class's constructor instead hooks `inboxai_localize_data`, checking `$slug === 'inboxai-contacts'`, to add its own nonce — see `docs/plans/05-settings-plan.md` §10.
 
 ## 5. Frontend build plan (`src/admin/componets/contacts/`)
 
 All of it compiles into the one shared `build/admin.js`/`build/admin.css` bundle, not a separate bundle per page (webpack.config.js disables code-splitting — see `docs/plans/05-settings-plan.md` §10); this page's `index.js` exports `initContactsPage()` and is added as one entry to the `loaders` map in the shared `src/admin/index.js`, keyed by `data-page="contacts"`.
 
-- `api.js` — shared `fetch()`-to-`admin-ajax.php` wrapper (same as Plans 1 and 2), reading from `window.inboxaiInboxAdmin` rather than a page-specific global.
-- `list.js` — replaces `contactsFromMessages()` + `filteredContacts()` + `renderContacts()`'s client-side grouping with a `inboxai_list_contacts` call keyed by `state.contactsFilters`/`state.contactsPage` — the grouping itself now happens in `get_contacts()` (section 4), not in the browser.
+- `api.js` — shared `fetch()`-to-`admin-ajax.php` wrapper (same as Plans 1 and 2), reading from `window.inboxaiAdmin` (as built — this plan's `window.inboxaiInboxAdmin` predates the project-wide identifier cleanup noted at the top of this document) rather than a page-specific global.
+- **As built, the list itself is fully server-rendered**, matching how the AI Inbox List actually ended up working rather than this plan's original client-fetch assumption: `ContactsListPage::render()` calls `MessageRepository::get_contacts()` directly and hands the rows to `contacts/list.php` on the very first page load — there is no client-side fetch-then-render step, and `contactsFromMessages()`/`filteredContacts()`/`renderContacts()`'s client-side grouping simply has no equivalent to replace, since nothing renders the table in the browser at all. `list.js` only wires up interactivity on top of that already-rendered HTML: auto-submitting the filter form, the row "more actions" menu, "Delete contact", and CSV export (below) — the same division of labor as `componets/inbox/list.js`. The `inboxai_list_contacts` AJAX action still exists, but only for that CSV export call.
 - Table rows reuse the shared `pagination.js`/`rowMenu.js`/badge modules from Plan 2's `src/admin/componets/shared/` rather than duplicating them; the two empty states ("no contacts match your filters" vs. "no contacts yet," section 7) toggle via the same class-based approach already used elsewhere.
-- "View messages" row action stays a plain `<a href="inbox.html?search=...">`-equivalent link, now pointed at the real AI Inbox List admin URL with the same `search` query arg (`Menu::url( 'inboxai-inbox' ) . '&search=' . rawurlencode( $email )`), rendered server-side in `contacts-list.php`.
-- `state.deletedContacts` (the client-side `Set`) goes away entirely — "Delete contact" calls `inboxai_delete_contact` via `api.js`, then re-fetches the current page of contacts.
-- `exportContactsCsv()` → same client-vs-server tradeoff as Plan 2's export; recommend the same choice made there for consistency.
-- Styling: reuse `src/admin/scss/common/`'s shared partials; this page's own rules go in a new `src/admin/scss/contacts/` folder, `@use`'d from `src/admin/scss/index.scss`. Tests: same Jest approach as Plans 1 and 2 in principle — **not actually set up anywhere yet** (`src/tests/index.js` is an empty stub, no `test-unit-js` script exists); Settings shipped without it too.
+- "View messages" row action stays a plain `<a href="inbox.html?search=...">`-equivalent link, now pointed at the real AI Inbox List admin URL with the same `search` query arg (`Menu::url( 'inboxai-inbox' ) . '&search=' . rawurlencode( $email )`), rendered server-side in `contacts/list.php`.
+- `state.deletedContacts` (the client-side `Set`) goes away entirely — "Delete contact" calls `inboxai_delete_contact` via `api.js`, then reloads the page (mirroring `componets/inbox/list.js`'s row actions) rather than re-fetching just that one row.
+- `exportContactsCsv()` → as built, matches the AI Inbox List's own export exactly: a client-side call to `inboxai_list_contacts` with `per_page: 10000` and the current URL's filters, then `downloadCsv()` builds the file in the browser — no dedicated export endpoint (see section 4's correction above).
+- Styling: reuse `src/admin/scss/common/`'s shared partials and, since this page's grid-table is visually identical to the AI Inbox List's aside from column widths, `inbox/_table.scss`'s and `inbox/_toolbar.scss`'s generic rules too; only the `--contacts` column-width modifier gets its own `src/admin/scss/contacts/_table.scss`, `@use`'d from `src/admin/scss/index.scss` (aliased, since Sass defaults both this file and `inbox/_table.scss` to the same `table` namespace: `@use 'contacts/table' as contacts-table;`). Tests: same Jest approach as Plans 1 and 2 in principle — **not actually set up anywhere yet** (`src/tests/index.js` is an empty stub, no `test-unit-js` script exists); Settings shipped without it too.
+- Real pagination defaults to 20 rows per page (matching every other server-rendered list in this plugin), not the mockup's demo-sized 5.
 
 ## 6. Security
 
@@ -77,7 +82,7 @@ All of it compiles into the one shared `build/admin.js`/`build/admin.css` bundle
 
 - Zero messages captured yet → contacts list is legitimately empty; this should read as "no contacts yet," distinct from "no contacts match your filters" (the mockup only has the filtered-empty copy — needs a second empty-state message for the true-zero case, or reuse of AI Inbox List's "no submissions yet" pattern).
 - A sender who submitted once, then had that message archived via option (a) above → contact should disappear from the default list (matches the SQL's `deleted_at IS NULL` / could also exclude fully-archived contacts depending on whether "archived" should still count as a contact — recommend still showing them, since archiving isn't deletion, unless product direction says otherwise).
-- Same email, different display name across submissions (e.g. a typo corrected on a later submit) → aggregate query's `ANY_VALUE`/most-recent-row choice needs to be deterministic (use the row with `MAX(created_at)`, not an arbitrary `ANY_VALUE`, to avoid flapping between page loads).
+- Same email, different display name across submissions (e.g. a typo corrected on a later submit) → aggregate query's most-recent-row choice needs to be deterministic. As built, this is `MAX(id)` (this codebase's existing recency proxy, per section 2's note), not an arbitrary `ANY_VALUE`, to avoid flapping between page loads.
 
 ## 8. Testing checklist
 
@@ -86,7 +91,7 @@ All of it compiles into the one shared `build/admin.js`/`build/admin.css` bundle
 - Category/priority filters match a direct SQL check against the most-recent-message values.
 - "View messages" link lands on AI Inbox List pre-filtered to exactly that sender's messages.
 - Delete contact archives every message from that sender (verify in AI Inbox List, not just that the contact disappears here) and is blocked for a user without `inboxai_delete_messages`.
-- Pagination math matches the same 5-per-page behavior already proven in Plan 2.
+- Pagination math matches the same server-rendered `LIMIT`/`OFFSET` approach already proven in Plan 2 (as built: 20 rows per page, matching Plan 2's own real default — the mockup's 5-per-page was a demo-sized constant, not carried into the real build).
 - Jest tests for `list.js`'s grouping/filtering logic and the delete flow pass.
 
 ## 9. Step-by-step build order
@@ -95,9 +100,9 @@ All of it compiles into the one shared `build/admin.js`/`build/admin.css` bundle
 2. `get_contacts()` aggregate query, tested directly against seeded rows for correctness (counts, most-recent-row selection, filters).
 3. `inboxai_list_contacts` action.
 4. Confirm the Delete decision (section 3) with the project owner if not already settled; implement `archive_by_email()` + `inboxai_delete_contact` accordingly.
-5. `inboxai_export_contacts` action (or keep client-side, per section 5).
+5. Export: resolved as client-side, reusing `inboxai_list_contacts` with a large `per_page` — no separate `inboxai_export_contacts` action was built (see section 4's correction).
 6. Build the modules in section 5 against real data, reusing Plan 2's shared modules (`pagination.js`, `rowMenu.js`, badges) rather than re-implementing them.
-7. Add `'inboxai-contacts' => array( 'Contacts List', 'Contacts List', Capabilities::VIEW_MESSAGES, ContactsListPage::class )` to `Menu::PAGES` — no iframe fallback exists to replace (removed entirely; see `docs/plans/05-settings-plan.md` §10). `Menu.php` automatically enqueues the shared bundle; `ContactsListPage`'s constructor just needs to hook `inboxai_inbox_localize_data` for its nonce.
+7. Add `'inboxai-contacts' => array( 'Contacts', 'Inbox AI Contacts', Capabilities::VIEW_MESSAGES, ContactsListPage::class )` to `Menu::PAGES` (as built — the menu/page title pair follows the `Inbox AI Settings`-style convention rather than this plan's original identical-string placeholder) — no iframe fallback exists to replace (removed entirely; see `docs/plans/05-settings-plan.md` §10). `Menu.php` automatically enqueues the shared bundle; `ContactsListPage`'s constructor just needs to hook `inboxai_localize_data` for its nonce.
 8. Run the full testing checklist. (No Jest suite exists yet in this codebase, so this is manual verification, same as Settings.)
 
 ## 10. Explicit dependencies

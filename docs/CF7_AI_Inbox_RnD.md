@@ -590,6 +590,13 @@ inboxai/
     └── E2E/
 ```
 
+**As built, this tree is an early sketch, not the current structure** — the real `includes/Admin/` and `includes/Templates/` layouts (see `docs/plans/02-ai-inbox-list-plan.md` §10 and `docs/plans/05-settings-plan.md` §10 for the actual, established conventions) diverged from it in several ways as pages were actually built, including two worth calling out here since they're the most recently confirmed:
+
+- **`Admin/AiInbox.php`, `Admin/Contacts.php`, `Admin/Settings.php`, `Admin/Dashboard.php`, `Admin/Analytics.php` above never happened as single per-page classes.** Each built page instead gets a thin `Admin/Pages/<Page>Page.php` (rendering only — capability check, assemble a view model, hand off to a template) plus its own AJAX controller under `Admin/Ajax/<Page>AjaxController.php` (registering that page's `wp_ajax_*` actions), both extending small shared base behavior rather than one monolithic class per page. The AJAX side started as a single shared `Admin/AjaxController.php` for every page and was split into these per-page classes once it grew large enough (Settings' six tabs + Import wizard, AI Inbox List's eight actions, Contacts List's own actions) to become unwieldy.
+- **`Templates/` (shown above with no children) actually has one subfolder per page** (`Templates/inbox/`, `Templates/settings/`, `Templates/contacts/`), and a page with meaningful chrome around its content (page wrap, shared row-menu/toast elements) splits into a shell file plus a content file — e.g. `Templates/contacts/contacts.php` (shell) rendering `Templates/contacts/list.php` (page-header, toolbar, table), the same split `Templates/inbox/inbox.php`/`list.php` established first.
+
+The rest of this tree (the `Jobs/`, `Mail/`, `Privacy/`, `REST/` folders, `ContactRepository.php`, etc.) is left as historical record of the original proposal; consult the actual `includes/` folder and the `docs/plans/*.md` build-order sections for what was really built instead.
+
 ### Namespace
 
 ```php
