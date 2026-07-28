@@ -19,10 +19,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * docs/plans/02-ai-inbox-list-plan.md, section 2). Owned by the AI Inbox
  * List page — {@see \InboxAI\CF7\SubmissionHandler} writes the initial
  * row, {@see \InboxAI\AI\AnalysisQueue} fills in the AI columns, and
- * {@see \InboxAI\Admin\AjaxController} reads/writes everything else via
- * this class. Only the read/write methods this page's own plan needs are
- * built here; Plans 1/3/4 add their own aggregate read methods on top of
- * this same table/class later without needing to touch what's here.
+ * {@see \InboxAI\Admin\Ajax\InboxAjaxController} reads/writes everything
+ * else via this class. The Contacts List page
+ * ({@see \InboxAI\Admin\Ajax\ContactsAjaxController}) reads this same table
+ * too, via its own aggregate methods ({@see self::get_contacts()},
+ * {@see self::archive_by_email()}) — see docs/plans/03-contacts-list-plan.md.
+ * Plan 4 (Analytics) adds its own aggregate read methods on top of this same
+ * table/class later without needing to touch what's here.
  */
 final class MessageRepository {
 
@@ -306,6 +309,162 @@ final class MessageRepository {
 		}
 
 		return gmdate( 'Y-m-d H:i:s', strtotime( "-{$days} days" ) );
+	}
+
+	/**
+	 * Returns a filtered, paginated page of contacts — one row per distinct
+	 * `sender_email`, derived live from this same table rather than a
+	 * separate contacts table (see docs/plans/03-contacts-list-plan.md,
+	 * section 2). Every displayed field except the aggregate counts comes
+	 * from that sender's single most-recent (highest id — the same recency
+	 * proxy {@see self::get_filtered()} already sorts by) message, so two
+	 * submissions from the same email with different names/categories never
+	 * flap between page loads.
+	 *
+	 * `category`/`priority`/`search` filter against that most-recent
+	 * message's own columns (matching the original mockup's
+	 * `filteredContacts()`), not against every message the sender ever sent.
+	 *
+	 * @param array<string, mixed> $filters  `category` (exact match), `priority`
+	 *                                       (exact match), `search` (matched
+	 *                                       against sender name/email only).
+	 * @param int                  $page     1-indexed page number.
+	 * @param int                  $per_page Rows per page.
+	 *
+	 * @return array{items: array<int, array<string, mixed>>, total: int}
+	 */
+	public static function get_contacts( array $filters, int $page = 1, int $per_page = 20 ): array {
+		global $wpdb;
+
+		$page     = max( 1, $page );
+		$per_page = max( 1, $per_page );
+		$offset   = ( $page - 1 ) * $per_page;
+		$table    = self::table();
+
+		[ $where_sql, $where_values ] = self::build_contacts_where( $filters );
+
+		// One sender_email per row: an inner "latest message per sender"
+		// aggregate (grouped by sender_email, MAX(id) as the recency
+		// tie-break) joined back to this same table to pull that one row's
+		// own columns — every user-supplied value still only ever reaches
+		// SQL via $where_values/$per_page/$offset prepare() placeholders,
+		// same as get_filtered() above.
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		$base_sql =
+			"FROM {$table} m " .
+			"INNER JOIN ( " .
+			"SELECT sender_email, MAX(id) AS latest_id, COUNT(*) AS message_count, " .
+			"SUM(workflow_status = 'replied') AS replied_count " .
+			"FROM {$table} WHERE deleted_at IS NULL GROUP BY sender_email " .
+			') agg ON agg.latest_id = m.id ' .
+			"{$where_sql}";
+
+		$count_sql = "SELECT COUNT(*) {$base_sql}";
+		$total     = (int) $wpdb->get_var( array() === $where_values ? $count_sql : $wpdb->prepare( $count_sql, $where_values ) );
+
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT m.*, agg.message_count, agg.replied_count {$base_sql} ORDER BY m.id DESC LIMIT %d OFFSET %d",
+				array_merge( $where_values, array( $per_page, $offset ) )
+			),
+			ARRAY_A
+		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, PluginCheck.Security.DirectDB.UnescapedDBParameter
+
+		$items = array_map(
+			static function ( $row ) {
+				$decoded                  = self::decode_row( $row );
+				$decoded['message_count'] = (int) ( $row['message_count'] ?? 0 );
+				$decoded['replied_count'] = (int) ( $row['replied_count'] ?? 0 );
+				return $decoded;
+			},
+			is_array( $rows ) ? $rows : array()
+		);
+
+		return array(
+			'items' => $items,
+			'total' => $total,
+		);
+	}
+
+	/**
+	 * Builds a `WHERE` clause (against the joined "latest message" row
+	 * alias `m`, always excluding soft-deleted rows) and its matching
+	 * prepare() values for {@see self::get_contacts()}.
+	 *
+	 * @param array<string, mixed> $filters See {@see self::get_contacts()}.
+	 *
+	 * @return array{0: string, 1: array<int, mixed>}
+	 */
+	private static function build_contacts_where( array $filters ): array {
+		global $wpdb;
+
+		$clauses = array( 'm.deleted_at IS NULL' );
+		$values  = array();
+
+		if ( ! empty( $filters['category'] ) && 'all' !== $filters['category'] ) {
+			$clauses[] = 'm.category = %s';
+			$values[]  = (string) $filters['category'];
+		}
+
+		if ( ! empty( $filters['priority'] ) && 'all' !== $filters['priority'] ) {
+			$clauses[] = 'm.priority = %s';
+			$values[]  = (string) $filters['priority'];
+		}
+
+		if ( ! empty( $filters['search'] ) ) {
+			$like      = '%' . $wpdb->esc_like( (string) $filters['search'] ) . '%';
+			$clauses[] = '( m.sender_name LIKE %s OR m.sender_email LIKE %s )';
+			array_push( $values, $like, $like );
+		}
+
+		return array( 'WHERE ' . implode( ' AND ', $clauses ), $values );
+	}
+
+	/**
+	 * Archives every non-deleted message from one sender email — this
+	 * plugin's definition of "delete contact" (see
+	 * docs/plans/03-contacts-list-plan.md, section 3): reversible, and reuses
+	 * the same `archived` workflow status and `DELETE_MESSAGES` capability
+	 * the AI Inbox List's own per-message archive/delete actions already use,
+	 * rather than adding a new capability or a hard delete for a table that
+	 * has no dedicated contacts row to remove in the first place.
+	 *
+	 * @param string $email Sender email every matching message will be
+	 *                       archived under.
+	 *
+	 * @return int[] ids of every message row archived (used to log an
+	 *               activity event per row; empty array if none matched).
+	 */
+	public static function archive_by_email( string $email ): array {
+		global $wpdb;
+
+		if ( '' === $email ) {
+			return array();
+		}
+
+		$table = self::table();
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $table is $wpdb->prefix + a hardcoded class constant, never user input.
+		$ids = $wpdb->get_col(
+			$wpdb->prepare( "SELECT id FROM {$table} WHERE sender_email = %s AND deleted_at IS NULL", $email ) // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		);
+
+		if ( array() === $ids ) {
+			return array();
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table; there is no WP API for it, and a write is never cached.
+		$wpdb->update(
+			$table,
+			array(
+				'workflow_status' => 'archived',
+				'updated_at'      => current_time( 'mysql' ),
+			),
+			array( 'sender_email' => $email )
+		);
+
+		return array_map( 'intval', $ids );
 	}
 
 	/**

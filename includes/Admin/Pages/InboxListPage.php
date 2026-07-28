@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use InboxAI\Admin\AjaxController;
+use InboxAI\Admin\Ajax\InboxAjaxController;
 use InboxAI\CF7\CategoryTaxonomy;
 use InboxAI\Database\ActivityRepository;
 use InboxAI\Database\MessageRepository;
@@ -46,10 +46,10 @@ final class InboxListPage {
 	 * the request is treated as no filter at all (every message, matching
 	 * this page's long-standing default). Same period vocabulary as the
 	 * Settings page's Usage & Billing tab (see
-	 * `AjaxController::USAGE_PERIODS`) for a consistent set of choices
-	 * across the plugin, resolved the same way by
+	 * {@see \InboxAI\Admin\Ajax\SettingsAjaxController::USAGE_PERIODS}) for
+	 * a consistent set of choices across the plugin, resolved the same way by
 	 * {@see \InboxAI\Database\MessageRepository::period_to_datetime()}.
-	 * Public: also read by {@see \InboxAI\Admin\AjaxController::list_messages()}
+	 * Public: also read by {@see \InboxAI\Admin\Ajax\InboxAjaxController::list_messages()}
 	 * so the CSV export AJAX call validates against the same whitelist.
 	 *
 	 * @var string[]
@@ -159,7 +159,7 @@ final class InboxListPage {
 
 	/**
 	 * Reads and sanitizes the list screen's filters from `$_GET`, matching
-	 * {@see \InboxAI\Admin\AjaxController::list_messages()}'s own
+	 * {@see \InboxAI\Admin\Ajax\InboxAjaxController::list_messages()}'s own
 	 * sanitization exactly (that AJAX action still exists, for the CSV
 	 * export's "current filters, no pagination cap" request).
 	 *
@@ -196,7 +196,7 @@ final class InboxListPage {
 			return $data;
 		}
 
-		$data['nonce'] = wp_create_nonce( AjaxController::INBOX_NONCE_ACTION );
+		$data['nonce'] = wp_create_nonce( InboxAjaxController::INBOX_NONCE_ACTION );
 
 		return $data;
 	}

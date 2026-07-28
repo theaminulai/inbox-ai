@@ -1,6 +1,10 @@
 <?php
 /**
- * Server-side rendering helpers for the AI Inbox List/Detail screens.
+ * Server-side rendering helpers, originally built for the AI Inbox
+ * List/Detail screens and reused as-is by the Contacts List screen (see
+ * `includes/Templates/contacts-list.php`) — a contact row needs the same
+ * priority badge, avatar, and relative timestamp rendering a message row
+ * does, since it's built from that same sender's most recent message.
  *
  * @package InboxAI\Support
  */

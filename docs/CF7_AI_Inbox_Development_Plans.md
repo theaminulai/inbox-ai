@@ -8,7 +8,7 @@ Before the five plans, here's the current state each of them builds on:
 
 - **Database** (`includes/Database/Migrator.php`): three tables are already created via `dbDelta` — `{prefix}inboxai_messages` (id, site_id, form_id, form_title, submission_hash, sender_name, sender_email, subject, message, fields, meta, channel, submission_status, workflow_status, mail_status, spam_status, priority, category, confidence, ai_summary, ai_reasoning, ai_error, ai_provider, ai_model, reply_subject, reply_draft, reply_sent_body, reply_sent_at, created_at, updated_at, deleted_at), `{prefix}inboxai_activities` (id, message_id, user_id, event_type, event_data, created_at), and `{prefix}inboxai_usage` (id, message_id, provider, model, prompt_tokens, completion_tokens, estimated_cost, request_status, created_at). No rows exist yet — nothing writes to these tables until Plan 2 (AI Inbox List) is built.
 - **Capabilities** (`includes/Security/Capabilities.php`): `inboxai_view_messages`, `inboxai_edit_messages`, `inboxai_delete_messages`, `inboxai_send_replies`, `inboxai_manage_settings`, `inboxai_view_analytics`, `inboxai_export_messages` — all granted to Administrator on activation.
-- **Admin menu** (`includes/Admin/Menu.php`): only `inboxai-settings` is registered so far — `Menu::PAGES` is a page-slug => `[ menu title, page title, capability, page-class ]` map, and a page is only added to it once it has a real, capability-gated PHP page class with its own `render()` method. There is **no iframe/static-mockup fallback anymore** — that was removed entirely once Settings shipped (see `docs/plans/05-settings-plan.md` §10), so a page simply doesn't appear in the menu until its own plan below is actually built. `Menu.php` also now centrally owns asset loading for every registered page: it enqueues one shared `build/admin.js`/`build/admin.css` bundle (built by `wp-scripts`/webpack from `src/admin/`) on `admin_enqueue_scripts`, gated to just this plugin's own screens, and applies a shared `inboxai_inbox_localize_data` filter (passing the current page slug) right before its one `wp_localize_script()` call. Individual page classes never enqueue anything themselves — a page that needs its own AJAX nonce hooks that filter in its constructor and checks the slug, exactly like `SettingsPage::localize_data()`. Every plan below has been updated to describe this instead of the original per-page-enqueue-with-an-iframe-fallback assumption.
+- **Admin menu** (`includes/Admin/Menu.php`): only `inboxai-settings` is registered so far — `Menu::PAGES` is a page-slug => `[ menu title, page title, capability, page-class ]` map, and a page is only added to it once it has a real, capability-gated PHP page class with its own `render()` method. There is **no iframe/static-mockup fallback anymore** — that was removed entirely once Settings shipped (see `docs/plans/05-settings-plan.md` §10), so a page simply doesn't appear in the menu until its own plan below is actually built. `Menu.php` also now centrally owns asset loading for every registered page: it enqueues one shared `build/admin.js`/`build/admin.css` bundle (built by `wp-scripts`/webpack from `src/admin/`) on `admin_enqueue_scripts`, gated to just this plugin's own screens, and applies a shared `inboxai_localize_data` filter (passing the current page slug) right before its one `wp_localize_script()` call. Individual page classes never enqueue anything themselves — a page that needs its own AJAX nonce hooks that filter in its constructor and checks the slug, exactly like `SettingsPage::localize_data()`. Every plan below has been updated to describe this instead of the original per-page-enqueue-with-an-iframe-fallback assumption.
 - **Not built yet**: CF7 submission capture, all AI provider code, the Settings repository, any REST/AJAX endpoints, and every repository class. All five plans depend on at least the Settings plan (Plan 5) and most depend on the AI Inbox List plan (Plan 2) for their data.
 
 ### Recommended build order
@@ -41,7 +41,7 @@ Five summary cards (New Messages, Needs Review, Urgent Messages, Replies Sent, A
 2. Build the AJAX/REST overview endpoint and its capability/nonce checks.
 3. Swap `dashboard.js`'s mock data for a real fetch; keep all existing DOM IDs and CSS classes.
 4. Wire the real "Monitored Forms" state into the empty-state check.
-5. Add `OverviewPage` to `Menu::PAGES` — there's no iframe to replace anymore (removed entirely; see the Admin menu note in section 0 and `docs/plans/05-settings-plan.md` §10). `Menu.php` automatically enqueues the one shared `build/admin.js`/`build/admin.css` bundle on this new screen; `OverviewPage` just needs to hook the shared `inboxai_inbox_localize_data` filter for its own nonce.
+5. Add `OverviewPage` to `Menu::PAGES` — there's no iframe to replace anymore (removed entirely; see the Admin menu note in section 0 and `docs/plans/05-settings-plan.md` §10). `Menu.php` automatically enqueues the one shared `build/admin.js`/`build/admin.css` bundle on this new screen; `OverviewPage` just needs to hook the shared `inboxai_localize_data` filter for its own nonce.
 
 ---
 
@@ -65,7 +65,7 @@ A filterable, searchable, paginated list (form/status/priority/category filters,
 ### Backend work — list, detail, and reply
 - `includes/Database/MessageRepository.php` — `get_filtered( $filters, $page, $per_page )` (mirrors `inbox.js`'s `filteredMessages()` filter set exactly: status, priority, category, form, confidence<70, free-text search across name/email/preview/form), `find( $id )`, `update_status( $id, $status )`, `save_draft( $id, $subject, $body )`, `mark_deleted( $id )` (soft delete via `deleted_at`).
 - `includes/Services/ReplyService.php` — validates the recipient comes from the stored `sender_email` (never from AI output, per R&D §13 "AI Security"), sanitizes headers, sends via `wp_mail()`, then stamps `reply_sent_body`/`reply_sent_at` and flips `workflow_status` to `replied`.
-- `includes/Admin/AjaxController.php` (or REST `includes/REST/MessagesController.php`) — one action/route per mockup interaction: list, get one, save draft, send reply (with confirmation client-side, per the existing modal), mark reviewed, archive, delete, retry analysis, regenerate analysis, regenerate reply, export CSV (mirrors the existing `exportInboxCsv()` so the button keeps working, or moves CSV generation server-side for the full unfiltered set).
+- `includes/Admin/Ajax/InboxAjaxController.php` (as built: no REST layer was ever added — every admin page's AJAX actions live under `includes/Admin/Ajax/`, one controller class per page, sharing only a small `BaseAjaxController`'s nonce/capability check; see `docs/plans/02-ai-inbox-list-plan.md`) — one action per mockup interaction: list, get one, save draft, send reply (with confirmation client-side, per the existing modal), mark reviewed, archive, delete, retry analysis (CSV export reuses the list action with a large `per_page` rather than a dedicated export endpoint).
 - Every write action: nonce + `current_user_can()` (`inboxai_edit_messages` / `inboxai_send_replies` / `inboxai_delete_messages` / `inboxai_export_messages` as appropriate) + an `inboxai_activities` row recording who did what and when, feeding the Activity timeline that's already in the mockup.
 
 ### Frontend work
@@ -78,7 +78,7 @@ A filterable, searchable, paginated list (form/status/priority/category filters,
 4. `ReplyService` + send-reply endpoint, with the existing confirmation modal wired to a real "are you sure" → AJAX call.
 5. Retry/regenerate endpoints for the AI Failure Detail screen.
 6. Rewire `inbox.js` from mock data to these endpoints; verify every existing interaction (filters, pagination, row menu, composer, modal) still works against real rows.
-7. Add `InboxListPage` to `Menu::PAGES` — no iframe to replace (removed entirely; see section 0). `Menu.php` handles enqueuing automatically; hook `inboxai_inbox_localize_data` for this page's own nonce(s).
+7. Add `InboxListPage` to `Menu::PAGES` — no iframe to replace (removed entirely; see section 0). `Menu.php` handles enqueuing automatically; hook `inboxai_localize_data` for this page's own nonce(s).
 
 ---
 
@@ -103,7 +103,7 @@ R&D §6 marks a dedicated `inboxai_contacts` table as "optional for version 1" a
 2. Build the `get_contacts()` aggregate query and list endpoint.
 3. Decide and implement the delete semantics above.
 4. Rewire `contacts.js` from the client-side derivation to the endpoint; update the "view messages" / delete links to real admin URLs (`Menu::url( 'inboxai-inbox' )` plus the search query arg).
-5. Add `ContactsListPage` to `Menu::PAGES` — no iframe to replace (removed entirely; see section 0). `Menu.php` handles enqueuing automatically; hook `inboxai_inbox_localize_data` for this page's own nonce.
+5. Add `ContactsListPage` to `Menu::PAGES` — no iframe to replace (removed entirely; see section 0). `Menu.php` handles enqueuing automatically; hook `inboxai_localize_data` for this page's own nonce.
 
 ---
 
@@ -127,7 +127,7 @@ Since `analytics.js` starts empty, this is the one page needing new front-end co
 2. Build `AnalyticsRepository` aggregate queries + transient caching.
 3. Build the analytics endpoint and wire the "Last 90 days" control to it.
 4. Write the missing `analytics.js` rendering logic against real data.
-5. Add `AnalyticsPage` to `Menu::PAGES` — no iframe to replace (removed entirely; see section 0). `Menu.php` handles enqueuing automatically; hook `inboxai_inbox_localize_data` for this page's own nonce.
+5. Add `AnalyticsPage` to `Menu::PAGES` — no iframe to replace (removed entirely; see section 0). `Menu.php` handles enqueuing automatically; hook `inboxai_localize_data` for this page's own nonce.
 
 ---
 
@@ -159,7 +159,7 @@ Six subtabs sharing one page (already switched client-side by `settings.js`, inc
 5. Usage & Billing tab: read-only view over Plan 1's `UsageRepository`.
 6. Notifications tab: persistence + the `wp_mail()`/Slack triggers.
 7. Import & Migration: `FlamingoImporter` + batched AJAX wizard.
-8. Add `SettingsPage` to `Menu::PAGES` (no iframe involved — see section 0); `Menu.php` enqueues the shared bundle automatically and applies the `inboxai_inbox_localize_data` filter, which `SettingsPage` hooks for its nonce. The existing `?tab=` query arg drives which subtab renders server-side too (not just client-side), so a saved-settings redirect can land back on the right tab.
+8. Add `SettingsPage` to `Menu::PAGES` (no iframe involved — see section 0); `Menu.php` enqueues the shared bundle automatically and applies the `inboxai_localize_data` filter, which `SettingsPage` hooks for its nonce. The existing `?tab=` query arg drives which subtab renders server-side too (not just client-side), so a saved-settings redirect can land back on the right tab.
 
 ---
 
