@@ -2,10 +2,10 @@
 /**
  * Read/write access to the captured-submission table.
  *
- * @package CF7AIInbox\Database
+ * @package InboxAI\Database
  */
 
-namespace CF7AIInbox\Database;
+namespace InboxAI\Database;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,9 +17,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * One row per captured Contact Form 7 submission (see
  * docs/plans/02-ai-inbox-list-plan.md, section 2). Owned by the AI Inbox
- * List page — {@see \CF7AIInbox\CF7\SubmissionHandler} writes the initial
- * row, {@see \CF7AIInbox\AI\AnalysisQueue} fills in the AI columns, and
- * {@see \CF7AIInbox\Admin\AjaxController} reads/writes everything else via
+ * List page — {@see \InboxAI\CF7\SubmissionHandler} writes the initial
+ * row, {@see \InboxAI\AI\AnalysisQueue} fills in the AI columns, and
+ * {@see \InboxAI\Admin\AjaxController} reads/writes everything else via
  * this class. Only the read/write methods this page's own plan needs are
  * built here; Plans 1/3/4 add their own aggregate read methods on top of
  * this same table/class later without needing to touch what's here.
@@ -113,7 +113,7 @@ final class MessageRepository {
 	/**
 	 * Finds an existing, non-deleted row by its dedup hash.
 	 *
-	 * @param string $hash Value from {@see \CF7AIInbox\CF7\SubmissionMapper::compute_hash()}.
+	 * @param string $hash Value from {@see \InboxAI\CF7\SubmissionMapper::compute_hash()}.
 	 *
 	 * @return array<string, mixed>|null
 	 */
@@ -136,13 +136,44 @@ final class MessageRepository {
 	}
 
 	/**
+	 * Submission counts for the current calendar month, grouped by form —
+	 * powers the Settings page's Monitored Forms list (see
+	 * `includes/Templates/settings/general.php`). One grouped query rather
+	 * than one per form.
+	 *
+	 * @return array<int, int> form_id => submission count this month.
+	 */
+	public static function count_this_month_by_form(): array {
+		global $wpdb;
+
+		$table = self::table();
+		$since = current_time( 'Y-m-01 00:00:00' );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom table; a form's monthly count can change between requests, so not cached.
+		$rows = $wpdb->get_results(
+			$wpdb->prepare( "SELECT form_id, COUNT(*) AS total FROM {$table} WHERE deleted_at IS NULL AND created_at >= %s GROUP BY form_id", $since ), // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $table is $wpdb->prefix + a hardcoded class constant, never user input.
+			ARRAY_A
+		);
+
+		$counts = array();
+
+		foreach ( (array) $rows as $row ) {
+			$counts[ (int) $row['form_id'] ] = (int) $row['total'];
+		}
+
+		return $counts;
+	}
+
+	/**
 	 * Returns a filtered, paginated page of messages, most recent first.
 	 *
 	 * @param array<string, mixed> $filters  `status`, `priority`, `category` (exact
 	 *                                       match), `form` (exact match against
 	 *                                       `form_title`), `confidence_below` (int),
 	 *                                       `search` (matched against sender name/
-	 *                                       email/subject/message).
+	 *                                       email/subject/message), `period`
+	 *                                       (`created_at` cutoff — see
+	 *                                       {@see self::period_to_datetime()}).
 	 * @param int                  $page     1-indexed page number.
 	 * @param int                  $per_page Rows per page.
 	 *
@@ -239,7 +270,42 @@ final class MessageRepository {
 			array_push( $values, $like, $like, $like, $like, $like );
 		}
 
+		if ( ! empty( $filters['period'] ) && 'all' !== $filters['period'] ) {
+			$clauses[] = 'created_at >= %s';
+			$values[]  = self::period_to_datetime( (string) $filters['period'] );
+		}
+
 		return array( 'WHERE ' . implode( ' AND ', $clauses ), $values );
+	}
+
+	/**
+	 * Resolves a `period` filter value (`7_days`, `30_days`, `90_days`,
+	 * `this_month`, `{n}_year`/`{n}_years`) to a `created_at >=` cutoff.
+	 * Mirrors {@see \InboxAI\Database\UsageRepository::period_to_datetime()}
+	 * — kept separately rather than shared, matching this table's own
+	 * self-contained read methods.
+	 *
+	 * @param string $period Raw period value; anything unrecognized falls
+	 *                       back to 30 days.
+	 *
+	 * @return string MySQL datetime.
+	 */
+	private static function period_to_datetime( string $period ): string {
+		if ( 'this_month' === $period ) {
+			return gmdate( 'Y-m-01 00:00:00' );
+		}
+
+		if ( preg_match( '/^(\d+)_years?$/', $period, $matches ) ) {
+			return gmdate( 'Y-m-d H:i:s', strtotime( '-' . (int) $matches[1] . ' years' ) );
+		}
+
+		$days = 30;
+
+		if ( preg_match( '/^(\d+)_days$/', $period, $matches ) ) {
+			$days = (int) $matches[1];
+		}
+
+		return gmdate( 'Y-m-d H:i:s', strtotime( "-{$days} days" ) );
 	}
 
 	/**

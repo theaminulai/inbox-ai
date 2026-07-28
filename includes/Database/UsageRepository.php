@@ -2,10 +2,10 @@
 /**
  * Read access to the AI usage/cost table.
  *
- * @package CF7AIInbox\Database
+ * @package InboxAI\Database
  */
 
-namespace CF7AIInbox\Database;
+namespace InboxAI\Database;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -26,7 +26,7 @@ final class UsageRepository {
 	/**
 	 * Records one AI request's token usage and estimated cost.
 	 *
-	 * Written by {@see \CF7AIInbox\AI\AnalysisQueue} for both the analysis
+	 * Written by {@see \InboxAI\AI\AnalysisQueue} for both the analysis
 	 * call and (if it ran) the reply-draft call — `$request_status`
 	 * distinguishes the two for the Settings page's Usage & Billing "Cost by
 	 * Request Type" breakdown (see docs/plans/05-settings-plan.md, section 3.5).
@@ -140,13 +140,19 @@ final class UsageRepository {
 	/**
 	 * Resolves a period string to a `created_at >=` cutoff.
 	 *
-	 * @param string $period `30_days`, `this_month`, or `{n}_days`.
+	 * @param string $period `30_days`, `this_month`, `{n}_days`, or `{n}_year`/`{n}_years`.
 	 *
 	 * @return string MySQL datetime.
 	 */
 	private static function period_to_datetime( string $period ): string {
 		if ( 'this_month' === $period ) {
 			return gmdate( 'Y-m-01 00:00:00' );
+		}
+
+		// Handled via strtotime()'s own "-N years" parsing (not N*365 days)
+		// so leap years land on the correct calendar date.
+		if ( preg_match( '/^(\d+)_years?$/', $period, $matches ) ) {
+			return gmdate( 'Y-m-d H:i:s', strtotime( '-' . (int) $matches[1] . ' years' ) );
 		}
 
 		$days = 30;

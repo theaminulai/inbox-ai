@@ -1,5 +1,5 @@
 /* =====================================================================
-   CF7 AI Inbox — Dashboard page script.
+   Inbox AI — Dashboard page script.
    Requires common.js to be loaded first (messages data + shared helpers).
    ===================================================================== */
 
@@ -29,7 +29,7 @@ function checkEmptyState(){
 
 /* ================= ROW ACTIONS (view/reply -> Inbox page; more -> local menu) ============= */
 document.addEventListener('click', function(e){
-  const menuItemEl = e.target.closest('.cf7-ai-inbox-row-menu__item[data-menu-action]');
+  const menuItemEl = e.target.closest('.inboxai-row-menu__item[data-menu-action]');
   if(menuItemEl){
     const action = menuItemEl.dataset.menuAction;
     const id = parseInt(menuItemEl.dataset.key, 10);
@@ -73,8 +73,8 @@ document.addEventListener('click', function(e){
 document.getElementById('chart-toggle').addEventListener('click', function(e){
   const btn = e.target.closest('button');
   if(!btn) return;
-  this.querySelectorAll('button').forEach(b=>b.classList.remove('cf7-ai-inbox-is-active'));
-  btn.classList.add('cf7-ai-inbox-is-active');
+  this.querySelectorAll('button').forEach(b=>b.classList.remove('inboxai-is-active'));
+  btn.classList.add('inboxai-is-active');
   const d = chartDatasets[btn.dataset.range];
   document.getElementById('chart-line-new').setAttribute('points', d.nw);
   document.getElementById('chart-line-reviewed').setAttribute('points', d.rv);

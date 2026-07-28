@@ -41,6 +41,7 @@ package-lock.json
 *.zip
 #composer
 /vendor
+composer.lock
 
 # htaccess
 /.htaccess

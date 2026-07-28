@@ -1,6 +1,6 @@
 // The generic card every Settings tab is built from.
 
-.cf7-ai-inbox-card {
+.inboxai-card {
 	background: var(--surface);
 	border: 1px solid var(--border);
 	border-radius: var(--radius-lg);
@@ -19,7 +19,7 @@
 			margin: 0;
 		}
 
-		.cf7-ai-inbox-card__muted {
+		.inboxai-card__muted {
 			font-size: 12px;
 			color: var(--text-tertiary);
 			font-weight: 500;

@@ -1,16 +1,16 @@
 // Import & Migration tab: the four-step Flamingo wizard, its summary rows,
-// and its progress bar (reuses the `.cf7-ai-inbox-confidence__track/__fill`
-// bar shape from the wider mockup design system — only those two rules are
-// pulled in here since nothing else in `.cf7-ai-inbox-confidence` is used
-// by the Settings page).
+// and its progress bar (reuses the `.inboxai-confidence__track/__fill`
+// bar shape — defined once in common/_badges.scss and always compiled into
+// the one shared admin.css bundle regardless of which page is open, so
+// there's no need for a separate copy here).
 
-.cf7-ai-inbox-wizard__steps {
+.inboxai-wizard__steps {
 	display: flex;
 	align-items: center;
 	margin-bottom: 20px;
 }
 
-.cf7-ai-inbox-wizard__step {
+.inboxai-wizard__step {
 	display: flex;
 	align-items: center;
 	gap: 8px;
@@ -19,20 +19,20 @@
 	font-weight: 600;
 	flex-shrink: 0;
 
-	&.cf7-ai-inbox-is-active {
+	&.inboxai-is-active {
 		color: var(--text-primary);
 
-		.cf7-ai-inbox-wizard__circle {
+		.inboxai-wizard__circle {
 			background: var(--accent);
 			border-color: var(--accent-deep);
 			color: #fff;
 		}
 	}
 
-	&.cf7-ai-inbox-is-done {
+	&.inboxai-is-done {
 		color: var(--text-primary);
 
-		.cf7-ai-inbox-wizard__circle {
+		.inboxai-wizard__circle {
 			background: var(--conf-good);
 			border-color: var(--conf-good);
 			color: #fff;
@@ -46,7 +46,7 @@
 	}
 }
 
-.cf7-ai-inbox-wizard__circle {
+.inboxai-wizard__circle {
 	width: 26px;
 	height: 26px;
 	border-radius: 50%;
@@ -62,7 +62,7 @@
 	transition: .15s;
 }
 
-.cf7-ai-inbox-wizard__line {
+.inboxai-wizard__line {
 	flex: 1;
 	height: 2px;
 	background: var(--border-strong);
@@ -70,7 +70,7 @@
 	min-width: 16px;
 	transition: .15s;
 
-	&.cf7-ai-inbox-is-done {
+	&.inboxai-is-done {
 		background: var(--conf-good);
 	}
 
@@ -79,7 +79,7 @@
 	}
 }
 
-.cf7-ai-inbox-info-row {
+.inboxai-info-row {
 	display: flex;
 	justify-content: space-between;
 	font-size: 12.5px;
@@ -92,17 +92,3 @@
 	}
 }
 
-.cf7-ai-inbox-confidence {
-	&__track {
-		width: 100%;
-		height: 5px;
-		border-radius: 3px;
-		background: var(--surface-2);
-		overflow: hidden;
-	}
-
-	&__fill {
-		height: 100%;
-		border-radius: 3px;
-	}
-}

@@ -11,7 +11,7 @@
  * @param {number} totalItems
  * @param {number} currentPage 1-indexed.
  * @param {number} pageSize
- * @return {string} HTML for the `.cf7-ai-inbox-pager` element.
+ * @return {string} HTML for the `.inboxai-pager` element.
  */
 export function paginationHtml( pagerId, totalItems, currentPage, pageSize ) {
 	const totalPages = Math.max( 1, Math.ceil( totalItems / pageSize ) );
@@ -26,8 +26,8 @@ export function paginationHtml( pagerId, totalItems, currentPage, pageSize ) {
 		'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>';
 
 	const btn = ( label, page, disabled, active ) =>
-		'<button class="cf7-ai-inbox-pager__btn' +
-		( active ? ' cf7-ai-inbox-is-active' : '' ) +
+		'<button class="inboxai-pager__btn' +
+		( active ? ' inboxai-is-active' : '' ) +
 		'"' +
 		( disabled ? ' disabled' : '' ) +
 		' data-pager="' +
@@ -66,12 +66,12 @@ export function paginationHtml( pagerId, totalItems, currentPage, pageSize ) {
 		pages.push( totalPages );
 	}
 
-	let html = '<div class="cf7-ai-inbox-pager">';
+	let html = '<div class="inboxai-pager">';
 	html += btn( prevIcon, currentPage - 1, currentPage <= 1, false );
 	pages.forEach( ( p ) => {
 		html +=
 			'…' === p
-				? '<span class="cf7-ai-inbox-pager__ellipsis">…</span>'
+				? '<span class="inboxai-pager__ellipsis">…</span>'
 				: btn( String( p ), p, false, p === currentPage );
 	} );
 	html += btn( nextIcon, currentPage + 1, currentPage >= totalPages, false );

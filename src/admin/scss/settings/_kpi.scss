@@ -1,6 +1,6 @@
 // Usage & Billing tab: the four KPI cards.
 
-.cf7-ai-inbox-kpi__strip {
+.inboxai-kpi__strip {
 	display: grid;
 	grid-template-columns: repeat(4, 1fr);
 	gap: 14px;
@@ -19,7 +19,7 @@
 	}
 }
 
-.cf7-ai-inbox-kpi__card {
+.inboxai-kpi__card {
 	background: var(--surface);
 	border: 1px solid var(--border);
 	border-radius: var(--radius-lg);
@@ -27,20 +27,20 @@
 	box-shadow: var(--shadow-sm);
 }
 
-.cf7-ai-inbox-kpi__label {
+.inboxai-kpi__label {
 	font-size: 12px;
 	color: var(--text-secondary);
 	font-weight: 600;
 	margin-bottom: 6px;
 }
 
-.cf7-ai-inbox-kpi__value {
+.inboxai-kpi__value {
 	font-family: var(--mono);
 	font-size: 24px;
 	font-weight: 600;
 }
 
-.cf7-ai-inbox-kpi__sub {
+.inboxai-kpi__sub {
 	font-size: 12px;
 	color: var(--text-secondary);
 	margin-top: 4px;

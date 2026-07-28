@@ -2,10 +2,10 @@
 /**
  * Server-side rendering helpers for the AI Inbox List/Detail screens.
  *
- * @package CF7AIInbox\Support
+ * @package InboxAI\Support
  */
 
-namespace CF7AIInbox\Support;
+namespace InboxAI\Support;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * PHP ports of what used to be the AI Inbox List's client-side rendering
  * helpers (`src/admin/componets/shared/badges.js`, `avatar.js`, `time.js`).
  * Now that the list and detail screens are rendered server-side (see
- * {@see \CF7AIInbox\Admin\Pages\InboxListPage}), the actual markup for a
+ * {@see \InboxAI\Admin\Pages\InboxListPage}), the actual markup for a
  * priority/status badge, a confidence bar, an avatar, and a relative
  * timestamp needs to exist in PHP too — this is the one place for that,
  * matching the original JS output's CSS classes exactly so no SCSS changes
@@ -41,35 +41,49 @@ final class Format {
 	 * @var array<string, array{0:string,1:string,2:string}>
 	 */
 	private const PRIORITY_MAP = array(
-		'urgent' => array( 'Urgent', 'var(--urgent)', 'cf7-ai-inbox-badge--urgent' ),
-		'high'   => array( 'High', 'var(--high)', 'cf7-ai-inbox-badge--high' ),
-		'normal' => array( 'Normal', 'var(--normal)', 'cf7-ai-inbox-badge--normal' ),
-		'low'    => array( 'Low', 'var(--low)', 'cf7-ai-inbox-badge--low' ),
+		'urgent' => array( 'Urgent', 'var(--urgent)', 'inboxai-badge--urgent' ),
+		'high'   => array( 'High', 'var(--high)', 'inboxai-badge--high' ),
+		'normal' => array( 'Normal', 'var(--normal)', 'inboxai-badge--normal' ),
+		'low'    => array( 'Low', 'var(--low)', 'inboxai-badge--low' ),
 	);
 
 	/**
 	 * @var array<string, array{0:string,1:string}>
 	 */
 	private const STATUS_MAP = array(
-		'new'      => array( 'New', 'cf7-ai-inbox-status--new' ),
-		'review'   => array( 'Needs Review', 'cf7-ai-inbox-status--review' ),
-		'reviewed' => array( 'Reviewed', 'cf7-ai-inbox-status--reviewed' ),
-		'drafted'  => array( 'Drafted', 'cf7-ai-inbox-status--drafted' ),
-		'replied'  => array( 'Replied', 'cf7-ai-inbox-status--replied' ),
-		'failed'   => array( 'Failed', 'cf7-ai-inbox-status--failed' ),
-		'archived' => array( 'Archived', 'cf7-ai-inbox-status--archived' ),
+		'new'      => array( 'New', 'inboxai-status--new' ),
+		'review'   => array( 'Needs Review', 'inboxai-status--review' ),
+		'reviewed' => array( 'Reviewed', 'inboxai-status--reviewed' ),
+		'drafted'  => array( 'Drafted', 'inboxai-status--drafted' ),
+		'replied'  => array( 'Replied', 'inboxai-status--replied' ),
+		'failed'   => array( 'Failed', 'inboxai-status--failed' ),
+		'archived' => array( 'Archived', 'inboxai-status--archived' ),
 	);
 
 	/**
-	 * @param string $priority `urgent`|`high`|`normal`|`low`.
+	 * @param string $priority `urgent`|`high`|`normal`|`low`, or `''` for a
+	 *                         message AI analysis hasn't run for yet — a
+	 *                         real, common state (a fresh submission is
+	 *                         `new`/pending until WP-Cron picks it up), not
+	 *                         an error, so it renders as a plain "—" rather
+	 *                         than silently falling back to "Normal" and
+	 *                         making an unanalyzed row look already scored.
 	 *
-	 * @return string HTML for a `<span class="cf7-ai-inbox-badge">`.
+	 * @return string HTML for a `<span class="inboxai-badge">`, or a
+	 *                bare "—" for the not-yet-analyzed case.
 	 */
 	public static function priority_badge_html( string $priority ): string {
+		if ( '' === $priority ) {
+			return '<span style="color:var(--text-tertiary);">—</span>';
+		}
+
+		// A genuinely unrecognized (but non-empty) value — e.g. old data
+		// from before a priority label changed — still falls back to
+		// "Normal" defensively, rather than showing nothing at all.
 		[ $label, $color, $css_class ] = self::PRIORITY_MAP[ $priority ] ?? self::PRIORITY_MAP['normal'];
 
 		return sprintf(
-			'<span class="cf7-ai-inbox-badge %1$s"><span class="cf7-ai-inbox-badge__dot" style="background:%2$s;"></span>%3$s</span>',
+			'<span class="inboxai-badge %1$s"><span class="inboxai-badge__dot" style="background:%2$s;"></span>%3$s</span>',
 			esc_attr( $css_class ),
 			esc_attr( $color ),
 			esc_html( $label )
@@ -79,13 +93,13 @@ final class Format {
 	/**
 	 * @param string $status One of `Migrator`'s `workflow_status` values.
 	 *
-	 * @return string HTML for a `<span class="cf7-ai-inbox-status">`.
+	 * @return string HTML for a `<span class="inboxai-status">`.
 	 */
 	public static function status_badge_html( string $status ): string {
 		[ $label, $css_class ] = self::STATUS_MAP[ $status ] ?? self::STATUS_MAP['new'];
 
 		return sprintf(
-			'<span class="cf7-ai-inbox-status %1$s">%2$s</span>',
+			'<span class="inboxai-status %1$s">%2$s</span>',
 			esc_attr( $css_class ),
 			esc_html( $label )
 		);
@@ -99,8 +113,8 @@ final class Format {
 	 */
 	public static function confidence_cell_html( ?int $confidence ): string {
 		if ( null === $confidence ) {
-			return '<div class="cf7-ai-inbox-confidence"><div class="cf7-ai-inbox-confidence__value" style="color:var(--text-tertiary);">—</div>' .
-				'<div class="cf7-ai-inbox-confidence__track"><div class="cf7-ai-inbox-confidence__fill" style="width:0%;"></div></div></div>';
+			return '<div class="inboxai-confidence"><div class="inboxai-confidence__value" style="color:var(--text-tertiary);">—</div>' .
+				'<div class="inboxai-confidence__track"><div class="inboxai-confidence__fill" style="width:0%;"></div></div></div>';
 		}
 
 		$color = $confidence >= 70 ? 'var(--conf-good)' : ( $confidence >= 40 ? 'var(--conf-mid)' : 'var(--conf-low)' );
@@ -109,7 +123,7 @@ final class Format {
 			: '';
 
 		return sprintf(
-			'<div class="cf7-ai-inbox-confidence"><div class="cf7-ai-inbox-confidence__value" style="color:%1$s;">%2$s%3$d%%</div><div class="cf7-ai-inbox-confidence__track"><div class="cf7-ai-inbox-confidence__fill" style="width:%3$d%%;background:%1$s;"></div></div></div>',
+			'<div class="inboxai-confidence"><div class="inboxai-confidence__value" style="color:%1$s;">%2$s%3$d%%</div><div class="inboxai-confidence__track"><div class="inboxai-confidence__fill" style="width:%3$d%%;background:%1$s;"></div></div></div>',
 			esc_attr( $color ),
 			$warn,
 			$confidence
@@ -177,27 +191,27 @@ final class Format {
 		$seconds = max( 0, current_time( 'timestamp' ) - $timestamp ); // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- matches the local-time write side (current_time('mysql')); comparing two local times, not doing anything timezone-sensitive.
 
 		if ( $seconds < 60 ) {
-			return __( 'just now', 'cf7-ai-inbox' );
+			return __( 'just now', 'inbox-ai' );
 		}
 
 		$minutes = (int) floor( $seconds / 60 );
 
 		if ( $minutes < 60 ) {
 			/* translators: %d: minutes */
-			return sprintf( __( '%dm ago', 'cf7-ai-inbox' ), $minutes );
+			return sprintf( __( '%dm ago', 'inbox-ai' ), $minutes );
 		}
 
 		$hours = (int) floor( $minutes / 60 );
 
 		if ( $hours < 24 ) {
 			/* translators: %d: hours */
-			return sprintf( __( '%dh ago', 'cf7-ai-inbox' ), $hours );
+			return sprintf( __( '%dh ago', 'inbox-ai' ), $hours );
 		}
 
 		$days = (int) floor( $hours / 24 );
 
 		/* translators: %d: days */
-		return sprintf( __( '%dd ago', 'cf7-ai-inbox' ), $days );
+		return sprintf( __( '%dd ago', 'inbox-ai' ), $days );
 	}
 
 	/**
@@ -231,7 +245,7 @@ final class Format {
 	 * @param int $current_page 1-indexed current page.
 	 * @param int $per_page     Rows per page.
 	 *
-	 * @return string HTML for a `.cf7-ai-inbox-pager` element, or '' if
+	 * @return string HTML for a `.inboxai-pager` element, or '' if
 	 *                everything fits on one page.
 	 */
 	public static function pagination_links( int $total, int $current_page, int $per_page ): string {
@@ -249,14 +263,14 @@ final class Format {
 				// pager now (real URLs, no client-side pager button), so there's no
 				// `:disabled` pseudo-class to dim it; the same visual effect is
 				// applied inline instead.
-				return '<span class="cf7-ai-inbox-pager__btn" aria-disabled="true" style="opacity:.4;cursor:default;">' . $label . '</span>';
+				return '<span class="inboxai-pager__btn" aria-disabled="true" style="opacity:.4;cursor:default;">' . $label . '</span>';
 			}
 
 			$url = add_query_arg( array( 'paged' => $page ) );
 
 			return sprintf(
-				'<a class="cf7-ai-inbox-pager__btn%1$s" href="%2$s">%3$s</a>',
-				$active ? ' cf7-ai-inbox-is-active' : '',
+				'<a class="inboxai-pager__btn%1$s" href="%2$s">%3$s</a>',
+				$active ? ' inboxai-is-active' : '',
 				esc_url( $url ),
 				$label
 			);
@@ -287,12 +301,12 @@ final class Format {
 			$pages[] = $total_pages;
 		}
 
-		$html  = '<div class="cf7-ai-inbox-pager">';
+		$html  = '<div class="inboxai-pager">';
 		$html .= $link( $current_page - 1, $prev_icon, $current_page <= 1 );
 
 		foreach ( $pages as $p ) {
 			$html .= '…' === $p
-				? '<span class="cf7-ai-inbox-pager__ellipsis">…</span>'
+				? '<span class="inboxai-pager__ellipsis">…</span>'
 				: $link( (int) $p, (string) $p, false, (int) $p === $current_page );
 		}
 

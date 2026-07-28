@@ -1,9 +1,9 @@
 // The generic multi-column grid the Submission Detail screen's two-up
-// layout is built from — ported from html/assets/css/cf7-ai-inbox.css.
+// layout is built from — ported from html/assets/css/inboxai.css.
 // Distinct from settings/_layout.scss, which is that page's own two-column
 // (subnav + content) shell, not a general-purpose grid utility.
 
-.cf7-ai-inbox-content-grid {
+.inboxai-content-grid {
 	display: grid;
 	grid-template-columns: 2fr 1fr;
 	gap: 16px;
@@ -26,7 +26,7 @@
 	}
 }
 
-.cf7-ai-inbox-stack {
+.inboxai-stack {
 	display: flex;
 	flex-direction: column;
 	gap: 14px;

@@ -1,8 +1,8 @@
 // The Confirm & Import overlay (includes/Templates/settings.php) — also
-// reused, via the same `.cf7-ai-inbox-modal__footer` class, for the plain
+// reused, via the same `.inboxai-modal__footer` class, for the plain
 // button rows at the bottom of each Flamingo wizard step's card.
 
-.cf7-ai-inbox-modal {
+.inboxai-modal {
 	position: fixed;
 	inset: 0;
 	background: rgba(20, 22, 28, 0.5);

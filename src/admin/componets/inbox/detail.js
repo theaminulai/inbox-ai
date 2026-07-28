@@ -4,7 +4,7 @@
  * Everything shown here (customer info, AI analysis or the "analysis
  * failed" error card, submitted fields, reply composer values, activity
  * timeline) is rendered server-side by `includes/Templates/inbox-detail.php`
- * — this is a real page load per submission (`?page=cf7ai-inbox&id=123`),
+ * — this is a real page load per submission (`?page=inboxai-inbox&id=123`),
  * not a client-side screen populated from an AJAX call. This file only
  * wires up the buttons that trigger a background action and then reload the
  * page so the server-rendered content reflects the result: retry analysis,

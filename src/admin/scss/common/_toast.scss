@@ -18,7 +18,7 @@
 	}
 }
 
-.cf7-ai-inbox-toast {
+.inboxai-toast {
 	background: #1D2327;
 	color: #fff;
 	padding: 10px 16px;
@@ -34,16 +34,16 @@
 	gap: 8px;
 	max-width: 320px;
 
-	&.cf7-ai-inbox-is-visible {
+	&.inboxai-is-visible {
 		opacity: 1;
 		transform: translateY(0);
 	}
 
-	&.cf7-ai-inbox-toast--success {
+	&.inboxai-toast--success {
 		background: #1F9254;
 	}
 
-	&.cf7-ai-inbox-toast--error {
+	&.inboxai-toast--error {
 		background: #D93B3B;
 	}
 

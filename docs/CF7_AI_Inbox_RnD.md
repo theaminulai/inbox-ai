@@ -3,7 +3,7 @@
 ## 1. Project Overview
 
 ### Proposed Working Name
-**CF7 AI Inbox**
+**Inbox AI**
 
 ### Objective
 Build a standalone WordPress plugin that combines:
@@ -303,7 +303,7 @@ For the combined plugin, custom tables are recommended.
 
 ### Main Tables
 
-#### `{prefix}cf7ai_messages`
+#### `{prefix}inboxai_messages`
 
 Suggested columns:
 
@@ -341,7 +341,7 @@ updated_at DATETIME NOT NULL
 deleted_at DATETIME NULL
 ```
 
-#### `{prefix}cf7ai_activities`
+#### `{prefix}inboxai_activities`
 
 ```sql
 id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT
@@ -352,7 +352,7 @@ event_data LONGTEXT
 created_at DATETIME NOT NULL
 ```
 
-#### `{prefix}cf7ai_usage`
+#### `{prefix}inboxai_usage`
 
 ```sql
 id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT
@@ -366,7 +366,7 @@ request_status VARCHAR(30)
 created_at DATETIME NOT NULL
 ```
 
-#### `{prefix}cf7ai_contacts` — optional for version 1
+#### `{prefix}inboxai_contacts` — optional for version 1
 
 ```sql
 id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT
@@ -497,7 +497,7 @@ Providers/
 A provider registry should make future providers pluggable.
 
 ```php
-apply_filters('cf7ai_registered_providers', $providers);
+apply_filters('inboxai_registered_providers', $providers);
 ```
 
 ### Provider Requirements
@@ -518,8 +518,8 @@ apply_filters('cf7ai_registered_providers', $providers);
 ## 9. Proposed Plugin Architecture
 
 ```text
-cf7-ai-inbox/
-├── cf7-ai-inbox.php
+inboxai/
+├── inboxai.php
 ├── uninstall.php
 ├── readme.txt
 ├── composer.json
@@ -593,7 +593,7 @@ cf7-ai-inbox/
 ### Namespace
 
 ```php
-CF7AIInbox\
+InboxAI\
 ```
 
 ### Autoloading
@@ -602,7 +602,7 @@ CF7AIInbox\
 {
   "autoload": {
     "psr-4": {
-      "CF7AIInbox\\": "includes/"
+      "InboxAI\\": "includes/"
     }
   }
 }
@@ -732,13 +732,13 @@ Desktop:
 
 Create custom capabilities:
 
-- `cf7ai_view_messages`
-- `cf7ai_edit_messages`
-- `cf7ai_delete_messages`
-- `cf7ai_send_replies`
-- `cf7ai_manage_settings`
-- `cf7ai_view_analytics`
-- `cf7ai_export_messages`
+- `inboxai_view_messages`
+- `inboxai_edit_messages`
+- `inboxai_delete_messages`
+- `inboxai_send_replies`
+- `inboxai_manage_settings`
+- `inboxai_view_analytics`
+- `inboxai_export_messages`
 
 Administrators receive all capabilities during activation. Capabilities should be filterable for custom roles.
 
@@ -967,7 +967,7 @@ When Flamingo is active, both plugins may save the same submission.
 
 **Mitigation:** Add a setting:
 
-- Use CF7 AI Inbox storage only.
+- Use Inbox AI storage only.
 - Import from Flamingo.
 - Link to Flamingo records without duplicate import, optional advanced mode.
 

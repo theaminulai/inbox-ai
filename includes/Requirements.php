@@ -2,10 +2,10 @@
 /**
  * Runtime environment/dependency checks.
  *
- * @package CF7AIInbox
+ * @package InboxAI
  */
 
-namespace CF7AIInbox;
+namespace InboxAI;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -41,7 +41,7 @@ final class Requirements {
 	/**
 	 * Contact Form 7's own plugin file, relative to the plugins directory —
 	 * the standard slug/file WordPress.org hosts it under. Used to build
-	 * the Install/Activate action links in {@see \CF7AIInbox\Plugin}'s
+	 * the Install/Activate action links in {@see \InboxAI\Plugin}'s
 	 * dependency notice, and to tell "not installed at all" apart from
 	 * "installed but not active" for that notice.
 	 *
@@ -54,7 +54,7 @@ final class Requirements {
 	 *
 	 * Deliberately does none of the string-building {@see self::get_errors()}
 	 * does — just the bare `version_compare()`/`defined()` checks — so it's
-	 * safe to call as early as `plugins_loaded` (where {@see \CF7AIInbox\Plugin::init()}
+	 * safe to call as early as `plugins_loaded` (where {@see \InboxAI\Plugin::init()}
 	 * calls it). `get_errors()` calls `__()`, and WordPress 6.7+ logs a
 	 * "translation loading triggered too early" notice if any `__()` call
 	 * for this plugin's text domain happens before the `init` hook — so
@@ -82,13 +82,13 @@ final class Requirements {
 	 * requirement. An empty array means all requirements are satisfied.
 	 *
 	 * The Contact Form 7 message (if present) is always exactly
-	 * {@see self::cf7_missing_message()} — {@see \CF7AIInbox\Plugin}'s notice
+	 * {@see self::cf7_missing_message()} — {@see \InboxAI\Plugin}'s notice
 	 * renderer compares against that constant (rather than guessing from
 	 * substring matching) to swap it out for an actionable Install/Activate
 	 * button instead of plain text.
 	 *
 	 * Calls `__()` internally — only ever call this from `init` or later
-	 * (see {@see self::are_met()}'s docblock). {@see \CF7AIInbox\Plugin} only
+	 * (see {@see self::are_met()}'s docblock). {@see \InboxAI\Plugin} only
 	 * calls it from inside its `admin_notices` callback for exactly this
 	 * reason.
 	 *
@@ -100,7 +100,7 @@ final class Requirements {
 		if ( version_compare( PHP_VERSION, self::MIN_PHP_VERSION, '<' ) ) {
 			$errors[] = sprintf(
 				/* translators: 1: required PHP version, 2: current PHP version. */
-				__( 'CF7 AI Inbox requires PHP %1$s or newer. This site is running PHP %2$s.', 'cf7-ai-inbox' ),
+				__( 'Inbox AI requires PHP %1$s or newer. This site is running PHP %2$s.', 'inbox-ai' ),
 				self::MIN_PHP_VERSION,
 				PHP_VERSION
 			);
@@ -111,7 +111,7 @@ final class Requirements {
 		if ( ! empty( $wp_version ) && version_compare( $wp_version, self::MIN_WP_VERSION, '<' ) ) {
 			$errors[] = sprintf(
 				/* translators: 1: required WordPress version, 2: current WordPress version. */
-				__( 'CF7 AI Inbox requires WordPress %1$s or newer. This site is running WordPress %2$s.', 'cf7-ai-inbox' ),
+				__( 'Inbox AI requires WordPress %1$s or newer. This site is running WordPress %2$s.', 'inbox-ai' ),
 				self::MIN_WP_VERSION,
 				$wp_version
 			);
@@ -126,13 +126,13 @@ final class Requirements {
 
 	/**
 	 * The exact message {@see self::get_errors()} uses for a missing/inactive
-	 * Contact Form 7 — a stable string {@see \CF7AIInbox\Plugin} can compare
+	 * Contact Form 7 — a stable string {@see \InboxAI\Plugin} can compare
 	 * against instead of fragile substring matching.
 	 *
 	 * @return string
 	 */
 	public static function cf7_missing_message(): string {
-		return __( 'CF7 AI Inbox requires Contact Form 7 to be installed and active.', 'cf7-ai-inbox' );
+		return __( 'Inbox AI requires Contact Form 7 to be installed and active.', 'inbox-ai' );
 	}
 
 	/**

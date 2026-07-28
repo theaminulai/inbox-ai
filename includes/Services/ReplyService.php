@@ -2,18 +2,18 @@
 /**
  * Sends a reply to a captured submission's visitor.
  *
- * @package CF7AIInbox\Services
+ * @package InboxAI\Services
  */
 
-namespace CF7AIInbox\Services;
+namespace InboxAI\Services;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use CF7AIInbox\Database\ActivityRepository;
-use CF7AIInbox\Database\MessageRepository;
+use InboxAI\Database\ActivityRepository;
+use InboxAI\Database\MessageRepository;
 use WP_Error;
 
 /**
@@ -42,20 +42,20 @@ final class ReplyService {
 		$message = MessageRepository::find( $message_id );
 
 		if ( null === $message ) {
-			return new WP_Error( 'cf7ai_not_found', __( 'This submission could not be found.', 'cf7-ai-inbox' ) );
+			return new WP_Error( 'inboxai_not_found', __( 'This submission could not be found.', 'inbox-ai' ) );
 		}
 
 		$to = (string) $message['sender_email'];
 
 		if ( '' === $to || ! is_email( $to ) ) {
-			return new WP_Error( 'cf7ai_no_email', __( 'This submission has no valid sender email to reply to.', 'cf7-ai-inbox' ) );
+			return new WP_Error( 'inboxai_no_email', __( 'This submission has no valid sender email to reply to.', 'inbox-ai' ) );
 		}
 
 		$subject = null !== $subject_override ? $subject_override : (string) $message['reply_subject'];
 		$body    = null !== $body_override ? $body_override : (string) $message['reply_draft'];
 
 		if ( '' === trim( $body ) ) {
-			return new WP_Error( 'cf7ai_empty_reply', __( 'The reply body is empty.', 'cf7-ai-inbox' ) );
+			return new WP_Error( 'inboxai_empty_reply', __( 'The reply body is empty.', 'inbox-ai' ) );
 		}
 
 		if ( '' === trim( $subject ) ) {
@@ -67,7 +67,7 @@ final class ReplyService {
 		$sent = wp_mail( $to, $subject, wpautop( $body ), $headers );
 
 		if ( ! $sent ) {
-			return new WP_Error( 'cf7ai_mail_failed', __( 'The reply could not be sent. Check your site\'s outgoing mail configuration.', 'cf7-ai-inbox' ) );
+			return new WP_Error( 'inboxai_mail_failed', __( 'The reply could not be sent. Check your site\'s outgoing mail configuration.', 'inbox-ai' ) );
 		}
 
 		MessageRepository::set_reply_sent( $message_id, $subject, $body );

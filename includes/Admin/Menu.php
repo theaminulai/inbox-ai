@@ -2,19 +2,19 @@
 /**
  * Registers the admin menu under Contact Form 7.
  *
- * @package CF7AIInbox\Admin
+ * @package InboxAI\Admin
  */
 
-namespace CF7AIInbox\Admin;
+namespace InboxAI\Admin;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use CF7AIInbox\Admin\Pages\InboxListPage;
-use CF7AIInbox\Admin\Pages\SettingsPage;
-use CF7AIInbox\Security\Capabilities;
+use InboxAI\Admin\Pages\InboxListPage;
+use InboxAI\Admin\Pages\SettingsPage;
+use InboxAI\Security\Capabilities;
 
 /**
  * Class Menu
@@ -33,9 +33,9 @@ use CF7AIInbox\Security\Capabilities;
  *
  * Only pages with a real, finished, data-backed renderer are registered in
  * {@see self::PAGES} — currently AI Inbox List
- * ({@see \CF7AIInbox\Admin\Pages\InboxListPage}, see
+ * ({@see \InboxAI\Admin\Pages\InboxListPage}, see
  * docs/plans/02-ai-inbox-list-plan.md) and Settings
- * ({@see \CF7AIInbox\Admin\Pages\SettingsPage}, see
+ * ({@see \InboxAI\Admin\Pages\SettingsPage}, see
  * docs/plans/05-settings-plan.md). There is no more static-mockup iframe
  * preview fallback: Overview, Contacts, and Analytics
  * (docs/plans/01,03,04-*.md) are added to {@see self::PAGES} — with their
@@ -51,8 +51,8 @@ use CF7AIInbox\Security\Capabilities;
  * (see webpack.config.js) once, only on this plugin's own admin screens —
  * individual page classes never enqueue anything themselves.
  * A page that needs its own AJAX nonce or other localized data hooks the
- * shared `cf7ai_inbox_localize_data` filter (see
- * {@see \CF7AIInbox\Admin\Pages\SettingsPage::localize_data()}), checking
+ * shared `inboxai_localize_data` filter (see
+ * {@see \InboxAI\Admin\Pages\SettingsPage::localize_data()}), checking
  * the current page slug passed as the filter's second argument, instead of
  * calling `wp_localize_script()` directly — only one such call per script
  * handle actually takes effect.
@@ -75,8 +75,8 @@ final class Menu {
 	 * @var array<string, array{0:string,1:string,2:string,3:class-string}>
 	 */
 	private const PAGES = array(
-		'cf7ai-inbox'    => array( 'AI Inbox', 'CF7 AI Inbox', Capabilities::VIEW_MESSAGES, InboxListPage::class ),
-		'cf7ai-settings' => array( 'Settings', 'CF7 AI Inbox Settings', Capabilities::MANAGE_SETTINGS, SettingsPage::class ),
+		'inboxai-inbox'    => array( 'AI Inbox', 'Inbox AI', Capabilities::VIEW_MESSAGES, InboxListPage::class ),
+		'inboxai-settings' => array( 'Settings', 'Inbox AI Settings', Capabilities::MANAGE_SETTINGS, SettingsPage::class ),
 	);
 
 	/**
@@ -129,10 +129,10 @@ final class Menu {
 	 *
 	 * `build/admin.asset.php` (written by `@wordpress/scripts`/webpack — see
 	 * webpack.config.js) supplies the real dependency list and a
-	 * content-hash version instead of `CF7AI_INBOX_VERSION`, so browsers
+	 * content-hash version instead of `INBOXAI_VERSION`, so browsers
 	 * bust their cache exactly when the bundle changes.
 	 *
-	 * The shared `cf7ai_inbox_localize_data` filter (starting from just
+	 * The shared `inboxai_localize_data` filter (starting from just
 	 * `ajaxUrl`, plus the current page slug as its second argument) is
 	 * applied right before the one `wp_localize_script()` call — only one
 	 * such call per handle survives, so this is the only place it happens;
@@ -151,38 +151,38 @@ final class Menu {
 			return;
 		}
 
-		$asset_file = CF7AI_INBOX_PATH . 'build/admin/admin.asset.php';
+		$asset_file = INBOXAI_PATH . 'build/admin/admin.asset.php';
 		$asset      = file_exists( $asset_file )
 			? require $asset_file
 			: array(
 				'dependencies' => array(),
-				'version'      => CF7AI_INBOX_VERSION,
+				'version'      => INBOXAI_VERSION,
 			);
 
 		wp_enqueue_style(
-			'cf7ai-inbox-admin',
-			CF7AI_INBOX_URL . 'build/admin/admin.css',
+			'inboxai-admin',
+			INBOXAI_URL . 'build/admin/admin.css',
 			array(),
 			$asset['version']
 		);
 		// Swaps in build/admin-rtl.css automatically for RTL locales.
-		wp_style_add_data( 'cf7ai-inbox-admin', 'rtl', 'replace' );
+		wp_style_add_data( 'inboxai-admin', 'rtl', 'replace' );
 
 		wp_enqueue_script(
-			'cf7ai-inbox-admin',
-			CF7AI_INBOX_URL . 'build/admin/admin.js',
+			'inboxai-admin',
+			INBOXAI_URL . 'build/admin/admin.js',
 			$asset['dependencies'],
 			$asset['version'],
 			true
 		);
 
 		$data = apply_filters(
-			'cf7ai_inbox_localize_data',
+			'inboxai_localize_data',
 			array( 'ajaxUrl' => admin_url( 'admin-ajax.php' ) ),
 			$slug
 		);
 
-		wp_localize_script( 'cf7ai-inbox-admin', 'cf7aiInboxAdmin', $data );
+		wp_localize_script( 'inboxai-admin', 'inboxaiAdmin', $data );
 	}
 
 	/**

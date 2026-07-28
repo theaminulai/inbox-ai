@@ -1,23 +1,23 @@
 <?php
 /**
- * Renderer for the AI Inbox List admin page (`cf7ai-inbox`).
+ * Renderer for the AI Inbox List admin page (`inboxai-inbox`).
  *
- * @package CF7AIInbox\Admin\Pages
+ * @package InboxAI\Admin\Pages
  */
 
-namespace CF7AIInbox\Admin\Pages;
+namespace InboxAI\Admin\Pages;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use CF7AIInbox\Admin\AjaxController;
-use CF7AIInbox\CF7\CategoryTaxonomy;
-use CF7AIInbox\Database\ActivityRepository;
-use CF7AIInbox\Database\MessageRepository;
-use CF7AIInbox\Security\Capabilities;
-use CF7AIInbox\Support\Template;
+use InboxAI\Admin\AjaxController;
+use InboxAI\CF7\CategoryTaxonomy;
+use InboxAI\Database\ActivityRepository;
+use InboxAI\Database\MessageRepository;
+use InboxAI\Security\Capabilities;
+use InboxAI\Support\Template;
 
 /**
  * Class InboxListPage
@@ -42,21 +42,36 @@ use CF7AIInbox\Support\Template;
 final class InboxListPage {
 
 	/**
-	 * Hooks this page's data into {@see \CF7AIInbox\Admin\Menu::enqueue_assets()}.
+	 * Values the "Received" date-range control accepts — anything else in
+	 * the request is treated as no filter at all (every message, matching
+	 * this page's long-standing default). Same period vocabulary as the
+	 * Settings page's Usage & Billing tab (see
+	 * `AjaxController::USAGE_PERIODS`) for a consistent set of choices
+	 * across the plugin, resolved the same way by
+	 * {@see \InboxAI\Database\MessageRepository::period_to_datetime()}.
+	 * Public: also read by {@see \InboxAI\Admin\AjaxController::list_messages()}
+	 * so the CSV export AJAX call validates against the same whitelist.
+	 *
+	 * @var string[]
+	 */
+	public const PERIODS = array( '7_days', '30_days', '90_days', 'this_month', '1_year', '2_years', '3_years', '5_years' );
+
+	/**
+	 * Hooks this page's data into {@see \InboxAI\Admin\Menu::enqueue_assets()}.
 	 */
 	public function __construct() {
-		add_filter( 'cf7ai_inbox_localize_data', array( $this, 'localize_data' ), 10, 2 );
+		add_filter( 'inboxai_localize_data', array( $this, 'localize_data' ), 10, 2 );
 	}
 
 	/**
 	 * Renders the page. Registered as the `add_submenu_page()` callback for
-	 * `cf7ai-inbox` by {@see \CF7AIInbox\Admin\Menu}.
+	 * `inboxai-inbox` by {@see \InboxAI\Admin\Menu}.
 	 *
 	 * @return void
 	 */
 	public function render(): void {
 		if ( ! current_user_can( Capabilities::VIEW_MESSAGES ) ) {
-			wp_die( esc_html__( 'You do not have permission to access this page.', 'cf7-ai-inbox' ) );
+			wp_die( esc_html__( 'You do not have permission to access this page.', 'inbox-ai' ) );
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only routing decision (which view to render), not a state-changing request.
@@ -72,9 +87,9 @@ final class InboxListPage {
 
 	/**
 	 * Renders the message list: reads filters + pagination straight from
-	 * `$_GET` (a plain GET form — see `includes/Templates/inbox-list.php` —
+	 * `$_GET` (a plain GET form — see `includes/Templates/inbox/list.php` —
 	 * so every filtered/paginated state is its own real URL) and queries
-	 * {@see \CF7AIInbox\Database\MessageRepository::get_filtered()} once,
+	 * {@see \InboxAI\Database\MessageRepository::get_filtered()} once,
 	 * server-side.
 	 *
 	 * @return void
@@ -87,7 +102,7 @@ final class InboxListPage {
 		$result = MessageRepository::get_filtered( $filters, $page, $per_page );
 
 		Template::render(
-			'inbox',
+			'inbox/inbox',
 			array(
 				'view'        => 'list',
 				'messages'    => $result['items'],
@@ -106,7 +121,7 @@ final class InboxListPage {
 
 	/**
 	 * Renders one submission's detail screen (folding in the "AI analysis
-	 * failed" state — see `includes/Templates/inbox-detail.php` — rather than
+	 * failed" state — see `includes/Templates/inbox/detail.php` — rather than
 	 * a separate screen/URL, since it's the same submission either way).
 	 *
 	 * @param int $id Message row id.
@@ -118,7 +133,7 @@ final class InboxListPage {
 
 		if ( null === $message ) {
 			Template::render(
-				'inbox',
+				'inbox/inbox',
 				array(
 					'view'       => 'not-found',
 					'can_reply'  => current_user_can( Capabilities::SEND_REPLIES ),
@@ -130,7 +145,7 @@ final class InboxListPage {
 		}
 
 		Template::render(
-			'inbox',
+			'inbox/inbox',
 			array(
 				'view'       => 'detail',
 				'message'    => $message,
@@ -144,13 +159,19 @@ final class InboxListPage {
 
 	/**
 	 * Reads and sanitizes the list screen's filters from `$_GET`, matching
-	 * {@see \CF7AIInbox\Admin\AjaxController::list_messages()}'s own
+	 * {@see \InboxAI\Admin\AjaxController::list_messages()}'s own
 	 * sanitization exactly (that AJAX action still exists, for the CSV
 	 * export's "current filters, no pagination cap" request).
 	 *
 	 * @return array<string, mixed>
 	 */
 	private function get_filters_from_request(): array {
+		$period = isset( $_GET['period'] ) ? sanitize_key( wp_unslash( $_GET['period'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only list filter, not a state-changing request.
+
+		if ( ! in_array( $period, self::PERIODS, true ) ) {
+			$period = '';
+		}
+
 		return array(
 			'status'           => isset( $_GET['status'] ) ? sanitize_key( wp_unslash( $_GET['status'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only list filter, not a state-changing request.
 			'priority'         => isset( $_GET['priority'] ) ? sanitize_key( wp_unslash( $_GET['priority'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -158,11 +179,12 @@ final class InboxListPage {
 			'form'             => isset( $_GET['form'] ) ? sanitize_text_field( wp_unslash( $_GET['form'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			'confidence_below' => isset( $_GET['confidence_below'] ) && '' !== $_GET['confidence_below'] ? absint( wp_unslash( $_GET['confidence_below'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			'search'           => isset( $_GET['search'] ) ? sanitize_text_field( wp_unslash( $_GET['search'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			'period'           => $period,
 		);
 	}
 
 	/**
-	 * Adds this page's AJAX nonce to the shared `cf7aiInboxAdmin` JS object.
+	 * Adds this page's AJAX nonce to the shared `inboxaiAdmin` JS object.
 	 *
 	 * @param array<string, mixed> $data Data collected so far (at least `ajaxUrl`).
 	 * @param string               $slug Slug of the admin page currently being enqueued for.
@@ -170,7 +192,7 @@ final class InboxListPage {
 	 * @return array<string, mixed>
 	 */
 	public function localize_data( array $data, string $slug ): array {
-		if ( 'cf7ai-inbox' !== $slug ) {
+		if ( 'inboxai-inbox' !== $slug ) {
 			return $data;
 		}
 
@@ -181,7 +203,7 @@ final class InboxListPage {
 
 	/**
 	 * Every AI category that exists anywhere on this site — the union of
-	 * every {@see \CF7AIInbox\CF7\CategoryTaxonomy} term any form has ever
+	 * every {@see \InboxAI\CF7\CategoryTaxonomy} term any form has ever
 	 * been assigned — for the "Category" filter dropdown. A stored
 	 * message's `category` column is a plain string set at analysis time,
 	 * independent of a form's current category list, so the filter needs

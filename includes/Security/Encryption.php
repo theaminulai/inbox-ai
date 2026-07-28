@@ -3,10 +3,10 @@
  * Symmetric encryption for secrets stored at rest (currently: the AI
  * provider API key).
  *
- * @package CF7AIInbox\Security
+ * @package InboxAI\Security
  */
 
-namespace CF7AIInbox\Security;
+namespace InboxAI\Security;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -30,7 +30,7 @@ final class Encryption {
 	 *
 	 * @var string
 	 */
-	private const KEY_OPTION = 'cf7ai_inbox_encryption_key';
+	private const KEY_OPTION = 'inboxai_encryption_key';
 
 	/**
 	 * Encrypts a plaintext string for storage.

@@ -2,10 +2,10 @@
 /**
  * Loads a plain-PHP view template from `includes/Templates/`.
  *
- * @package CF7AIInbox\Support
+ * @package InboxAI\Support
  */
 
-namespace CF7AIInbox\Support;
+namespace InboxAI\Support;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * Every admin page's markup lives in its own file under
  * `includes/Templates/` rather than inline inside a controller/page class
- * (see {@see \CF7AIInbox\Admin\Menu}). This is the single, shared way any
+ * (see {@see \InboxAI\Admin\Menu}). This is the single, shared way any
  * class in the plugin loads one of those files.
  */
 final class Template {
@@ -44,7 +44,7 @@ final class Template {
 	 * @return void
 	 */
 	public static function render( string $template, array $vars = array() ): void {
-		$file = CF7AI_INBOX_PATH . 'includes/Templates/' . $template . '.php';
+		$file = INBOXAI_PATH . 'includes/Templates/' . $template . '.php';
 
 		if ( ! is_readable( $file ) ) {
 			return;

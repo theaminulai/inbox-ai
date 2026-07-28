@@ -2,18 +2,18 @@
 /**
  * Removes all data the plugin created.
  *
- * @package CF7AIInbox
+ * @package InboxAI
  */
 
-namespace CF7AIInbox;
+namespace InboxAI;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use CF7AIInbox\Database\Migrator;
-use CF7AIInbox\Security\Capabilities;
+use InboxAI\Database\Migrator;
+use InboxAI\Security\Capabilities;
 
 /**
  * Class Uninstaller
@@ -38,7 +38,7 @@ final class Uninstaller {
 		Migrator::drop_tables();
 		Capabilities::remove_from_administrator();
 
-		delete_option( 'cf7ai_inbox_version' );
-		delete_option( 'cf7ai_inbox_activated_at' );
+		delete_option( 'inboxai_version' );
+		delete_option( 'inboxai_activated_at' );
 	}
 }

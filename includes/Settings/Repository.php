@@ -2,17 +2,17 @@
 /**
  * Typed access to every setting on the Settings admin page.
  *
- * @package CF7AIInbox\Settings
+ * @package InboxAI\Settings
  */
 
-namespace CF7AIInbox\Settings;
+namespace InboxAI\Settings;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use CF7AIInbox\Security\Encryption;
+use InboxAI\Security\Encryption;
 
 /**
  * Class Repository
@@ -25,11 +25,11 @@ use CF7AIInbox\Security\Encryption;
  */
 final class Repository {
 
-	private const PROVIDER_OPTION      = 'cf7ai_inbox_settings_provider';
-	private const API_KEY_OPTION       = 'cf7ai_inbox_api_key';
-	private const GENERAL_OPTION       = 'cf7ai_inbox_settings_general';
-	private const PROMPTS_OPTION       = 'cf7ai_inbox_settings_prompts';
-	private const NOTIFICATIONS_OPTION = 'cf7ai_inbox_settings_notifications';
+	private const PROVIDER_OPTION      = 'inboxai_settings_provider';
+	private const API_KEY_OPTION       = 'inboxai_api_key';
+	private const GENERAL_OPTION       = 'inboxai_settings_general';
+	private const PROMPTS_OPTION       = 'inboxai_settings_prompts';
+	private const NOTIFICATIONS_OPTION = 'inboxai_settings_notifications';
 
 	/**
 	 * Allowed provider ids, retention periods, and reply tones — kept here

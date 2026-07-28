@@ -23,7 +23,7 @@ export function initRowMenuGlobalClose() {
 	document.addEventListener( 'click', ( e ) => {
 		if (
 			! e.target.closest( '[data-action="more"]' ) &&
-			! e.target.closest( '.cf7-ai-inbox-row-menu__item' )
+			! e.target.closest( '.inboxai-row-menu__item' )
 		) {
 			closeRowMenu();
 		}
@@ -56,9 +56,9 @@ export function openRowMenu( anchorEl, kind, key, items ) {
 		? items
 				.map(
 					( it ) =>
-						'<div class="cf7-ai-inbox-row-menu__item' +
+						'<div class="inboxai-row-menu__item' +
 						( it.danger
-							? ' cf7-ai-inbox-row-menu__item--danger'
+							? ' inboxai-row-menu__item--danger'
 							: '' ) +
 						'" data-menu-action="' +
 						it.action +
@@ -73,7 +73,7 @@ export function openRowMenu( anchorEl, kind, key, items ) {
 						'</span></div>'
 				)
 				.join( '' )
-		: '<div class="cf7-ai-inbox-row-menu__item" style="color:var(--text-tertiary);cursor:default;">No further actions</div>';
+		: '<div class="inboxai-row-menu__item" style="color:var(--text-tertiary);cursor:default;">No further actions</div>';
 
 	const rect = anchorEl.getBoundingClientRect();
 	menu.style.display = 'block';

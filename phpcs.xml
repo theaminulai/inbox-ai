@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="CF7 AI Inbox">
-    <description>CF7 AI Inbox for Contact Form 7 — WordPress Coding Standards ruleset.</description>
+<ruleset name="Inbox AI">
+    <description>Inbox AI — WordPress Coding Standards ruleset.</description>
 
     <!-- Files to scan -->
     <file>.</file>
@@ -56,7 +56,7 @@
     <!-- Enforce the correct text domain -->
     <rule ref="WordPress.WP.I18n">
         <properties>
-            <property name="text_domain" type="array" value="cf7-ai-inbox"/>
+            <property name="text_domain" type="array" value="inbox-ai"/>
         </properties>
     </rule>
 

@@ -5,7 +5,7 @@
  */
 
 /**
- * @param {HTMLElement} root Container to search within (e.g. one `.cf7-ai-inbox-screen`).
+ * @param {HTMLElement} root Container to search within (e.g. one `.inboxai-screen`).
  * @return {Object<string, *>} field name => value.
  */
 export function collectFields( root ) {
@@ -14,8 +14,8 @@ export function collectFields( root ) {
 	root.querySelectorAll( '[data-field]' ).forEach( ( el ) => {
 		const field = el.dataset.field;
 
-		if ( el.classList.contains( 'cf7-ai-inbox-switch' ) ) {
-			values[ field ] = el.classList.contains( 'cf7-ai-inbox-is-on' );
+		if ( el.classList.contains( 'inboxai-switch' ) ) {
+			values[ field ] = el.classList.contains( 'inboxai-is-on' );
 		} else if ( 'checkbox' === el.type ) {
 			values[ field ] = el.checked;
 		} else if ( 'range' === el.type || 'number' === el.type ) {
@@ -47,8 +47,8 @@ export function populateFields( root, data ) {
 			return;
 		}
 
-		if ( el.classList.contains( 'cf7-ai-inbox-switch' ) ) {
-			el.classList.toggle( 'cf7-ai-inbox-is-on', !! data[ field ] );
+		if ( el.classList.contains( 'inboxai-switch' ) ) {
+			el.classList.toggle( 'inboxai-is-on', !! data[ field ] );
 		} else {
 			el.value = data[ field ];
 		}

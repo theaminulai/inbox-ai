@@ -2,10 +2,10 @@
 /**
  * Custom capability definitions for the AI Inbox.
  *
- * @package CF7AIInbox\Security
+ * @package InboxAI\Security
  */
 
-namespace CF7AIInbox\Security;
+namespace InboxAI\Security;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -28,49 +28,49 @@ final class Capabilities {
 	 *
 	 * @var string
 	 */
-	public const VIEW_MESSAGES = 'cf7ai_view_messages';
+	public const VIEW_MESSAGES = 'inboxai_view_messages';
 
 	/**
 	 * Edit submissions (status, draft replies, etc.).
 	 *
 	 * @var string
 	 */
-	public const EDIT_MESSAGES = 'cf7ai_edit_messages';
+	public const EDIT_MESSAGES = 'inboxai_edit_messages';
 
 	/**
 	 * Delete submissions.
 	 *
 	 * @var string
 	 */
-	public const DELETE_MESSAGES = 'cf7ai_delete_messages';
+	public const DELETE_MESSAGES = 'inboxai_delete_messages';
 
 	/**
 	 * Send AI-drafted (or edited) replies to visitors.
 	 *
 	 * @var string
 	 */
-	public const SEND_REPLIES = 'cf7ai_send_replies';
+	public const SEND_REPLIES = 'inboxai_send_replies';
 
 	/**
 	 * Manage plugin settings (AI provider, prompt, enabled forms).
 	 *
 	 * @var string
 	 */
-	public const MANAGE_SETTINGS = 'cf7ai_manage_settings';
+	public const MANAGE_SETTINGS = 'inboxai_manage_settings';
 
 	/**
 	 * View usage/analytics screens.
 	 *
 	 * @var string
 	 */
-	public const VIEW_ANALYTICS = 'cf7ai_view_analytics';
+	public const VIEW_ANALYTICS = 'inboxai_view_analytics';
 
 	/**
 	 * Export submission data.
 	 *
 	 * @var string
 	 */
-	public const EXPORT_MESSAGES = 'cf7ai_export_messages';
+	public const EXPORT_MESSAGES = 'inboxai_export_messages';
 
 	/**
 	 * Returns every capability this plugin defines.
@@ -82,14 +82,14 @@ final class Capabilities {
 	 */
 	public static function all(): array {
 		/**
-		 * Filters the full list of CF7 AI Inbox capabilities.
+		 * Filters the full list of Inbox AI capabilities.
 		 *
 		 * @since 0.1.0
 		 *
 		 * @param string[] $capabilities Capability names.
 		 */
 		return apply_filters(
-			'cf7ai_inbox_capabilities',
+			'inboxai_capabilities',
 			array(
 				self::VIEW_MESSAGES,
 				self::EDIT_MESSAGES,

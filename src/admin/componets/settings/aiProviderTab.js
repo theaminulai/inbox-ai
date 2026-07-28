@@ -2,13 +2,13 @@
  * Settings page — AI Provider tab.
  */
 
-import { cf7aiAjax } from '../shared/api.js';
+import { inboxaiAjax } from '../shared/api.js';
 import { showToast } from '../shared/toast.js';
 import { collectFields } from '../shared/fields.js';
 
 function selectedProviderId( screen ) {
 	const selected = screen.querySelector(
-		'.cf7-ai-inbox-provider__option.cf7-ai-inbox-is-selected'
+		'.inboxai-provider__option.inboxai-is-selected'
 	);
 	return selected ? selected.dataset.provider : 'openai';
 }
@@ -40,36 +40,76 @@ export function initAiProviderTab() {
 		return;
 	}
 
+	const apiKeyInput = screen.querySelector( '[data-field="api_key"]' );
+	const modelSelect = screen.querySelector( '[data-field="model"]' );
+
+	// The provider/model actually saved and rendered on page load — used so
+	// clicking back to that same card restores its real saved model instead
+	// of resetting to that provider's first default option.
+	const savedProvider = selectedProviderId( screen );
+	const savedModel = modelSelect ? modelSelect.value : null;
+
 	screen.addEventListener( 'click', ( e ) => {
-		const option = e.target.closest( '.cf7-ai-inbox-provider__option' );
+		const option = e.target.closest( '.inboxai-provider__option' );
 
 		if ( ! option ) {
 			return;
 		}
 
 		screen
-			.querySelectorAll( '.cf7-ai-inbox-provider__option' )
+			.querySelectorAll( '.inboxai-provider__option' )
 			.forEach( ( o ) => {
-				o.classList.remove( 'cf7-ai-inbox-is-selected' );
+				o.classList.remove( 'inboxai-is-selected' );
 				const radio = o.querySelector(
-					'.cf7-ai-inbox-provider__radio'
+					'.inboxai-provider__radio'
 				);
 
 				if ( radio ) {
-					radio.classList.remove( 'cf7-ai-inbox-is-checked' );
+					radio.classList.remove( 'inboxai-is-checked' );
 				}
 			} );
 
-		option.classList.add( 'cf7-ai-inbox-is-selected' );
-		const radio = option.querySelector( '.cf7-ai-inbox-provider__radio' );
+		option.classList.add( 'inboxai-is-selected' );
+		const radio = option.querySelector( '.inboxai-provider__radio' );
 
 		if ( radio ) {
-			radio.classList.add( 'cf7-ai-inbox-is-checked' );
+			radio.classList.add( 'inboxai-is-checked' );
+		}
+
+		// Keep the "<Provider> Configuration" card header in sync with
+		// whichever card was just clicked — otherwise it keeps showing
+		// whatever provider was active on page load, making it look like
+		// Anthropic/Google can't actually be configured.
+		const configLabel = screen.querySelector(
+			'#settings-provider-config-label'
+		);
+
+		if ( configLabel && option.dataset.providerLabel ) {
+			configLabel.textContent = option.dataset.providerLabel;
+		}
+
+		// Swap the Model dropdown to this provider's own models — left
+		// alone it kept showing whatever model belonged to whichever
+		// provider was active on page load (e.g. an OpenAI model id while
+		// Anthropic is selected), which isn't a valid model for this
+		// provider at all.
+		if ( modelSelect && option.dataset.models ) {
+			try {
+				const models = JSON.parse( option.dataset.models );
+				const isSavedProvider =
+					option.dataset.provider === savedProvider;
+
+				populateModels(
+					modelSelect,
+					models,
+					isSavedProvider ? savedModel : null
+				);
+			} catch ( err ) {
+				// Malformed data-models JSON — leave the dropdown as-is
+				// rather than clearing it.
+			}
 		}
 	} );
-
-	const apiKeyInput = screen.querySelector( '[data-field="api_key"]' );
-	const modelSelect = screen.querySelector( '[data-field="model"]' );
 
 	const testBtn = document.getElementById( 'settings-test-connection' );
 
@@ -82,7 +122,7 @@ export function initAiProviderTab() {
 			const provider = selectedProviderId( screen );
 			const apiKey = apiKeyInput ? apiKeyInput.value : '';
 
-			cf7aiAjax( 'cf7ai_test_connection', { provider, api_key: apiKey } )
+			inboxaiAjax( 'inboxai_test_connection', { provider, api_key: apiKey } )
 				.then( () => {
 					showToast( 'Connection successful', 'success' );
 
@@ -94,7 +134,7 @@ export function initAiProviderTab() {
 						pill.style.display = '';
 					}
 
-					return cf7aiAjax( 'cf7ai_list_models', {
+					return inboxaiAjax( 'inboxai_list_models', {
 						provider,
 						api_key: apiKey,
 					} );
@@ -125,7 +165,7 @@ export function initAiProviderTab() {
 				collectFields( screen )
 			);
 
-			cf7aiAjax( 'cf7ai_save_settings', {
+			inboxaiAjax( 'inboxai_save_settings', {
 				tab: 'ai-settings',
 				values: JSON.stringify( values ),
 			} )

@@ -2,10 +2,10 @@
 /**
  * Per-form, admin-editable AI categories.
  *
- * @package CF7AIInbox\CF7
+ * @package InboxAI\CF7
  */
 
-namespace CF7AIInbox\CF7;
+namespace InboxAI\CF7;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -47,18 +47,18 @@ final class CategoryTaxonomy {
 	 *
 	 * @var string
 	 */
-	public const TAXONOMY = 'cf7ai_category';
+	public const TAXONOMY = 'inboxai_category';
 
 	/**
 	 * Nonce action for the checklist box's hidden field.
 	 *
 	 * @var string
 	 */
-	private const NONCE_ACTION = 'cf7ai_save_categories';
+	private const NONCE_ACTION = 'inboxai_save_categories';
 
 	/**
 	 * Registers WordPress/CF7 hooks. Must run unconditionally (not just
-	 * `is_admin()`) — {@see \CF7AIInbox\AI\AnalysisQueue::process()} reads
+	 * `is_admin()`) — {@see \InboxAI\AI\AnalysisQueue::process()} reads
 	 * this taxonomy's terms from a WP-Cron request.
 	 *
 	 * @return void
@@ -77,8 +77,8 @@ final class CategoryTaxonomy {
 	 * Deliberately a plain, unbundled static file rather than something
 	 * routed through this plugin's own webpack entry point
 	 * (`src/admin/index.js`) — that bundle is only ever enqueued on this
-	 * plugin's own `cf7ai-*` pages (see
-	 * {@see \CF7AIInbox\Admin\Menu::enqueue_assets()}), never on CF7's own
+	 * plugin's own `inboxai-*` pages (see
+	 * {@see \InboxAI\Admin\Menu::enqueue_assets()}), never on CF7's own
 	 * `admin.php?page=wpcf7` screens.
 	 *
 	 * @return void
@@ -95,16 +95,16 @@ final class CategoryTaxonomy {
 				return;
 			}
 		}
-		$cf7_assets_file = CF7AI_INBOX_PATH . 'build/cf7/category.asset.php';
+		$cf7_assets_file = INBOXAI_PATH . 'build/cf7/category.asset.php';
 		$cf7_assets      = file_exists( $cf7_assets_file )
 			? require $cf7_assets_file
 			: array(
 				'dependencies' => array(),
-				'version'      => CF7AI_INBOX_VERSION,
+				'version'      => INBOXAI_VERSION,
 			);
 		wp_enqueue_script(
-			'cf7ai-category-metabox',
-			CF7AI_INBOX_URL . 'build/cf7/category.js',
+			'inboxai-category-metabox',
+			INBOXAI_URL . 'build/cf7/category.js',
 			$cf7_assets['dependencies'],
 			$cf7_assets['version'],
 			true
@@ -123,8 +123,8 @@ final class CategoryTaxonomy {
 			'wpcf7_contact_form',
 			array(
 				'labels'            => array(
-					'name'          => __( 'AI Categories', 'cf7-ai-inbox' ),
-					'singular_name' => __( 'AI Category', 'cf7-ai-inbox' ),
+					'name'          => __( 'AI Categories', 'inbox-ai' ),
+					'singular_name' => __( 'AI Category', 'inbox-ai' ),
 				),
 				'hierarchical'      => false,
 				'public'            => false,
@@ -166,31 +166,31 @@ final class CategoryTaxonomy {
 		sort( $all_terms );
 
 		?>
-		<div class="misc-pub-section cf7ai-categories" style="border-top:1px solid #eee;padding:10px 10px 12px;">
-			<strong style="display:block;margin-bottom:6px;"><?php esc_html_e( 'AI Categories', 'cf7-ai-inbox' ); ?></strong>
+		<div class="misc-pub-section inboxai-categories" style="border-top:1px solid #eee;padding:10px 10px 12px;">
+			<strong style="display:block;margin-bottom:6px;"><?php esc_html_e( 'AI Categories', 'inbox-ai' ); ?></strong>
 			<p style="margin:0 0 8px;font-size:12px;color:#646970;">
-				<?php esc_html_e( 'The categories the AI can assign to this form\'s submissions.', 'cf7-ai-inbox' ); ?>
+				<?php esc_html_e( 'The categories the AI can assign to this form\'s submissions.', 'inbox-ai' ); ?>
 			</p>
-			<div id="cf7ai-category-list" style="max-height:200px;overflow-y:auto;border:1px solid #dcdcde;border-radius:3px;padding:8px 10px;background:#fff;margin-bottom:8px;">
+			<div id="inboxai-category-list" style="max-height:200px;overflow-y:auto;border:1px solid #dcdcde;border-radius:3px;padding:8px 10px;background:#fff;margin-bottom:8px;">
 				<?php if ( array() === $all_terms ) : ?>
-					<p id="cf7ai-category-empty" style="margin:0;font-size:12px;color:#646970;font-style:italic;">
-						<?php esc_html_e( 'No categories yet.', 'cf7-ai-inbox' ); ?>
+					<p id="inboxai-category-empty" style="margin:0;font-size:12px;color:#646970;font-style:italic;">
+						<?php esc_html_e( 'No categories yet.', 'inbox-ai' ); ?>
 					</p>
 				<?php else : ?>
 					<?php foreach ( $all_terms as $term_name ) : ?>
 						<label style="display:block;font-size:13px;margin-bottom:4px;">
-							<input type="checkbox" name="cf7ai_categories[]" value="<?php echo esc_attr( $term_name ); ?>" <?php checked( in_array( $term_name, $assigned, true ) ); ?> />
+							<input type="checkbox" name="inboxai_categories[]" value="<?php echo esc_attr( $term_name ); ?>" <?php checked( in_array( $term_name, $assigned, true ) ); ?> />
 							<?php echo esc_html( $term_name ); ?>
 						</label>
 					<?php endforeach; ?>
 				<?php endif; ?>
 			</div>
-			<a href="#" id="cf7ai-add-toggle"><?php esc_html_e( '+ Add new category', 'cf7-ai-inbox' ); ?></a>
-			<div id="cf7ai-add-new" style="display:none;margin-top:8px;">
-				<input type="text" id="cf7ai-add-input" style="width:100%;box-sizing:border-box;margin-bottom:6px;" placeholder="<?php esc_attr_e( 'New category name', 'cf7-ai-inbox' ); ?>" />
-				<button type="button" class="button" id="cf7ai-add-submit"><?php esc_html_e( 'Add new category', 'cf7-ai-inbox' ); ?></button>
+			<a href="#" id="inboxai-add-toggle"><?php esc_html_e( '+ Add new category', 'inbox-ai' ); ?></a>
+			<div id="inboxai-add-new" style="display:none;margin-top:8px;">
+				<input type="text" id="inboxai-add-input" style="width:100%;box-sizing:border-box;margin-bottom:6px;" placeholder="<?php esc_attr_e( 'New category name', 'inbox-ai' ); ?>" />
+				<button type="button" class="button" id="inboxai-add-submit"><?php esc_html_e( 'Add new category', 'inbox-ai' ); ?></button>
 			</div>
-			<?php wp_nonce_field( self::NONCE_ACTION, 'cf7ai_categories_nonce' ); ?>
+			<?php wp_nonce_field( self::NONCE_ACTION, 'inboxai_categories_nonce' ); ?>
 		</div>
 		<?php
 		/*
@@ -230,8 +230,8 @@ final class CategoryTaxonomy {
 		// `wpcf7_edit_contact_form` capability for this exact save request
 		// — this only re-checks the one field this class itself added.
 		if (
-			! isset( $_POST['cf7ai_categories_nonce'] ) ||
-			! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['cf7ai_categories_nonce'] ) ), self::NONCE_ACTION )
+			! isset( $_POST['inboxai_categories_nonce'] ) ||
+			! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['inboxai_categories_nonce'] ) ), self::NONCE_ACTION )
 		) {
 			return;
 		}
@@ -241,8 +241,8 @@ final class CategoryTaxonomy {
 		// legitimate, intentional state (unassign every category from this
 		// form), not "the field wasn't submitted".
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- wp_unslash() only; every element is run through sanitize_text_field() in the array_map() immediately below before it's used for anything.
-		$posted = isset( $_POST['cf7ai_categories'] ) && is_array( $_POST['cf7ai_categories'] )
-			? wp_unslash( $_POST['cf7ai_categories'] )
+		$posted = isset( $_POST['inboxai_categories'] ) && is_array( $_POST['inboxai_categories'] )
+			? wp_unslash( $_POST['inboxai_categories'] )
 			: array();
 
 		$names = array_filter(

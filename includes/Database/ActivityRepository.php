@@ -2,10 +2,10 @@
 /**
  * Read/write access to the per-message activity timeline table.
  *
- * @package CF7AIInbox\Database
+ * @package InboxAI\Database
  */
 
-namespace CF7AIInbox\Database;
+namespace InboxAI\Database;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {

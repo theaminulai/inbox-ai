@@ -38,16 +38,16 @@ svg {
 
 // Grid/flex children that would otherwise refuse to shrink below their
 // content's intrinsic width — only the containers Settings actually uses.
-.cf7-ai-inbox-settings__shell > *,
-.cf7-ai-inbox-kpi__strip > * {
+.inboxai-settings__shell > *,
+.inboxai-kpi__strip > * {
 	min-width: 0;
 }
 
-.cf7-ai-inbox-card {
+.inboxai-card {
 	min-width: 0;
 }
 
-.cf7-ai-inbox-main {
+.inboxai-main {
 	width: 100%;
 	// max-width: 1440px;
 	margin: 0 auto;
@@ -60,10 +60,10 @@ svg {
 
 // All six Settings subtabs render into the DOM at once (see
 // includes/Templates/settings.php); tabs.js toggles which one is visible.
-.cf7-ai-inbox-screen {
+.inboxai-screen {
 	display: none;
 }
 
-.cf7-ai-inbox-screen.cf7-ai-inbox-is-active {
+.inboxai-screen.inboxai-is-active {
 	display: block;
 }

@@ -1,7 +1,7 @@
 // AI Inbox List — the messages grid-table, its customer cell, and avatar —
-// ported from html/assets/css/cf7-ai-inbox.css.
+// ported from html/assets/css/inboxai.css.
 
-.cf7-ai-inbox-grid-table {
+.inboxai-grid-table {
 	display: grid;
 	font-size: 13px;
 	width: 100%;
@@ -16,16 +16,16 @@
 	&__row {
 		display: contents;
 
-		&:hover > .cf7-ai-inbox-grid-table__cell {
+		&:hover > .inboxai-grid-table__cell {
 			background: var(--surface-2);
 		}
 
 		&--head {
-			&:hover > .cf7-ai-inbox-grid-table__cell {
+			&:hover > .inboxai-grid-table__cell {
 				background: none;
 			}
 
-			.cf7-ai-inbox-grid-table__cell {
+			.inboxai-grid-table__cell {
 				text-align: left;
 				font-size: 11px;
 				text-transform: uppercase;
@@ -37,7 +37,7 @@
 			}
 		}
 
-		&.cf7-ai-inbox-is-archived > .cf7-ai-inbox-grid-table__cell {
+		&.inboxai-is-archived > .inboxai-grid-table__cell {
 			opacity: .5;
 		}
 	}
@@ -65,7 +65,7 @@
 	}
 }
 
-.cf7-ai-inbox-customer {
+.inboxai-customer {
 	&__cell {
 		gap: 10px;
 
@@ -104,7 +104,7 @@
 	}
 }
 
-.cf7-ai-inbox-message-preview {
+.inboxai-message-preview {
 	max-width: 220px;
 	color: var(--text-secondary);
 	font-size: 12.5px;
@@ -114,7 +114,7 @@
 	display: block;
 }
 
-.cf7-ai-inbox-avatar {
+.inboxai-avatar {
 	width: 32px;
 	height: 32px;
 	border-radius: 50%;

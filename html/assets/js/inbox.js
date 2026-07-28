@@ -1,5 +1,5 @@
 /* =====================================================================
-   CF7 AI Inbox — AI Inbox page script (list + submission detail + AI
+   Inbox AI — AI Inbox page script (list + submission detail + AI
    failure detail — these three views share one page/URL, switched via
    JS, since opening a message is a drill-down of the list rather than a
    separate top-level destination).
@@ -16,9 +16,9 @@ const state = {
 
 /* ================= IN-PAGE SCREEN SWITCH (list / detail / failure) ============= */
 function showInboxScreen(key){
-  document.querySelectorAll('.cf7-ai-inbox-screen').forEach(s=>s.classList.remove('cf7-ai-inbox-is-active'));
+  document.querySelectorAll('.inboxai-screen').forEach(s=>s.classList.remove('inboxai-is-active'));
   const el = document.getElementById('screen-'+key);
-  if(el) el.classList.add('cf7-ai-inbox-is-active');
+  if(el) el.classList.add('inboxai-is-active');
   document.getElementById('main').scrollTo({top:0, behavior:'instant'});
   window.scrollTo({top:0, behavior:'instant'});
 }
@@ -98,7 +98,7 @@ function renderInboxTable(){
   const pageList = fullList.slice(start, start + INBOX_PAGE_SIZE);
 
   if(fullList.length===0){
-    tbody.innerHTML = '<div class="cf7-ai-inbox-grid-table__cell cf7-ai-inbox-grid-table__cell--empty">No messages match your filters.<button class="cf7-ai-inbox-btn--secondary cf7-ai-inbox-btn--clear" id="clear-filters-btn">Clear filters</button></div>';
+    tbody.innerHTML = '<div class="inboxai-grid-table__cell inboxai-grid-table__cell--empty">No messages match your filters.<button class="inboxai-btn--secondary inboxai-btn--clear" id="clear-filters-btn">Clear filters</button></div>';
   } else {
     tbody.innerHTML = pageList.map(rowHtml).join('');
   }
@@ -180,8 +180,8 @@ function openDetail(id){
   document.getElementById('detail-draft-status').textContent = 'Draft auto-saved just now';
 
   document.getElementById('detail-timeline').innerHTML =
-    '<div class="cf7-ai-inbox-timeline__item"><div class="cf7-ai-inbox-timeline__dot cf7-ai-inbox-timeline__dot--ok"><svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="color:var(--conf-good);"><path d="M20 6L9 17l-5-5"/></svg></div><div class="cf7-ai-inbox-timeline__text">AI analysis completed — '+(m.confidence||0)+'% confidence</div><div class="cf7-ai-inbox-timeline__meta">System · '+m.received+'</div></div>'
-    +'<div class="cf7-ai-inbox-timeline__item"><div class="cf7-ai-inbox-timeline__dot cf7-ai-inbox-timeline__dot--neutral"><svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="color:var(--low);"><path d="M4 4h16v14H8l-4 4V4z"/></svg></div><div class="cf7-ai-inbox-timeline__text">Submission received via '+m.form+'</div><div class="cf7-ai-inbox-timeline__meta">System · '+m.received+'</div></div>';
+    '<div class="inboxai-timeline__item"><div class="inboxai-timeline__dot inboxai-timeline__dot--ok"><svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="color:var(--conf-good);"><path d="M20 6L9 17l-5-5"/></svg></div><div class="inboxai-timeline__text">AI analysis completed — '+(m.confidence||0)+'% confidence</div><div class="inboxai-timeline__meta">System · '+m.received+'</div></div>'
+    +'<div class="inboxai-timeline__item"><div class="inboxai-timeline__dot inboxai-timeline__dot--neutral"><svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="color:var(--low);"><path d="M4 4h16v14H8l-4 4V4z"/></svg></div><div class="inboxai-timeline__text">Submission received via '+m.form+'</div><div class="inboxai-timeline__meta">System · '+m.received+'</div></div>';
 
   state.currentDetailId = id;
   showInboxScreen('detail');
@@ -201,7 +201,7 @@ function openFailure(id){
 
 /* ================= EVENT DELEGATION ================= */
 document.addEventListener('click', function(e){
-  const menuItemEl = e.target.closest('.cf7-ai-inbox-row-menu__item[data-menu-action]');
+  const menuItemEl = e.target.closest('.inboxai-row-menu__item[data-menu-action]');
   if(menuItemEl){
     const action = menuItemEl.dataset.menuAction;
     const id = parseInt(menuItemEl.dataset.key, 10);
@@ -242,14 +242,14 @@ document.addEventListener('input', function(e){
   if(e.target.id==='inbox-search'){ state.inboxFilters.search = e.target.value; state.inboxPage = 1; renderInboxTable(); }
 });
 document.addEventListener('change', function(e){
-  if(e.target.classList.contains('cf7-ai-inbox-filter-select')){
+  if(e.target.classList.contains('inboxai-filter-select')){
     state.inboxFilters[e.target.dataset.filter] = e.target.value;
     state.inboxPage = 1;
     renderInboxTable();
   }
 });
 document.addEventListener('click', function(e){
-  const pagerBtn = e.target.closest('.cf7-ai-inbox-pager__btn');
+  const pagerBtn = e.target.closest('.inboxai-pager__btn');
   if(pagerBtn && !pagerBtn.disabled){
     state.inboxPage = parseInt(pagerBtn.dataset.page, 10);
     renderInboxTable();
@@ -260,8 +260,8 @@ document.addEventListener('click', function(e){
 });
 
 document.getElementById('inbox-refresh-btn').addEventListener('click', function(){
-  this.classList.add('cf7-ai-inbox-is-spinning');
-  setTimeout(()=>{ this.classList.remove('cf7-ai-inbox-is-spinning'); showToast('Inbox refreshed','success'); }, 700);
+  this.classList.add('inboxai-is-spinning');
+  setTimeout(()=>{ this.classList.remove('inboxai-is-spinning'); showToast('Inbox refreshed','success'); }, 700);
 });
 document.getElementById('inbox-export-btn').addEventListener('click', exportInboxCsv);
 
@@ -340,10 +340,10 @@ document.getElementById('fmt-block').addEventListener('change', function(){
 });
 function syncToolbarState(){
   try{
-    document.getElementById('fmt-bold').classList.toggle('cf7-ai-inbox-is-active', document.queryCommandState('bold'));
-    document.getElementById('fmt-italic').classList.toggle('cf7-ai-inbox-is-active', document.queryCommandState('italic'));
-    document.getElementById('fmt-underline').classList.toggle('cf7-ai-inbox-is-active', document.queryCommandState('underline'));
-    document.getElementById('fmt-list').classList.toggle('cf7-ai-inbox-is-active', document.queryCommandState('insertUnorderedList'));
+    document.getElementById('fmt-bold').classList.toggle('inboxai-is-active', document.queryCommandState('bold'));
+    document.getElementById('fmt-italic').classList.toggle('inboxai-is-active', document.queryCommandState('italic'));
+    document.getElementById('fmt-underline').classList.toggle('inboxai-is-active', document.queryCommandState('underline'));
+    document.getElementById('fmt-list').classList.toggle('inboxai-is-active', document.queryCommandState('insertUnorderedList'));
   } catch(e){}
 }
 document.getElementById('detail-reply-body').addEventListener('keyup', syncToolbarState);
@@ -381,7 +381,7 @@ document.getElementById('failure-manual-btn').addEventListener('click', function
 document.getElementById('open-reply-modal').addEventListener('click', function(){
   const m = messages.find(x=>x.id===state.currentDetailId);
   if(!m) return;
-  document.getElementById('modal-body-text').innerHTML = 'This reply will be emailed to <b style="color:var(--text-primary);">'+m.email+'</b> and the message status will change to <b style="color:var(--text-primary);">Replied</b>. This action cannot be undone.<div class="cf7-ai-inbox-modal__preview" id="modal-preview-text"><b>Subject:</b> Re: '+m.subject+'<br><br>'+(document.getElementById('detail-reply-body').innerText.slice(0,140))+'…</div>';
+  document.getElementById('modal-body-text').innerHTML = 'This reply will be emailed to <b style="color:var(--text-primary);">'+m.email+'</b> and the message status will change to <b style="color:var(--text-primary);">Replied</b>. This action cannot be undone.<div class="inboxai-modal__preview" id="modal-preview-text"><b>Subject:</b> Re: '+m.subject+'<br><br>'+(document.getElementById('detail-reply-body').innerText.slice(0,140))+'…</div>';
   document.getElementById('reply-modal-overlay').style.display = 'flex';
 });
 document.getElementById('modal-confirm-send').addEventListener('click', function(){

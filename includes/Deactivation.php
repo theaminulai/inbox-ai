@@ -2,10 +2,10 @@
 /**
  * Handles plugin deactivation.
  *
- * @package CF7AIInbox
+ * @package InboxAI
  */
 
-namespace CF7AIInbox;
+namespace InboxAI;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -30,13 +30,13 @@ final class Deactivation {
 	 */
 	public static function run(): void {
 		/**
-		 * Fires once CF7 AI Inbox has finished its deactivation routine.
+		 * Fires once Inbox AI has finished its deactivation routine.
 		 *
 		 * Reserved for future use (e.g. clearing scheduled AI-processing
 		 * jobs once Phase 3 introduces the async queue).
 		 *
 		 * @since 0.1.0
 		 */
-		do_action( 'cf7ai_inbox_deactivated' );
+		do_action( 'inboxai_deactivated' );
 	}
 }

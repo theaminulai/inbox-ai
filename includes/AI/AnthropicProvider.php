@@ -2,17 +2,17 @@
 /**
  * Anthropic provider — credential validation and model listing.
  *
- * @package CF7AIInbox\AI
+ * @package InboxAI\AI
  */
 
-namespace CF7AIInbox\AI;
+namespace InboxAI\AI;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use CF7AIInbox\Interfaces\AIProviderInterface;
+use InboxAI\Interfaces\AIProviderInterface;
 use WP_Error;
 
 /**
@@ -86,7 +86,7 @@ final class AnthropicProvider implements AIProviderInterface {
 	 */
 	public function analyze( string $api_key, string $model, string $system_prompt, string $user_prompt ) {
 		if ( '' === trim( $api_key ) ) {
-			return new WP_Error( 'cf7ai_missing_key', __( 'No API key has been configured.', 'cf7-ai-inbox' ) );
+			return new WP_Error( 'inboxai_missing_key', __( 'No API key has been configured.', 'inbox-ai' ) );
 		}
 
 		$payload = array(
@@ -118,7 +118,7 @@ final class AnthropicProvider implements AIProviderInterface {
 		);
 
 		if ( is_wp_error( $response ) ) {
-			return new WP_Error( 'cf7ai_provider_unreachable', __( 'Could not reach Anthropic. Please try again.', 'cf7-ai-inbox' ) );
+			return new WP_Error( 'inboxai_provider_unreachable', __( 'Could not reach Anthropic. Please try again.', 'inbox-ai' ) );
 		}
 
 		$code = (int) wp_remote_retrieve_response_code( $response );
@@ -126,13 +126,13 @@ final class AnthropicProvider implements AIProviderInterface {
 		$body = is_array( $body ) ? $body : array();
 
 		if ( $code < 200 || $code >= 300 ) {
-			return new WP_Error( 'cf7ai_provider_error', $this->error_message( $body, $code ) );
+			return new WP_Error( 'inboxai_provider_error', $this->error_message( $body, $code ) );
 		}
 
 		$content = (string) ( $body['content'][0]['text'] ?? '' );
 
 		if ( '' === trim( $content ) ) {
-			return new WP_Error( 'cf7ai_empty_response', __( 'Anthropic returned an empty response.', 'cf7-ai-inbox' ) );
+			return new WP_Error( 'inboxai_empty_response', __( 'Anthropic returned an empty response.', 'inbox-ai' ) );
 		}
 
 		return array(
@@ -159,7 +159,7 @@ final class AnthropicProvider implements AIProviderInterface {
 
 		return sprintf(
 			/* translators: %d: HTTP status code */
-			__( 'Anthropic returned an unexpected error (HTTP %d).', 'cf7-ai-inbox' ),
+			__( 'Anthropic returned an unexpected error (HTTP %d).', 'inbox-ai' ),
 			$code
 		);
 	}
@@ -171,7 +171,7 @@ final class AnthropicProvider implements AIProviderInterface {
 	 */
 	private function request( string $api_key ) {
 		if ( '' === trim( $api_key ) ) {
-			return new WP_Error( 'cf7ai_missing_key', __( 'Enter an API key first.', 'cf7-ai-inbox' ) );
+			return new WP_Error( 'inboxai_missing_key', __( 'Enter an API key first.', 'inbox-ai' ) );
 		}
 
 		$response = wp_remote_get(
@@ -186,17 +186,17 @@ final class AnthropicProvider implements AIProviderInterface {
 		);
 
 		if ( is_wp_error( $response ) ) {
-			return new WP_Error( 'cf7ai_provider_unreachable', __( 'Could not reach Anthropic. Please try again.', 'cf7-ai-inbox' ) );
+			return new WP_Error( 'inboxai_provider_unreachable', __( 'Could not reach Anthropic. Please try again.', 'inbox-ai' ) );
 		}
 
 		$code = (int) wp_remote_retrieve_response_code( $response );
 
 		if ( 401 === $code || 403 === $code ) {
-			return new WP_Error( 'cf7ai_invalid_key', __( 'That API key was rejected by Anthropic.', 'cf7-ai-inbox' ) );
+			return new WP_Error( 'inboxai_invalid_key', __( 'That API key was rejected by Anthropic.', 'inbox-ai' ) );
 		}
 
 		if ( $code < 200 || $code >= 300 ) {
-			return new WP_Error( 'cf7ai_provider_error', __( 'Anthropic returned an unexpected error. Please try again.', 'cf7-ai-inbox' ) );
+			return new WP_Error( 'inboxai_provider_error', __( 'Anthropic returned an unexpected error. Please try again.', 'inbox-ai' ) );
 		}
 
 		return $response;
