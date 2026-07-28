@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Inbox AI
  * Description:       An AI-powered review inbox for Contact Form 7 submissions — summaries, suggested replies, categorization, and priority scoring, with nothing ever sent automatically.
- * Version:           0.5.0
+ * Version: 0.6.0
  * Requires at least: 6.7
  * Requires PHP:      8.1
  * Requires Plugins:  contact-form-7
