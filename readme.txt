@@ -154,11 +154,6 @@ Only one provider is contacted per request — whichever one is currently select
 
 == Changelog ==
 
-= 0.7.0 =
-* Merge pull request #10 from theaminulai/development
-* Merge pull request #9 from theaminulai/Added-the-Contacts-List-page,-grouped-by-sender
-* Added the Contacts List page, grouped by sender.
-
 = Inbox AI/v0.7.0 - 2026-07-28 =
 
 **Added**
