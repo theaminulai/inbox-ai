@@ -14,6 +14,16 @@ const git = simpleGit.default();
 const releaseType = process.env.RELEASE_TYPE;
 const VALID_RELEASE_TYPES = [ 'major', 'minor', 'patch' ];
 
+// Whether a given tag actually exists in this repo's history yet.
+async function tagExists( tag ) {
+	try {
+		const tagsResult = await git.tags();
+		return tagsResult.all.includes( tag );
+	} catch ( error ) {
+		return false;
+	}
+}
+
 // To get the merges since the last (previous) tag
 async function getChangesSinceLastTag() {
 	try {
@@ -23,8 +33,14 @@ async function getChangesSinceLastTag() {
 		} );
 		const tags = tagsResult.all;
 		if ( tags.length === 0 ) {
-			console.error( '❌ Error: No previous tags found.' );
-			return null;
+			// No previous tag exists yet — this is the first-ever release,
+			// so there's no baseline to diff against. Fall back to the
+			// full commit history instead of crashing/returning null (which
+			// would blow up later at `changes.all.map(...)`).
+			console.info(
+				'ℹ️ No previous tags found — treating this as the first release and using the full commit history.'
+			);
+			return await git.log();
 		}
 		const previousTag = tags[ 0 ]; // The most recent tag
 
@@ -40,6 +56,20 @@ async function getChangesSinceLastTag() {
 // we are not using getChangesSinceGitTag because it returns the just the merges and not the commits.
 // So for example if a hotfix was committed directly to trunk this function will detect it but getChangesSinceGitTag will not.
 async function getHasChangesSinceGitTag( tag ) {
+	if ( ! ( await tagExists( tag ) ) ) {
+		// The tag doesn't exist yet (e.g. the very first release, so there's
+		// no prior `v*` tag to compare against). `git log a...b` requires
+		// both sides to be valid revisions, so running it against a
+		// non-existent tag throws "ambiguous argument" instead of just
+		// telling us there's nothing to compare. Treat "any commits exist
+		// at all" as "yes, there are changes to release" in that case.
+		console.info(
+			`ℹ️ Tag ${ tag } does not exist yet — treating this as the first release.`
+		);
+		const allCommits = await git.log();
+		return ( allCommits?.all?.length ?? 0 ) > 0;
+	}
+
 	const changes = await git.log( [ `HEAD...${ tag }` ] );
 	return changes?.all?.length > 0;
 }
