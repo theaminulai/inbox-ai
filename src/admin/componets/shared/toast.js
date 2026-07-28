@@ -26,8 +26,8 @@ export function showToast( message, type ) {
 
 	const el = document.createElement( 'div' );
 	el.className =
-		'cf7-ai-inbox-toast' +
-		( type && ICONS[ type ] ? ' cf7-ai-inbox-toast--' + type : '' );
+		'inboxai-toast' +
+		( type && ICONS[ type ] ? ' inboxai-toast--' + type : '' );
 
 	const icon = document.createElement( 'span' );
 	icon.innerHTML = ICONS[ type ] || ICONS.info;
@@ -40,11 +40,11 @@ export function showToast( message, type ) {
 	container.appendChild( el );
 
 	requestAnimationFrame( () =>
-		el.classList.add( 'cf7-ai-inbox-is-visible' )
+		el.classList.add( 'inboxai-is-visible' )
 	);
 
 	setTimeout( () => {
-		el.classList.remove( 'cf7-ai-inbox-is-visible' );
+		el.classList.remove( 'inboxai-is-visible' );
 		setTimeout( () => el.remove(), 250 );
 	}, 3000 );
 }

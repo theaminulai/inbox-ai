@@ -1,5 +1,5 @@
 /* =====================================================================
-   CF7 AI Inbox — Analytics page script.
+   Inbox AI — Analytics page script.
    Requires common.js to be loaded first (shared helpers).
 
    The Analytics screen is currently a static mockup (hardcoded KPI

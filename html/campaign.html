@@ -2,58 +2,58 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Campaigns · CF7 AI Inbox</title>
+<title>Campaigns · Inbox AI</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/cf7-ai-inbox.css">
+<link rel="stylesheet" href="assets/css/inboxai.css">
 </head>
 <body>
 
-  <div class="cf7-ai-inbox-main" id="main">
+  <div class="inboxai-main" id="main">
 
     <!-- ============ SCREEN: CAMPAIGNS LIST ============ -->
-    <section class="cf7-ai-inbox-screen cf7-ai-inbox-is-active" id="screen-campaigns">
-      <div class="cf7-ai-inbox-nav">
-        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html">Contacts</a><a href="analytics.html">Analytics</a><a href="campaign.html" class="cf7-ai-inbox-is-active js-nav-campaigns">Campaigns</a><a href="settings.html">Settings</a>
+    <section class="inboxai-screen inboxai-is-active" id="screen-campaigns">
+      <div class="inboxai-nav">
+        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html">Contacts</a><a href="analytics.html">Analytics</a><a href="campaign.html" class="inboxai-is-active js-nav-campaigns">Campaigns</a><a href="settings.html">Settings</a>
       </div>
-      <div class="cf7-ai-inbox-page-header">
+      <div class="inboxai-page-header">
         <div><h1>Campaigns</h1><p>Send bulk email to a segment of your submissions — by category, form, priority, or status.</p></div>
-        <div class="cf7-ai-inbox-page-header__controls">
-          <button class="cf7-ai-inbox-btn--primary" id="new-campaign-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>New Campaign</button>
+        <div class="inboxai-page-header__controls">
+          <button class="inboxai-btn--primary" id="new-campaign-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>New Campaign</button>
         </div>
       </div>
 
-      <div class="cf7-ai-inbox-kpi__strip">
-        <div class="cf7-ai-inbox-kpi__card"><div class="cf7-ai-inbox-kpi__label">Total campaigns</div><div class="cf7-ai-inbox-kpi__value" id="campaigns-kpi-total">0</div><div class="cf7-ai-inbox-kpi__sub">All time</div></div>
-        <div class="cf7-ai-inbox-kpi__card"><div class="cf7-ai-inbox-kpi__label">Emails sent</div><div class="cf7-ai-inbox-kpi__value" id="campaigns-kpi-sent">0</div><div class="cf7-ai-inbox-kpi__sub">Across all campaigns</div></div>
-        <div class="cf7-ai-inbox-kpi__card"><div class="cf7-ai-inbox-kpi__label">Avg. open rate</div><div class="cf7-ai-inbox-kpi__value" id="campaigns-kpi-open">—</div><div class="cf7-ai-inbox-kpi__sub">Sent campaigns only</div></div>
-        <div class="cf7-ai-inbox-kpi__card"><div class="cf7-ai-inbox-kpi__label">Daily send limit</div><div class="cf7-ai-inbox-kpi__value" style="font-size:20px;">5,000</div><div class="cf7-ai-inbox-kpi__sub">Configurable per campaign</div></div>
+      <div class="inboxai-kpi__strip">
+        <div class="inboxai-kpi__card"><div class="inboxai-kpi__label">Total campaigns</div><div class="inboxai-kpi__value" id="campaigns-kpi-total">0</div><div class="inboxai-kpi__sub">All time</div></div>
+        <div class="inboxai-kpi__card"><div class="inboxai-kpi__label">Emails sent</div><div class="inboxai-kpi__value" id="campaigns-kpi-sent">0</div><div class="inboxai-kpi__sub">Across all campaigns</div></div>
+        <div class="inboxai-kpi__card"><div class="inboxai-kpi__label">Avg. open rate</div><div class="inboxai-kpi__value" id="campaigns-kpi-open">—</div><div class="inboxai-kpi__sub">Sent campaigns only</div></div>
+        <div class="inboxai-kpi__card"><div class="inboxai-kpi__label">Daily send limit</div><div class="inboxai-kpi__value" style="font-size:20px;">5,000</div><div class="inboxai-kpi__sub">Configurable per campaign</div></div>
       </div>
 
       <div id="campaigns-empty" style="display:none;">
-        <div class="cf7-ai-inbox-state">
+        <div class="inboxai-state">
           <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6" style="width:48px;height:48px;"><path d="M4 4h16v16H4z"/><path d="M4 6l8 7 8-7"/></svg>
           <h2>No campaigns yet</h2>
           <p>Create your first campaign to send bulk email to a segment of your contacts — by category, form, priority, or status.</p>
-          <div class="cf7-ai-inbox-state__actions"><button class="cf7-ai-inbox-btn--primary" id="campaigns-empty-new-btn">New Campaign</button></div>
+          <div class="inboxai-state__actions"><button class="inboxai-btn--primary" id="campaigns-empty-new-btn">New Campaign</button></div>
         </div>
       </div>
 
       <div id="campaigns-populated">
-        <div class="cf7-ai-inbox-card">
+        <div class="inboxai-card">
           <div style="overflow-x:auto;">
-            <div class="cf7-ai-inbox-grid-table cf7-ai-inbox-grid-table--campaigns" role="table">
-              <div class="cf7-ai-inbox-grid-table__row cf7-ai-inbox-grid-table__row--head" role="row">
-                <div class="cf7-ai-inbox-grid-table__cell" role="columnheader">Campaign</div>
-                <div class="cf7-ai-inbox-grid-table__cell" role="columnheader">Audience</div>
-                <div class="cf7-ai-inbox-grid-table__cell" role="columnheader">Recipients</div>
-                <div class="cf7-ai-inbox-grid-table__cell" role="columnheader">Status</div>
-                <div class="cf7-ai-inbox-grid-table__cell" role="columnheader">Open Rate</div>
-                <div class="cf7-ai-inbox-grid-table__cell" role="columnheader">Sent</div>
-                <div class="cf7-ai-inbox-grid-table__cell" role="columnheader"></div>
+            <div class="inboxai-grid-table inboxai-grid-table--campaigns" role="table">
+              <div class="inboxai-grid-table__row inboxai-grid-table__row--head" role="row">
+                <div class="inboxai-grid-table__cell" role="columnheader">Campaign</div>
+                <div class="inboxai-grid-table__cell" role="columnheader">Audience</div>
+                <div class="inboxai-grid-table__cell" role="columnheader">Recipients</div>
+                <div class="inboxai-grid-table__cell" role="columnheader">Status</div>
+                <div class="inboxai-grid-table__cell" role="columnheader">Open Rate</div>
+                <div class="inboxai-grid-table__cell" role="columnheader">Sent</div>
+                <div class="inboxai-grid-table__cell" role="columnheader"></div>
               </div>
-              <div id="campaigns-table-body" class="cf7-ai-inbox-grid-table__body" role="rowgroup"></div>
+              <div id="campaigns-table-body" class="inboxai-grid-table__body" role="rowgroup"></div>
             </div>
           </div>
         </div>
@@ -61,57 +61,57 @@
     </section>
 
     <!-- ============ SCREEN: NEW CAMPAIGN WIZARD ============ -->
-    <section class="cf7-ai-inbox-screen" id="screen-campaign-new">
-      <div class="cf7-ai-inbox-nav">
-        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html">Contacts</a><a href="analytics.html">Analytics</a><a href="campaign.html" class="cf7-ai-inbox-is-active js-nav-campaigns">Campaigns</a><a href="settings.html">Settings</a>
+    <section class="inboxai-screen" id="screen-campaign-new">
+      <div class="inboxai-nav">
+        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html">Contacts</a><a href="analytics.html">Analytics</a><a href="campaign.html" class="inboxai-is-active js-nav-campaigns">Campaigns</a><a href="settings.html">Settings</a>
       </div>
-      <div class="cf7-ai-inbox-page-header"><div><h1>New Campaign</h1><p>Send a bulk email to a segment of your Contact Form 7 submissions.</p></div></div>
+      <div class="inboxai-page-header"><div><h1>New Campaign</h1><p>Send a bulk email to a segment of your Contact Form 7 submissions.</p></div></div>
 
-      <div class="cf7-ai-inbox-wizard__steps">
-        <div class="cf7-ai-inbox-wizard__step cf7-ai-inbox-is-active" data-wizard-step="1"><div class="cf7-ai-inbox-wizard__circle">1</div><span>Audience</span></div>
-        <div class="cf7-ai-inbox-wizard__line"></div>
-        <div class="cf7-ai-inbox-wizard__step" data-wizard-step="2"><div class="cf7-ai-inbox-wizard__circle">2</div><span>Compose</span></div>
-        <div class="cf7-ai-inbox-wizard__line"></div>
-        <div class="cf7-ai-inbox-wizard__step" data-wizard-step="3"><div class="cf7-ai-inbox-wizard__circle">3</div><span>Sending</span></div>
-        <div class="cf7-ai-inbox-wizard__line"></div>
-        <div class="cf7-ai-inbox-wizard__step" data-wizard-step="4"><div class="cf7-ai-inbox-wizard__circle">4</div><span>Review & Send</span></div>
-        <div class="cf7-ai-inbox-wizard__line"></div>
-        <div class="cf7-ai-inbox-wizard__step" data-wizard-step="5"><div class="cf7-ai-inbox-wizard__circle">5</div><span>Complete</span></div>
+      <div class="inboxai-wizard__steps">
+        <div class="inboxai-wizard__step inboxai-is-active" data-wizard-step="1"><div class="inboxai-wizard__circle">1</div><span>Audience</span></div>
+        <div class="inboxai-wizard__line"></div>
+        <div class="inboxai-wizard__step" data-wizard-step="2"><div class="inboxai-wizard__circle">2</div><span>Compose</span></div>
+        <div class="inboxai-wizard__line"></div>
+        <div class="inboxai-wizard__step" data-wizard-step="3"><div class="inboxai-wizard__circle">3</div><span>Sending</span></div>
+        <div class="inboxai-wizard__line"></div>
+        <div class="inboxai-wizard__step" data-wizard-step="4"><div class="inboxai-wizard__circle">4</div><span>Review & Send</span></div>
+        <div class="inboxai-wizard__line"></div>
+        <div class="inboxai-wizard__step" data-wizard-step="5"><div class="inboxai-wizard__circle">5</div><span>Complete</span></div>
       </div>
 
       <!-- STEP 1: AUDIENCE -->
-      <div class="cf7-ai-inbox-card" id="campaign-panel-1">
-        <div class="cf7-ai-inbox-card__header"><h2>Choose your audience</h2><span class="cf7-ai-inbox-card__muted">Only contacts matching this segment will receive the email</span></div>
-        <div class="cf7-ai-inbox-card__body">
-          <div class="cf7-ai-inbox-provider__option cf7-ai-inbox-is-selected" data-audience-type="all">
-            <div class="cf7-ai-inbox-provider__logo" style="background:var(--accent-soft);color:var(--accent-deep);">All</div>
+      <div class="inboxai-card" id="campaign-panel-1">
+        <div class="inboxai-card__header"><h2>Choose your audience</h2><span class="inboxai-card__muted">Only contacts matching this segment will receive the email</span></div>
+        <div class="inboxai-card__body">
+          <div class="inboxai-provider__option inboxai-is-selected" data-audience-type="all">
+            <div class="inboxai-provider__logo" style="background:var(--accent-soft);color:var(--accent-deep);">All</div>
             <div><div style="font-weight:700;font-size:13.5px;">All contacts</div><div style="font-size:12px;color:var(--text-tertiary);">Everyone who has submitted a form</div></div>
-            <div class="cf7-ai-inbox-provider__radio cf7-ai-inbox-is-checked"></div>
+            <div class="inboxai-provider__radio inboxai-is-checked"></div>
           </div>
-          <div class="cf7-ai-inbox-provider__option" data-audience-type="category">
-            <div class="cf7-ai-inbox-provider__logo" style="background:var(--purple-soft);color:var(--purple);">Cat</div>
+          <div class="inboxai-provider__option" data-audience-type="category">
+            <div class="inboxai-provider__logo" style="background:var(--purple-soft);color:var(--purple);">Cat</div>
             <div><div style="font-weight:700;font-size:13.5px;">By category</div><div style="font-size:12px;color:var(--text-tertiary);">e.g. everyone categorized as Sales</div></div>
-            <div class="cf7-ai-inbox-provider__radio"></div>
+            <div class="inboxai-provider__radio"></div>
           </div>
-          <div class="cf7-ai-inbox-provider__option" data-audience-type="form">
-            <div class="cf7-ai-inbox-provider__logo" style="background:var(--high-soft);color:var(--high);">Frm</div>
+          <div class="inboxai-provider__option" data-audience-type="form">
+            <div class="inboxai-provider__logo" style="background:var(--high-soft);color:var(--high);">Frm</div>
             <div><div style="font-weight:700;font-size:13.5px;">By form</div><div style="font-size:12px;color:var(--text-tertiary);">e.g. everyone who used the Sales Contact form</div></div>
-            <div class="cf7-ai-inbox-provider__radio"></div>
+            <div class="inboxai-provider__radio"></div>
           </div>
-          <div class="cf7-ai-inbox-provider__option" data-audience-type="priority">
-            <div class="cf7-ai-inbox-provider__logo" style="background:var(--urgent-soft);color:var(--urgent);">Pri</div>
+          <div class="inboxai-provider__option" data-audience-type="priority">
+            <div class="inboxai-provider__logo" style="background:var(--urgent-soft);color:var(--urgent);">Pri</div>
             <div><div style="font-weight:700;font-size:13.5px;">By priority</div><div style="font-size:12px;color:var(--text-tertiary);">e.g. everyone flagged Urgent or High</div></div>
-            <div class="cf7-ai-inbox-provider__radio"></div>
+            <div class="inboxai-provider__radio"></div>
           </div>
-          <div class="cf7-ai-inbox-provider__option" data-audience-type="status" style="margin-bottom:0;">
-            <div class="cf7-ai-inbox-provider__logo" style="background:var(--conf-good-soft);color:var(--conf-good);">Sts</div>
+          <div class="inboxai-provider__option" data-audience-type="status" style="margin-bottom:0;">
+            <div class="inboxai-provider__logo" style="background:var(--conf-good-soft);color:var(--conf-good);">Sts</div>
             <div><div style="font-weight:700;font-size:13.5px;">By status</div><div style="font-size:12px;color:var(--text-tertiary);">e.g. everyone marked Replied</div></div>
-            <div class="cf7-ai-inbox-provider__radio"></div>
+            <div class="inboxai-provider__radio"></div>
           </div>
 
-          <div class="cf7-ai-inbox-field" id="campaign-segment-value-wrap" style="display:none;margin-top:18px;margin-bottom:0;">
+          <div class="inboxai-field" id="campaign-segment-value-wrap" style="display:none;margin-top:18px;margin-bottom:0;">
             <label id="campaign-segment-label">Category</label>
-            <select class="cf7-ai-inbox-field__input" id="campaign-segment-value"></select>
+            <select class="inboxai-field__input" id="campaign-segment-value"></select>
           </div>
 
           <div style="margin-top:18px;background:var(--accent-soft);border:1px solid var(--accent-soft-border);border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:10px;">
@@ -119,117 +119,117 @@
             <div style="font-size:13px;color:var(--accent-deep);"><b id="campaign-recipient-count">0</b> <span id="campaign-recipient-label">contacts match this audience</span></div>
           </div>
         </div>
-        <div class="cf7-ai-inbox-modal__footer" style="justify-content:flex-end;background:transparent;">
-          <button class="cf7-ai-inbox-btn--primary" id="campaign-next-1">Next</button>
+        <div class="inboxai-modal__footer" style="justify-content:flex-end;background:transparent;">
+          <button class="inboxai-btn--primary" id="campaign-next-1">Next</button>
         </div>
       </div>
 
       <!-- STEP 2: COMPOSE -->
-      <div class="cf7-ai-inbox-card" id="campaign-panel-2" style="display:none;">
-        <div class="cf7-ai-inbox-card__header"><h2>Compose your email</h2></div>
-        <div class="cf7-ai-inbox-card__body">
-          <div class="cf7-ai-inbox-field-row">
-            <div class="cf7-ai-inbox-field"><label>From name</label><input class="cf7-ai-inbox-field__input" id="campaign-from-name" value="Aminul Islam"></div>
-            <div class="cf7-ai-inbox-field"><label>From email</label><input class="cf7-ai-inbox-field__input" id="campaign-from-email" value="aminul@yourcompany.com"></div>
+      <div class="inboxai-card" id="campaign-panel-2" style="display:none;">
+        <div class="inboxai-card__header"><h2>Compose your email</h2></div>
+        <div class="inboxai-card__body">
+          <div class="inboxai-field-row">
+            <div class="inboxai-field"><label>From name</label><input class="inboxai-field__input" id="campaign-from-name" value="Aminul Islam"></div>
+            <div class="inboxai-field"><label>From email</label><input class="inboxai-field__input" id="campaign-from-email" value="aminul@yourcompany.com"></div>
           </div>
-          <div class="cf7-ai-inbox-field"><label>Subject</label><input class="cf7-ai-inbox-field__input" id="campaign-subject" placeholder="e.g. New features for our Sales customers"></div>
-          <div class="cf7-ai-inbox-field" style="margin-bottom:12px;">
+          <div class="inboxai-field"><label>Subject</label><input class="inboxai-field__input" id="campaign-subject" placeholder="e.g. New features for our Sales customers"></div>
+          <div class="inboxai-field" style="margin-bottom:12px;">
             <label>Message</label>
             <div style="border:1px solid var(--border-strong);border-radius:8px;overflow:hidden;">
               <div style="display:flex;align-items:center;gap:2px;padding:8px 10px;border-bottom:1px solid var(--border);background:var(--surface-2);flex-wrap:wrap;">
-                <div class="cf7-ai-inbox-btn--icon" id="campaign-fmt-bold" title="Bold" style="width:26px;height:26px;border:none;background:transparent;box-shadow:none;font-weight:700;font-size:12px;">B</div>
-                <div class="cf7-ai-inbox-btn--icon" id="campaign-fmt-italic" title="Italic" style="width:26px;height:26px;border:none;background:transparent;box-shadow:none;font-style:italic;font-size:12px;">I</div>
-                <div class="cf7-ai-inbox-btn--icon" id="campaign-fmt-underline" title="Underline" style="width:26px;height:26px;border:none;background:transparent;box-shadow:none;text-decoration:underline;font-size:12px;">U</div>
-                <div class="cf7-ai-inbox-btn--icon" id="campaign-fmt-list" title="Bulleted list" style="width:26px;height:26px;border:none;background:transparent;box-shadow:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></div>
-                <div class="cf7-ai-inbox-btn--icon" id="campaign-fmt-link" title="Insert link" style="width:26px;height:26px;border:none;background:transparent;box-shadow:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007 0l3-3a5 5 0 00-7-7l-1 1"/><path d="M14 11a5 5 0 00-7 0l-3 3a5 5 0 007 7l1-1"/></svg></div>
+                <div class="inboxai-btn--icon" id="campaign-fmt-bold" title="Bold" style="width:26px;height:26px;border:none;background:transparent;box-shadow:none;font-weight:700;font-size:12px;">B</div>
+                <div class="inboxai-btn--icon" id="campaign-fmt-italic" title="Italic" style="width:26px;height:26px;border:none;background:transparent;box-shadow:none;font-style:italic;font-size:12px;">I</div>
+                <div class="inboxai-btn--icon" id="campaign-fmt-underline" title="Underline" style="width:26px;height:26px;border:none;background:transparent;box-shadow:none;text-decoration:underline;font-size:12px;">U</div>
+                <div class="inboxai-btn--icon" id="campaign-fmt-list" title="Bulleted list" style="width:26px;height:26px;border:none;background:transparent;box-shadow:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></div>
+                <div class="inboxai-btn--icon" id="campaign-fmt-link" title="Insert link" style="width:26px;height:26px;border:none;background:transparent;box-shadow:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007 0l3-3a5 5 0 00-7-7l-1 1"/><path d="M14 11a5 5 0 00-7 0l-3 3a5 5 0 007 7l1-1"/></svg></div>
               </div>
-              <div class="cf7-ai-inbox-field__input" id="campaign-body" contenteditable="true" style="border:none;border-radius:0;min-height:180px;font-family:'Inter';font-size:13px;overflow-y:auto;white-space:pre-wrap;"></div>
+              <div class="inboxai-field__input" id="campaign-body" contenteditable="true" style="border:none;border-radius:0;min-height:180px;font-family:'Inter';font-size:13px;overflow-y:auto;white-space:pre-wrap;"></div>
               <div style="padding:10px 14px;border-top:1px solid var(--border);background:var(--surface-2);font-size:11.5px;color:var(--text-tertiary);">This footer is added automatically to every campaign: <em>"You're receiving this because you contacted us. <span style="color:var(--accent-deep);">Unsubscribe</span>."</em></div>
             </div>
           </div>
         </div>
-        <div class="cf7-ai-inbox-modal__footer" style="justify-content:space-between;background:transparent;">
-          <button class="cf7-ai-inbox-btn--secondary" id="campaign-back-2">Back</button>
-          <button class="cf7-ai-inbox-btn--primary" id="campaign-next-2">Next</button>
+        <div class="inboxai-modal__footer" style="justify-content:space-between;background:transparent;">
+          <button class="inboxai-btn--secondary" id="campaign-back-2">Back</button>
+          <button class="inboxai-btn--primary" id="campaign-next-2">Next</button>
         </div>
       </div>
 
       <!-- STEP 3: SENDING SETTINGS -->
-      <div class="cf7-ai-inbox-card" id="campaign-panel-3" style="display:none;">
-        <div class="cf7-ai-inbox-card__header"><h2>Sending settings</h2><span class="cf7-ai-inbox-card__muted">Protects your sender reputation at high volume</span></div>
-        <div class="cf7-ai-inbox-card__body">
-          <div class="cf7-ai-inbox-field-row">
-            <div class="cf7-ai-inbox-field">
+      <div class="inboxai-card" id="campaign-panel-3" style="display:none;">
+        <div class="inboxai-card__header"><h2>Sending settings</h2><span class="inboxai-card__muted">Protects your sender reputation at high volume</span></div>
+        <div class="inboxai-card__body">
+          <div class="inboxai-field-row">
+            <div class="inboxai-field">
               <label>Daily send limit</label>
-              <select class="cf7-ai-inbox-field__input" id="campaign-send-rate">
+              <select class="inboxai-field__input" id="campaign-send-rate">
                 <option value="500">500 / day</option>
                 <option value="1000">1,000 / day</option>
                 <option value="3000">3,000 / day</option>
                 <option value="5000" selected>5,000 / day</option>
                 <option value="0">No limit (not recommended)</option>
               </select>
-              <div class="cf7-ai-inbox-field__hint">If your audience is larger than this, sending continues automatically across the following days.</div>
+              <div class="inboxai-field__hint">If your audience is larger than this, sending continues automatically across the following days.</div>
             </div>
-            <div class="cf7-ai-inbox-field">
+            <div class="inboxai-field">
               <label>Email provider</label>
               <div id="campaign-provider-status" style="border:1px solid var(--border-strong);border-radius:8px;padding:9px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
                 <span id="campaign-provider-name" style="font-size:13px;font-weight:600;">—</span>
                 <a href="settings.html?tab=email-settings" id="campaign-provider-manage-link" style="font-size:12px;font-weight:600;color:var(--accent-deep);white-space:nowrap;">Manage</a>
               </div>
-              <div class="cf7-ai-inbox-field__hint" id="campaign-provider-hint">Bulk sending requires a connected email provider.</div>
+              <div class="inboxai-field__hint" id="campaign-provider-hint">Bulk sending requires a connected email provider.</div>
             </div>
           </div>
-          <div class="cf7-ai-inbox-switch-row"><div><div class="cf7-ai-inbox-switch-row__text">Send immediately</div><div class="cf7-ai-inbox-switch-row__sub">Turn off to schedule for a specific date and time</div></div><div class="cf7-ai-inbox-switch cf7-ai-inbox-is-on" id="campaign-send-now-toggle"></div></div>
-          <div class="cf7-ai-inbox-field-row" id="campaign-schedule-row" style="display:none;margin-top:14px;">
-            <div class="cf7-ai-inbox-field" style="margin-bottom:0;"><label>Send date</label><input type="date" class="cf7-ai-inbox-field__input" id="campaign-schedule-date"></div>
-            <div class="cf7-ai-inbox-field" style="margin-bottom:0;"><label>Send time</label><input type="time" class="cf7-ai-inbox-field__input" id="campaign-schedule-time" value="09:00"></div>
+          <div class="inboxai-switch-row"><div><div class="inboxai-switch-row__text">Send immediately</div><div class="inboxai-switch-row__sub">Turn off to schedule for a specific date and time</div></div><div class="inboxai-switch inboxai-is-on" id="campaign-send-now-toggle"></div></div>
+          <div class="inboxai-field-row" id="campaign-schedule-row" style="display:none;margin-top:14px;">
+            <div class="inboxai-field" style="margin-bottom:0;"><label>Send date</label><input type="date" class="inboxai-field__input" id="campaign-schedule-date"></div>
+            <div class="inboxai-field" style="margin-bottom:0;"><label>Send time</label><input type="time" class="inboxai-field__input" id="campaign-schedule-time" value="09:00"></div>
           </div>
-          <div class="cf7-ai-inbox-switch-row" style="border-bottom:none;margin-top:6px;"><div><div class="cf7-ai-inbox-switch-row__text">Recipients have consented to this type of email</div><div class="cf7-ai-inbox-switch-row__sub">Required — confirms this audience isn't purely transactional/support contacts</div></div><div class="cf7-ai-inbox-switch" id="campaign-consent-toggle"></div></div>
+          <div class="inboxai-switch-row" style="border-bottom:none;margin-top:6px;"><div><div class="inboxai-switch-row__text">Recipients have consented to this type of email</div><div class="inboxai-switch-row__sub">Required — confirms this audience isn't purely transactional/support contacts</div></div><div class="inboxai-switch" id="campaign-consent-toggle"></div></div>
         </div>
-        <div class="cf7-ai-inbox-modal__footer" style="justify-content:space-between;background:transparent;">
-          <button class="cf7-ai-inbox-btn--secondary" id="campaign-back-3">Back</button>
-          <button class="cf7-ai-inbox-btn--primary" id="campaign-next-3">Next</button>
+        <div class="inboxai-modal__footer" style="justify-content:space-between;background:transparent;">
+          <button class="inboxai-btn--secondary" id="campaign-back-3">Back</button>
+          <button class="inboxai-btn--primary" id="campaign-next-3">Next</button>
         </div>
       </div>
 
       <!-- STEP 4: REVIEW & SEND -->
-      <div class="cf7-ai-inbox-card" id="campaign-panel-4" style="display:none;">
-        <div class="cf7-ai-inbox-card__header"><h2>Review & Send</h2><span class="cf7-ai-inbox-card__muted">Double check before this goes out</span></div>
-        <div class="cf7-ai-inbox-card__body">
-          <div class="cf7-ai-inbox-info-row"><span>Audience</span><b id="campaign-review-audience">—</b></div>
-          <div class="cf7-ai-inbox-info-row"><span>Recipients</span><b style="font-family:var(--mono);" id="campaign-review-count">0</b></div>
-          <div class="cf7-ai-inbox-info-row"><span>From</span><b id="campaign-review-from">—</b></div>
-          <div class="cf7-ai-inbox-info-row"><span>Subject</span><b id="campaign-review-subject">—</b></div>
-          <div class="cf7-ai-inbox-info-row"><span>Daily limit</span><b id="campaign-review-rate">—</b></div>
-          <div class="cf7-ai-inbox-info-row"><span>Provider</span><b id="campaign-review-provider">—</b></div>
-          <div class="cf7-ai-inbox-info-row"><span>Estimated completion</span><b id="campaign-review-eta">—</b></div>
-          <div class="cf7-ai-inbox-info-row"><span>Sending</span><b id="campaign-review-when">—</b></div>
-          <div class="cf7-ai-inbox-modal__preview" style="margin-top:14px;">
+      <div class="inboxai-card" id="campaign-panel-4" style="display:none;">
+        <div class="inboxai-card__header"><h2>Review & Send</h2><span class="inboxai-card__muted">Double check before this goes out</span></div>
+        <div class="inboxai-card__body">
+          <div class="inboxai-info-row"><span>Audience</span><b id="campaign-review-audience">—</b></div>
+          <div class="inboxai-info-row"><span>Recipients</span><b style="font-family:var(--mono);" id="campaign-review-count">0</b></div>
+          <div class="inboxai-info-row"><span>From</span><b id="campaign-review-from">—</b></div>
+          <div class="inboxai-info-row"><span>Subject</span><b id="campaign-review-subject">—</b></div>
+          <div class="inboxai-info-row"><span>Daily limit</span><b id="campaign-review-rate">—</b></div>
+          <div class="inboxai-info-row"><span>Provider</span><b id="campaign-review-provider">—</b></div>
+          <div class="inboxai-info-row"><span>Estimated completion</span><b id="campaign-review-eta">—</b></div>
+          <div class="inboxai-info-row"><span>Sending</span><b id="campaign-review-when">—</b></div>
+          <div class="inboxai-modal__preview" style="margin-top:14px;">
             <b>Preview:</b> <span id="campaign-review-preview">—</span>
           </div>
           <div id="campaign-consent-warning" style="display:none;margin-top:14px;background:var(--urgent-soft);border:1px solid #F3C6C6;border-radius:8px;padding:10px 14px;font-size:12.5px;color:var(--urgent);">
             You haven't confirmed recipient consent yet — go back to Sending settings before sending to a non-transactional audience.
           </div>
         </div>
-        <div class="cf7-ai-inbox-modal__footer" style="justify-content:space-between;background:transparent;">
-          <button class="cf7-ai-inbox-btn--secondary" id="campaign-back-4">Back</button>
-          <button class="cf7-ai-inbox-btn--primary" id="campaign-send-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px;"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>Send Campaign</button>
+        <div class="inboxai-modal__footer" style="justify-content:space-between;background:transparent;">
+          <button class="inboxai-btn--secondary" id="campaign-back-4">Back</button>
+          <button class="inboxai-btn--primary" id="campaign-send-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px;"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>Send Campaign</button>
         </div>
         <div id="campaign-progress-wrap" style="display:none;padding:0 18px 18px;">
           <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-secondary);margin-bottom:6px;"><span id="campaign-progress-label">Sending…</span><span id="campaign-progress-pct">0%</span></div>
-          <div class="cf7-ai-inbox-confidence__track"><div class="cf7-ai-inbox-confidence__fill" id="campaign-progress-fill" style="width:0%;background:var(--accent);"></div></div>
+          <div class="inboxai-confidence__track"><div class="inboxai-confidence__fill" id="campaign-progress-fill" style="width:0%;background:var(--accent);"></div></div>
         </div>
       </div>
 
       <!-- STEP 5: COMPLETE -->
-      <div class="cf7-ai-inbox-card" id="campaign-panel-5" style="display:none;">
-        <div class="cf7-ai-inbox-card__body" style="text-align:center;padding:44px 24px;">
+      <div class="inboxai-card" id="campaign-panel-5" style="display:none;">
+        <div class="inboxai-card__body" style="text-align:center;padding:44px 24px;">
           <svg viewBox="0 0 24 24" fill="none" stroke="var(--conf-good)" stroke-width="1.6" style="width:48px;height:48px;"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-6"/></svg>
           <h2 style="margin:14px 0 6px;font-size:16px;" id="campaign-complete-title">Campaign Sent</h2>
           <p style="color:var(--text-secondary);font-size:13px;margin:0 0 22px;" id="campaign-complete-summary">—</p>
           <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-            <button class="cf7-ai-inbox-btn--secondary" id="campaign-new-another-btn">Create Another</button>
-            <button class="cf7-ai-inbox-btn--primary" id="campaign-back-to-list-btn">Back to Campaigns</button>
+            <button class="inboxai-btn--secondary" id="campaign-new-another-btn">Create Another</button>
+            <button class="inboxai-btn--primary" id="campaign-back-to-list-btn">Back to Campaigns</button>
           </div>
         </div>
       </div>
@@ -237,7 +237,7 @@
 
   </div>
 
-<div class="cf7-ai-inbox-row-menu" id="row-menu" data-open-for=""></div>
+<div class="inboxai-row-menu" id="row-menu" data-open-for=""></div>
 
 <div id="toast-container"></div>
 

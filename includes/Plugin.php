@@ -6,22 +6,22 @@
  * the safety-net schema migration. Later phases wire in submission capture,
  * the AI layer, and the admin inbox UI (see docs/CF7_AI_Inbox_RnD.md).
  *
- * @package CF7AIInbox
+ * @package InboxAI
  */
 
-namespace CF7AIInbox;
+namespace InboxAI;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use CF7AIInbox\Admin\AjaxController;
-use CF7AIInbox\Admin\Menu;
-use CF7AIInbox\AI\AnalysisQueue;
-use CF7AIInbox\CF7\CategoryTaxonomy;
-use CF7AIInbox\CF7\SubmissionHandler;
-use CF7AIInbox\Database\Migrator;
+use InboxAI\Admin\AjaxController;
+use InboxAI\Admin\Menu;
+use InboxAI\AI\AnalysisQueue;
+use InboxAI\CF7\CategoryTaxonomy;
+use InboxAI\CF7\SubmissionHandler;
+use InboxAI\Database\Migrator;
 
 /**
  * Class Plugin
@@ -111,12 +111,12 @@ final class Plugin {
 		( new CategoryTaxonomy() )->init();
 
 		/**
-		 * Fires once CF7 AI Inbox has confirmed its requirements are met
+		 * Fires once Inbox AI has confirmed its requirements are met
 		 * and finished its Phase 1 bootstrap.
 		 *
 		 * @since 0.1.0
 		 */
-		do_action( 'cf7ai_inbox_loaded' );
+		do_action( 'inboxai_loaded' );
 	}
 
 	/**
@@ -160,7 +160,7 @@ final class Plugin {
 	 * Renders the missing-Contact-Form-7 admin notice with a real,
 	 * one-click Install or Activate button — instead of core's own
 	 * "Requires Plugins" header mechanism, which hard-blocks activating
-	 * CF7 AI Inbox at all until Contact Form 7 is already active. This
+	 * Inbox AI at all until Contact Form 7 is already active. This
 	 * plugin deliberately doesn't declare a `Requires Plugins` header for
 	 * that reason: it always activates, stays active, and simply no-ops
 	 * (see {@see self::init()}) with this notice until Contact Form 7 is
@@ -181,7 +181,7 @@ final class Plugin {
 				),
 				'activate-plugin_' . Requirements::CF7_PLUGIN_FILE
 			);
-			$label = __( 'Activate Contact Form 7', 'cf7-ai-inbox' );
+			$label = __( 'Activate Contact Form 7', 'inbox-ai' );
 		} else {
 			$action_url = wp_nonce_url(
 				add_query_arg(
@@ -193,12 +193,12 @@ final class Plugin {
 				),
 				'install-plugin_contact-form-7'
 			);
-			$label = __( 'Install Contact Form 7', 'cf7-ai-inbox' );
+			$label = __( 'Install Contact Form 7', 'inbox-ai' );
 		}
 
 		printf(
 			'<div class="notice notice-warning"><p>%s</p><p><a href="%s" class="button button-primary">%s</a></p></div>',
-			esc_html__( 'CF7 AI Inbox needs Contact Form 7 to do anything — it will stay installed and switch its features on automatically as soon as Contact Form 7 is active.', 'cf7-ai-inbox' ),
+			esc_html__( 'Inbox AI needs Contact Form 7 to do anything — it will stay installed and switch its features on automatically as soon as Contact Form 7 is active.', 'inbox-ai' ),
 			esc_url( $action_url ),
 			esc_html( $label )
 		);

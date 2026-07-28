@@ -2,10 +2,10 @@
 /**
  * Turns a Contact Form 7 submission into AI-ready prompt text.
  *
- * @package CF7AIInbox\AI
+ * @package InboxAI\AI
  */
 
-namespace CF7AIInbox\AI;
+namespace InboxAI\AI;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -222,7 +222,7 @@ final class PromptBuilder {
 	 * Builds the analysis prompt: the admin-configured template (with its
 	 * placeholders substituted) plus a fixed, non-editable instruction
 	 * telling the model to respond with only a single JSON object in the
-	 * exact shape {@see \CF7AIInbox\AI\ResponseValidator} expects.
+	 * exact shape {@see \InboxAI\AI\ResponseValidator} expects.
 	 *
 	 * @param string                $template   Raw `analysis_prompt` template text,
 	 *                                          from `Settings\Repository::get_prompts()`.
@@ -232,7 +232,7 @@ final class PromptBuilder {
 	 * @param string[]              $categories The category names the model is actually
 	 *                                          allowed to choose from for this message —
 	 *                                          the submitting form's own
-	 *                                          {@see \CF7AIInbox\CF7\CategoryTaxonomy}
+	 *                                          {@see \InboxAI\CF7\CategoryTaxonomy}
 	 *                                          terms. Empty for a form with no categories
 	 *                                          of its own added yet, in which case the
 	 *                                          model isn't asked for a category at all

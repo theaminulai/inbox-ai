@@ -2,7 +2,7 @@
 
 **Where to find it:** Contact → Settings → **AI Provider** tab (this is the tab that opens by default).
 
-This is where you tell CF7 AI Inbox which AI service to use for analyzing submissions and drafting replies. Nothing here is optional — the plugin can't summarize or categorize anything until a provider is connected.
+This is where you tell Inbox AI which AI service to use for analyzing submissions and drafting replies. Nothing here is optional — the plugin can't summarize or categorize anything until a provider is connected.
 
 ## Step by step: connecting a provider
 

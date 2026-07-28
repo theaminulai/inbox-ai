@@ -1,10 +1,10 @@
 // The `<h1>` + description + right-aligned controls row every real page
 // (Settings, AI Inbox List, and later Contacts/Analytics/Overview) opens
-// with — ported from html/assets/css/cf7-ai-inbox.css. Used to also have a
+// with — ported from html/assets/css/inboxai.css. Used to also have a
 // near-identical copy in settings/_layout.scss; consolidated here since
 // every page shares the exact same header.
 
-.cf7-ai-inbox-page-header {
+.inboxai-page-header {
 	display: flex;
 	justify-content: space-between;
 	align-items: flex-center;
@@ -55,7 +55,7 @@
 
 // The date-range dropdown in a page header's `&__controls` — used by the
 // Settings page's Usage & Billing tab and the AI Inbox List page.
-.cf7-ai-inbox-control {
+.inboxai-control {
 	display: flex;
 	align-items: center;
 	gap: 6px;

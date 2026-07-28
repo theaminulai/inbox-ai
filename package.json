@@ -1,8 +1,8 @@
 {
-    "name": "cf7-ai-inbox",
+    "name": "inbox-ai",
     "version": "1.0.0",
-    "description": "CF7 AI Inbox for Contact Form 7",
-    "author": "theaminulai",
+    "description": "Inbox AI - an AI-powered review inbox for Contact Form 7 submissions",
+    "author": "theaminuldev",
     "license": "GPL-3.0-or-later",
     "private": true,
     "scripts": {
@@ -17,7 +17,7 @@
         "packages-update": "wp-scripts packages-update",
         "plugin-zip": "wp-scripts plugin-zip",
         "update-version": "node update-version-and-changelog.js",
-        "make-pot": "php vendor/wp-cli/wp-cli/php/boot-fs.php i18n make-pot . languages/cf7-ai-inbox.pot --domain=cf7-ai-inbox --exclude=node_modules,vendor,tests"
+        "make-pot": "php vendor/wp-cli/wp-cli/php/boot-fs.php i18n make-pot . languages/inbox-ai.pot --domain=inbox-ai --exclude=node_modules,vendor,tests"
     },
     "devDependencies": {
         "@wordpress/scripts": "^30.23.0",

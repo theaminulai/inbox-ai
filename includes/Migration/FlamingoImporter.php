@@ -2,17 +2,17 @@
 /**
  * Imports Flamingo's captured messages into this plugin's own tables.
  *
- * @package CF7AIInbox\Migration
+ * @package InboxAI\Migration
  */
 
-namespace CF7AIInbox\Migration;
+namespace InboxAI\Migration;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use CF7AIInbox\Database\Migrator;
+use InboxAI\Database\Migrator;
 
 /**
  * Class FlamingoImporter
@@ -22,7 +22,7 @@ use CF7AIInbox\Database\Migrator;
  * APIs only (`get_posts()`/`get_post_meta()`/`wp_get_object_terms()`) —
  * Flamingo's internal classes are never treated as a stable dependency (R&D
  * §10.1) — and never deletes or modifies Flamingo's own data; every import
- * creates a row in this plugin's own `cf7ai_messages` table instead.
+ * creates a row in this plugin's own `inboxai_messages` table instead.
  *
  * This importer also had a companion path for Flamingo's separate
  * `flamingo_contact` posts (its Address Book) at one point, alongside a

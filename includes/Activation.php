@@ -2,18 +2,18 @@
 /**
  * Handles plugin activation.
  *
- * @package CF7AIInbox
+ * @package InboxAI
  */
 
-namespace CF7AIInbox;
+namespace InboxAI;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use CF7AIInbox\Database\Migrator;
-use CF7AIInbox\Security\Capabilities;
+use InboxAI\Database\Migrator;
+use InboxAI\Security\Capabilities;
 
 /**
  * Class Activation
@@ -27,7 +27,7 @@ use CF7AIInbox\Security\Capabilities;
  * activation with a dead-end error page whenever Contact Form 7 isn't
  * already active/installed, instead of the friendlier "stay active, show an
  * Install/Activate button, switch features on automatically" behavior
- * {@see \CF7AIInbox\Plugin::init()} implements). Refusing to activate here
+ * {@see \InboxAI\Plugin::init()} implements). Refusing to activate here
  * on unmet requirements would leave the site owner without even an
  * explanatory admin notice.
  */
@@ -44,7 +44,7 @@ final class Activation {
 
 		// Track the version that last ran activation, and when the plugin
 		// was first activated. Never overwritten on subsequent activations.
-		add_option( 'cf7ai_inbox_activated_at', current_time( 'mysql' ), '', false );
-		update_option( 'cf7ai_inbox_version', CF7AI_INBOX_VERSION, false );
+		add_option( 'inboxai_activated_at', current_time( 'mysql' ), '', false );
+		update_option( 'inboxai_version', INBOXAI_VERSION, false );
 	}
 }

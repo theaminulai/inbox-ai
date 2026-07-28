@@ -3,18 +3,18 @@
  * Imports a Flamingo CSV export (an alternative to reading live Flamingo
  * data — see {@see FlamingoImporter}) into this plugin's own tables.
  *
- * @package CF7AIInbox\Migration
+ * @package InboxAI\Migration
  */
 
-namespace CF7AIInbox\Migration;
+namespace InboxAI\Migration;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use CF7AIInbox\Database\MessageRepository;
-use CF7AIInbox\Database\Migrator;
+use InboxAI\Database\MessageRepository;
+use InboxAI\Database\Migrator;
 use WP_Error;
 
 /**
@@ -47,7 +47,7 @@ final class FlamingoCsvImporter {
 	 *
 	 * @var string
 	 */
-	private const TRANSIENT_PREFIX = 'cf7ai_flamingo_csv_';
+	private const TRANSIENT_PREFIX = 'inboxai_flamingo_csv_';
 
 	/**
 	 * How long a staged upload survives without being resumed — long enough
@@ -72,14 +72,14 @@ final class FlamingoCsvImporter {
 		$handle = @fopen( $file_path, 'r' );
 
 		if ( false === $handle ) {
-			return new WP_Error( 'cf7ai_csv_unreadable', __( 'The uploaded file could not be read.', 'cf7-ai-inbox' ) );
+			return new WP_Error( 'inboxai_csv_unreadable', __( 'The uploaded file could not be read.', 'inbox-ai' ) );
 		}
 
 		$header = fgetcsv( $handle );
 
 		if ( ! is_array( $header ) || array() === $header ) {
 			fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- see the fopen() call above; WP_Filesystem has no fgetcsv() streaming equivalent.
-			return new WP_Error( 'cf7ai_csv_empty', __( 'The uploaded file is empty.', 'cf7-ai-inbox' ) );
+			return new WP_Error( 'inboxai_csv_empty', __( 'The uploaded file is empty.', 'inbox-ai' ) );
 		}
 
 		// Strip a leading UTF-8 BOM, which Excel-produced CSVs often add to
@@ -90,8 +90,8 @@ final class FlamingoCsvImporter {
 		if ( ! self::is_messages_shape( $header ) ) {
 			fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- see the fopen() call above.
 			return new WP_Error(
-				'cf7ai_csv_unrecognized',
-				__( 'This doesn\'t look like a Flamingo Inbound Messages export. Expected your form\'s own field names as columns, ending in a Date column.', 'cf7-ai-inbox' )
+				'inboxai_csv_unrecognized',
+				__( 'This doesn\'t look like a Flamingo Inbound Messages export. Expected your form\'s own field names as columns, ending in a Date column.', 'inbox-ai' )
 			);
 		}
 
@@ -116,7 +116,7 @@ final class FlamingoCsvImporter {
 		fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- see the fopen() call above.
 
 		if ( array() === $rows ) {
-			return new WP_Error( 'cf7ai_csv_no_rows', __( 'The uploaded file has a header row but no data rows.', 'cf7-ai-inbox' ) );
+			return new WP_Error( 'inboxai_csv_no_rows', __( 'The uploaded file has a header row but no data rows.', 'inbox-ai' ) );
 		}
 
 		$token = wp_generate_password( 20, false, false );

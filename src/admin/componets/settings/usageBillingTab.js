@@ -4,12 +4,12 @@
  * Mostly read-only and server-rendered (see
  * includes/Templates/settings/usage.php) on first paint — the one
  * interactive piece is the date-range `<select>` in the page header, which
- * re-fetches the KPI figures and cost breakdown via `cf7ai_get_settings`
+ * re-fetches the KPI figures and cost breakdown via `inboxai_get_settings`
  * (see AjaxController::get_settings()) and re-renders them in place, no
  * full page reload.
  */
 
-import { cf7aiAjax } from '../shared/api.js';
+import { inboxaiAjax } from '../shared/api.js';
 
 /**
  * Matches the colors `includes/Templates/settings/usage.php` cycles
@@ -96,14 +96,14 @@ function renderBreakdown( breakdown ) {
 			const color = BREAKDOWN_COLORS[ index % BREAKDOWN_COLORS.length ];
 
 			return (
-				'<div class="cf7-ai-inbox-usage-bar__row">' +
-				`<span class="cf7-ai-inbox-usage-bar__label">${ prettifyLabel(
+				'<div class="inboxai-usage-bar__row">' +
+				`<span class="inboxai-usage-bar__label">${ prettifyLabel(
 					label
 				) }</span>` +
-				'<div class="cf7-ai-inbox-usage-bar__track">' +
-				`<div class="cf7-ai-inbox-usage-bar__fill" style="width:${ pct }%;background:${ color };"></div>` +
+				'<div class="inboxai-usage-bar__track">' +
+				`<div class="inboxai-usage-bar__fill" style="width:${ pct }%;background:${ color };"></div>` +
 				'</div>' +
-				`<span class="cf7-ai-inbox-usage-bar__value">$${ formatMoney(
+				`<span class="inboxai-usage-bar__value">$${ formatMoney(
 					cost
 				) }</span>` +
 				'</div>'
@@ -125,7 +125,7 @@ export function initUsageBillingTab() {
 
 		select.disabled = true;
 
-		cf7aiAjax( 'cf7ai_get_settings', {
+		inboxaiAjax( 'inboxai_get_settings', {
 			tab: 'usage',
 			period: select.value,
 		} )

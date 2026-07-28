@@ -29,4 +29,4 @@ This means the plugin couldn't get a usable response from your AI provider for t
 
 ## Still stuck?
 
-Check that both Contact Form 7 and CF7 AI Inbox are updated to their latest versions, since fixes and improvements ship regularly.
+Check that both Contact Form 7 and Inbox AI are updated to their latest versions, since fixes and improvements ship regularly.

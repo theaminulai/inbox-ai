@@ -1,2 +1,2 @@
-# cf7-ai-inbox
+# Inbox AI
 

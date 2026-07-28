@@ -7,34 +7,34 @@
  */
 
 const PRIORITY_MAP = {
-	urgent: [ 'Urgent', 'var(--urgent)', 'cf7-ai-inbox-badge--urgent' ],
-	high: [ 'High', 'var(--high)', 'cf7-ai-inbox-badge--high' ],
-	normal: [ 'Normal', 'var(--normal)', 'cf7-ai-inbox-badge--normal' ],
-	low: [ 'Low', 'var(--low)', 'cf7-ai-inbox-badge--low' ],
+	urgent: [ 'Urgent', 'var(--urgent)', 'inboxai-badge--urgent' ],
+	high: [ 'High', 'var(--high)', 'inboxai-badge--high' ],
+	normal: [ 'Normal', 'var(--normal)', 'inboxai-badge--normal' ],
+	low: [ 'Low', 'var(--low)', 'inboxai-badge--low' ],
 };
 
 const STATUS_MAP = {
-	new: [ 'New', 'cf7-ai-inbox-status--new' ],
-	review: [ 'Needs Review', 'cf7-ai-inbox-status--review' ],
-	reviewed: [ 'Reviewed', 'cf7-ai-inbox-status--reviewed' ],
-	drafted: [ 'Drafted', 'cf7-ai-inbox-status--drafted' ],
-	replied: [ 'Replied', 'cf7-ai-inbox-status--replied' ],
-	failed: [ 'Failed', 'cf7-ai-inbox-status--failed' ],
-	archived: [ 'Archived', 'cf7-ai-inbox-status--archived' ],
+	new: [ 'New', 'inboxai-status--new' ],
+	review: [ 'Needs Review', 'inboxai-status--review' ],
+	reviewed: [ 'Reviewed', 'inboxai-status--reviewed' ],
+	drafted: [ 'Drafted', 'inboxai-status--drafted' ],
+	replied: [ 'Replied', 'inboxai-status--replied' ],
+	failed: [ 'Failed', 'inboxai-status--failed' ],
+	archived: [ 'Archived', 'inboxai-status--archived' ],
 };
 
 /**
  * @param {string} priority `urgent`|`high`|`normal`|`low`.
- * @return {string} HTML for a `<span class="cf7-ai-inbox-badge">`.
+ * @return {string} HTML for a `<span class="inboxai-badge">`.
  */
 export function priorityBadgeHtml( priority ) {
 	const [ label, color, cssClass ] =
 		PRIORITY_MAP[ priority ] || PRIORITY_MAP.normal;
 
 	return (
-		'<span class="cf7-ai-inbox-badge ' +
+		'<span class="inboxai-badge ' +
 		cssClass +
-		'"><span class="cf7-ai-inbox-badge__dot" style="background:' +
+		'"><span class="inboxai-badge__dot" style="background:' +
 		color +
 		';"></span>' +
 		label +
@@ -43,14 +43,14 @@ export function priorityBadgeHtml( priority ) {
 }
 
 /**
- * @param {string} status One of the `cf7ai_messages.workflow_status` values.
- * @return {string} HTML for a `<span class="cf7-ai-inbox-status">`.
+ * @param {string} status One of the `inboxai_messages.workflow_status` values.
+ * @return {string} HTML for a `<span class="inboxai-status">`.
  */
 export function statusBadgeHtml( status ) {
 	const [ label, cssClass ] = STATUS_MAP[ status ] || STATUS_MAP.new;
 
 	return (
-		'<span class="cf7-ai-inbox-status ' +
+		'<span class="inboxai-status ' +
 		cssClass +
 		'">' +
 		label +
@@ -76,9 +76,9 @@ export function setPriorityBadge( elId, priority ) {
 	const [ label, color, cssClass ] =
 		PRIORITY_MAP[ priority ] || PRIORITY_MAP.normal;
 
-	el.className = 'cf7-ai-inbox-badge ' + cssClass;
+	el.className = 'inboxai-badge ' + cssClass;
 	el.innerHTML =
-		'<span class="cf7-ai-inbox-badge__dot" style="background:' +
+		'<span class="inboxai-badge__dot" style="background:' +
 		color +
 		';"></span>' +
 		label;
@@ -97,7 +97,7 @@ export function setStatusBadge( elId, status ) {
 
 	const [ label, cssClass ] = STATUS_MAP[ status ] || STATUS_MAP.new;
 
-	el.className = 'cf7-ai-inbox-status ' + cssClass;
+	el.className = 'inboxai-status ' + cssClass;
 	el.textContent = label;
 }
 
@@ -109,8 +109,8 @@ export function setStatusBadge( elId, status ) {
 export function confidenceCellHtml( confidence ) {
 	if ( null === confidence || undefined === confidence ) {
 		return (
-			'<div class="cf7-ai-inbox-confidence"><div class="cf7-ai-inbox-confidence__value" style="color:var(--text-tertiary);">—</div>' +
-			'<div class="cf7-ai-inbox-confidence__track"><div class="cf7-ai-inbox-confidence__fill" style="width:0%;"></div></div></div>'
+			'<div class="inboxai-confidence"><div class="inboxai-confidence__value" style="color:var(--text-tertiary);">—</div>' +
+			'<div class="inboxai-confidence__track"><div class="inboxai-confidence__fill" style="width:0%;"></div></div></div>'
 		);
 	}
 
@@ -126,12 +126,12 @@ export function confidenceCellHtml( confidence ) {
 			: '';
 
 	return (
-		'<div class="cf7-ai-inbox-confidence"><div class="cf7-ai-inbox-confidence__value" style="color:' +
+		'<div class="inboxai-confidence"><div class="inboxai-confidence__value" style="color:' +
 		color +
 		';">' +
 		warn +
 		confidence +
-		'%</div><div class="cf7-ai-inbox-confidence__track"><div class="cf7-ai-inbox-confidence__fill" style="width:' +
+		'%</div><div class="inboxai-confidence__track"><div class="inboxai-confidence__fill" style="width:' +
 		confidence +
 		'%;background:' +
 		color +

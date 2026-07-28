@@ -1,7 +1,7 @@
 // AI Inbox List — table toolbar (search + filter dropdowns) — ported from
-// html/assets/css/cf7-ai-inbox.css.
+// html/assets/css/inboxai.css.
 
-.cf7-ai-inbox-table__toolbar {
+.inboxai-table__toolbar {
 	display: flex;
 	gap: 8px;
 	padding: 14px 18px;
@@ -10,7 +10,7 @@
 	align-items: center;
 }
 
-.cf7-ai-inbox-search {
+.inboxai-search {
 	display: flex;
 	align-items: center;
 	gap: 6px;
@@ -40,7 +40,7 @@
 	}
 }
 
-select.cf7-ai-inbox-filter-select {
+select.inboxai-filter-select {
 	background: var(--surface);
 	border: 1px solid var(--border-strong);
 	border-radius: 7px;
@@ -56,7 +56,7 @@ select.cf7-ai-inbox-filter-select {
 	}
 }
 
-.cf7-ai-inbox-table__footer {
+.inboxai-table__footer {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -69,16 +69,16 @@ select.cf7-ai-inbox-filter-select {
 }
 
 @media (max-width: 760px) {
-	.cf7-ai-inbox-table__toolbar {
+	.inboxai-table__toolbar {
 		flex-direction: column;
 		align-items: stretch;
 	}
 
-	.cf7-ai-inbox-search {
+	.inboxai-search {
 		min-width: 0;
 	}
 
-	.cf7-ai-inbox-filter-select {
+	.inboxai-filter-select {
 		width: 100%;
 	}
 }

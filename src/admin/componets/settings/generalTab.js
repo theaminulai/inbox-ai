@@ -2,7 +2,7 @@
  * Settings page — General tab.
  */
 
-import { cf7aiAjax } from '../shared/api.js';
+import { inboxaiAjax } from '../shared/api.js';
 import { showToast } from '../shared/toast.js';
 import { collectFields } from '../shared/fields.js';
 
@@ -21,13 +21,13 @@ export function initGeneralTab() {
 
 			const monitoredForms = [];
 			screen.querySelectorAll( '[data-form-toggle]' ).forEach( ( el ) => {
-				if ( el.classList.contains( 'cf7-ai-inbox-is-on' ) ) {
+				if ( el.classList.contains( 'inboxai-is-on' ) ) {
 					monitoredForms.push( parseInt( el.dataset.formId, 10 ) );
 				}
 			} );
 			values.monitored_forms = monitoredForms;
 
-			cf7aiAjax( 'cf7ai_save_settings', {
+			inboxaiAjax( 'inboxai_save_settings', {
 				tab: 'general-settings',
 				values: JSON.stringify( values ),
 			} )

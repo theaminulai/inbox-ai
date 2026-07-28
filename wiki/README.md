@@ -1,12 +1,12 @@
-# CF7 AI Inbox — User Guide
+# Inbox AI — User Guide
 
-Welcome! This guide explains, in plain language and step by step, how to use **CF7 AI Inbox** — the plugin that adds an AI-powered review inbox on top of your Contact Form 7 forms.
+Welcome! This guide explains, in plain language and step by step, how to use **Inbox AI** — the plugin that adds an AI-powered review inbox on top of your Contact Form 7 forms.
 
 No technical background is needed to follow this guide. Every screen, button, and toggle you'll actually see in your WordPress admin is explained here.
 
 ## What this plugin does
 
-Once set up, CF7 AI Inbox will:
+Once set up, Inbox AI will:
 
 * Save every submission from the Contact Form 7 forms you choose to monitor.
 * Use an AI provider you connect (OpenAI, Anthropic, or Google) to write a short summary, suggest a category and priority, and draft a reply for each submission.

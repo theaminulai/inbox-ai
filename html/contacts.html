@@ -2,54 +2,54 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Contacts · CF7 AI Inbox</title>
+<title>Contacts · Inbox AI</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/cf7-ai-inbox.css">
+<link rel="stylesheet" href="assets/css/inboxai.css">
 </head>
 <body>
 
-  <div class="cf7-ai-inbox-main" id="main">
+  <div class="inboxai-main" id="main">
 
-    <section class="cf7-ai-inbox-screen cf7-ai-inbox-is-active" id="screen-contacts">
-      <div class="cf7-ai-inbox-nav">
-        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html" class="cf7-ai-inbox-is-active">Contacts</a><a href="analytics.html">Analytics</a><a href="campaign.html">Campaigns</a><a href="settings.html">Settings</a>
+    <section class="inboxai-screen inboxai-is-active" id="screen-contacts">
+      <div class="inboxai-nav">
+        <a href="dashboard.html">Dashboard</a><a href="inbox.html">AI Inbox</a><a href="contacts.html" class="inboxai-is-active">Contacts</a><a href="analytics.html">Analytics</a><a href="campaign.html">Campaigns</a><a href="settings.html">Settings</a>
       </div>
-      <div class="cf7-ai-inbox-page-header">
+      <div class="inboxai-page-header">
         <div><h1>Contacts</h1><p>Everyone who has submitted a Contact Form 7 message, grouped by sender. Click a contact to see their messages.</p></div>
-        <div class="cf7-ai-inbox-page-header__controls">
-          <button class="cf7-ai-inbox-btn--secondary" id="contacts-export-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;vertical-align:-2px;margin-right:5px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Export</button>
+        <div class="inboxai-page-header__controls">
+          <button class="inboxai-btn--secondary" id="contacts-export-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;vertical-align:-2px;margin-right:5px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Export</button>
         </div>
       </div>
-      <div class="cf7-ai-inbox-card">
-        <div class="cf7-ai-inbox-table__toolbar">
-          <div class="cf7-ai-inbox-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="contacts-search" placeholder="Search contacts…"></div>
-          <select class="cf7-ai-inbox-filter-select" id="contacts-filter-category" data-filter="category"><option value="all">All categories</option><option value="Sales">Sales</option><option value="Support">Support</option><option value="Billing">Billing</option><option value="Partnership">Partnership</option><option value="Feedback">Feedback</option><option value="Spam">Spam</option><option value="Other">Other</option></select>
-          <select class="cf7-ai-inbox-filter-select" id="contacts-filter-priority" data-filter="priority"><option value="all">All priorities</option><option value="urgent">Urgent</option><option value="high">High</option><option value="normal">Normal</option><option value="low">Low</option></select>
+      <div class="inboxai-card">
+        <div class="inboxai-table__toolbar">
+          <div class="inboxai-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="contacts-search" placeholder="Search contacts…"></div>
+          <select class="inboxai-filter-select" id="contacts-filter-category" data-filter="category"><option value="all">All categories</option><option value="Sales">Sales</option><option value="Support">Support</option><option value="Billing">Billing</option><option value="Partnership">Partnership</option><option value="Feedback">Feedback</option><option value="Spam">Spam</option><option value="Other">Other</option></select>
+          <select class="inboxai-filter-select" id="contacts-filter-priority" data-filter="priority"><option value="all">All priorities</option><option value="urgent">Urgent</option><option value="high">High</option><option value="normal">Normal</option><option value="low">Low</option></select>
         </div>
         <div style="overflow-x:auto;">
-          <div class="cf7-ai-inbox-grid-table cf7-ai-inbox-grid-table--contacts" role="table">
-            <div class="cf7-ai-inbox-grid-table__row cf7-ai-inbox-grid-table__row--head" role="row">
-              <div class="cf7-ai-inbox-grid-table__cell" role="columnheader">Contact</div>
-              <div class="cf7-ai-inbox-grid-table__cell" role="columnheader">Email</div>
-              <div class="cf7-ai-inbox-grid-table__cell" role="columnheader">Category</div>
-              <div class="cf7-ai-inbox-grid-table__cell" role="columnheader">Priority</div>
-              <div class="cf7-ai-inbox-grid-table__cell" role="columnheader">Messages</div>
-              <div class="cf7-ai-inbox-grid-table__cell" role="columnheader">Replied</div>
-              <div class="cf7-ai-inbox-grid-table__cell" role="columnheader">Last Contact</div>
-              <div class="cf7-ai-inbox-grid-table__cell" role="columnheader"></div>
+          <div class="inboxai-grid-table inboxai-grid-table--contacts" role="table">
+            <div class="inboxai-grid-table__row inboxai-grid-table__row--head" role="row">
+              <div class="inboxai-grid-table__cell" role="columnheader">Contact</div>
+              <div class="inboxai-grid-table__cell" role="columnheader">Email</div>
+              <div class="inboxai-grid-table__cell" role="columnheader">Category</div>
+              <div class="inboxai-grid-table__cell" role="columnheader">Priority</div>
+              <div class="inboxai-grid-table__cell" role="columnheader">Messages</div>
+              <div class="inboxai-grid-table__cell" role="columnheader">Replied</div>
+              <div class="inboxai-grid-table__cell" role="columnheader">Last Contact</div>
+              <div class="inboxai-grid-table__cell" role="columnheader"></div>
             </div>
-            <div id="contacts-table-body" class="cf7-ai-inbox-grid-table__body" role="rowgroup"></div>
+            <div id="contacts-table-body" class="inboxai-grid-table__body" role="rowgroup"></div>
           </div>
         </div>
-        <div class="cf7-ai-inbox-table__footer"><span id="contacts-count-label">Showing 0 contacts</span><div id="contacts-pager"></div></div>
+        <div class="inboxai-table__footer"><span id="contacts-count-label">Showing 0 contacts</span><div id="contacts-pager"></div></div>
       </div>
     </section>
 
   </div>
 
-<div class="cf7-ai-inbox-row-menu" id="row-menu" data-open-for=""></div>
+<div class="inboxai-row-menu" id="row-menu" data-open-for=""></div>
 
 <div id="toast-container"></div>
 

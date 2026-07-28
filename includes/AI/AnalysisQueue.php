@@ -2,21 +2,21 @@
 /**
  * Runs AI analysis for one captured message, off the visitor-facing request.
  *
- * @package CF7AIInbox\AI
+ * @package InboxAI\AI
  */
 
-namespace CF7AIInbox\AI;
+namespace InboxAI\AI;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use CF7AIInbox\CF7\CategoryTaxonomy;
-use CF7AIInbox\Database\ActivityRepository;
-use CF7AIInbox\Database\MessageRepository;
-use CF7AIInbox\Database\UsageRepository;
-use CF7AIInbox\Settings\Repository as SettingsRepository;
+use InboxAI\CF7\CategoryTaxonomy;
+use InboxAI\Database\ActivityRepository;
+use InboxAI\Database\MessageRepository;
+use InboxAI\Database\UsageRepository;
+use InboxAI\Settings\Repository as SettingsRepository;
 use WP_Error;
 
 /**
@@ -43,7 +43,7 @@ final class AnalysisQueue {
 	 *
 	 * @var string
 	 */
-	public const CRON_HOOK = 'cf7ai_process_message';
+	public const CRON_HOOK = 'inboxai_process_message';
 
 	/**
 	 * Rough blended cost-per-1,000-tokens estimate, by provider id. Not
@@ -121,14 +121,14 @@ final class AnalysisQueue {
 		$api_key           = SettingsRepository::get_api_key();
 
 		if ( null === $api_key || '' === $api_key ) {
-			$this->fail( $message_id, __( 'No API key has been configured. Add one on the Settings page, then retry.', 'cf7-ai-inbox' ) );
+			$this->fail( $message_id, __( 'No API key has been configured. Add one on the Settings page, then retry.', 'inbox-ai' ) );
 			return;
 		}
 
 		$provider = ProviderFactory::create( $provider_settings['provider'] );
 
 		if ( null === $provider ) {
-			$this->fail( $message_id, __( 'The configured AI provider is not recognized.', 'cf7-ai-inbox' ) );
+			$this->fail( $message_id, __( 'The configured AI provider is not recognized.', 'inbox-ai' ) );
 			return;
 		}
 
@@ -157,7 +157,7 @@ final class AnalysisQueue {
 		$data = ResponseValidator::extract_json( $result['content'] );
 
 		if ( null === $data ) {
-			$this->fail( $message_id, __( 'The AI response could not be parsed as JSON.', 'cf7-ai-inbox' ) );
+			$this->fail( $message_id, __( 'The AI response could not be parsed as JSON.', 'inbox-ai' ) );
 			return;
 		}
 
@@ -229,7 +229,7 @@ final class AnalysisQueue {
 	 * lands correctly categorized and prioritized even if drafting the
 	 * reply didn't work.
 	 *
-	 * @param \CF7AIInbox\Interfaces\AIProviderInterface $provider          Provider instance.
+	 * @param \InboxAI\Interfaces\AIProviderInterface $provider          Provider instance.
 	 * @param string                                     $api_key           Decrypted API key.
 	 * @param array<string, mixed>                       $provider_settings From `Settings\Repository::get_provider()`.
 	 * @param array<string, mixed>                       $prompts           From `Settings\Repository::get_prompts()`.
@@ -287,10 +287,10 @@ final class AnalysisQueue {
 
 	/**
 	 * The category names a specific form's submissions may be classified
-	 * into — that form's own {@see \CF7AIInbox\CF7\CategoryTaxonomy} terms.
+	 * into — that form's own {@see \InboxAI\CF7\CategoryTaxonomy} terms.
 	 *
 	 * There is no fallback list: a form nobody has added categories to yet
-	 * returns an empty array, and {@see \CF7AIInbox\AI\PromptBuilder::build_analysis_prompt()}
+	 * returns an empty array, and {@see \InboxAI\AI\PromptBuilder::build_analysis_prompt()}
 	 * responds to that by not asking the model for a category at all — the
 	 * message still gets summarized/prioritized/scored normally, just left
 	 * uncategorized until the admin adds real categories to that form.

@@ -9,7 +9,7 @@ const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
 const RemoveEmptyScriptsPlugin = require( 'webpack-remove-empty-scripts' );
 const path = require('path');
 
-/* CF7 AI Inbox for Contact Form 7 — webpack configuration.
+/* Inbox AI — webpack configuration.
  *
  * Extends the default @wordpress/scripts webpack config with two entry points:
  *

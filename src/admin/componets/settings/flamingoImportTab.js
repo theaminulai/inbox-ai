@@ -3,10 +3,10 @@
  *
  * A 4-step wizard, messages-only, with two source paths:
  *  - "live": reads this site's own Flamingo `flamingo_inbound` posts
- *    directly (`cf7ai_flamingo_detect` / `cf7ai_flamingo_import_batch`).
+ *    directly (`inboxai_flamingo_detect` / `inboxai_flamingo_import_batch`).
  *  - "csv": a Flamingo Inbound Messages CSV export uploaded from disk
- *    (`cf7ai_flamingo_upload_csv` to parse+stage it, then
- *    `cf7ai_flamingo_import_csv_batch` to import in the same batched-loop
+ *    (`inboxai_flamingo_upload_csv` to parse+stage it, then
+ *    `inboxai_flamingo_import_csv_batch` to import in the same batched-loop
  *    shape as the live path).
  *
  * Both paths converge on the same step 2/3/4 panels; only the summary text
@@ -21,7 +21,7 @@
  * later, from-scratch build.
  */
 
-import { cf7aiAjax, cf7aiUpload } from '../shared/api.js';
+import { inboxaiAjax, inboxaiUpload } from '../shared/api.js';
 import { showToast } from '../shared/toast.js';
 import { openModal, closeModal } from '../shared/modal.js';
 
@@ -89,17 +89,17 @@ export function initFlamingoImportTab() {
 		}
 
 		screen
-			.querySelectorAll( '.cf7-ai-inbox-wizard__step' )
+			.querySelectorAll( '.inboxai-wizard__step' )
 			.forEach( ( el ) => {
 				const step = parseInt( el.dataset.wizardStep, 10 );
-				el.classList.toggle( 'cf7-ai-inbox-is-active', step === n );
-				el.classList.toggle( 'cf7-ai-inbox-is-done', step < n );
+				el.classList.toggle( 'inboxai-is-active', step === n );
+				el.classList.toggle( 'inboxai-is-done', step < n );
 			} );
 
 		screen
-			.querySelectorAll( '.cf7-ai-inbox-wizard__line' )
+			.querySelectorAll( '.inboxai-wizard__line' )
 			.forEach( ( el, idx ) => {
-				el.classList.toggle( 'cf7-ai-inbox-is-done', idx + 1 < n );
+				el.classList.toggle( 'inboxai-is-done', idx + 1 < n );
 			} );
 
 		const main = document.getElementById( 'main' );
@@ -139,7 +139,7 @@ export function initFlamingoImportTab() {
 		next1.disabled = true;
 		showToast( 'Checking for Flamingo data…' );
 
-		cf7aiAjax( 'cf7ai_flamingo_detect' )
+		inboxaiAjax( 'inboxai_flamingo_detect' )
 			.then( ( data ) => {
 				detected.live.messages = data.messages || 0;
 
@@ -172,7 +172,7 @@ export function initFlamingoImportTab() {
 		detected.csv = { token: '', count: 0 };
 		showToast( 'Uploading and checking file…' );
 
-		cf7aiUpload( 'cf7ai_flamingo_upload_csv', file )
+		inboxaiUpload( 'inboxai_flamingo_upload_csv', file )
 			.then( ( data ) => {
 				detected.csv = {
 					token: data.token,
@@ -258,7 +258,7 @@ export function initFlamingoImportTab() {
 
 			const runAi = document
 				.getElementById( 'flamingo-toggle-ai' )
-				.classList.contains( 'cf7-ai-inbox-is-on' );
+				.classList.contains( 'inboxai-is-on' );
 
 			runImport( currentSource(), runAi )
 				.then( ( totalImported ) => {
@@ -300,8 +300,8 @@ export function initFlamingoImportTab() {
 	function runImport( source, runAi ) {
 		const action =
 			'live' === source
-				? 'cf7ai_flamingo_import_batch'
-				: 'cf7ai_flamingo_import_csv_batch';
+				? 'inboxai_flamingo_import_batch'
+				: 'inboxai_flamingo_import_csv_batch';
 		const total =
 			'live' === source ? detected.live.messages : detected.csv.count;
 		const baseArgs =
@@ -313,7 +313,7 @@ export function initFlamingoImportTab() {
 
 		return new Promise( ( resolve, reject ) => {
 			const step = ( offset ) => {
-				cf7aiAjax( action, { offset, ...baseArgs } )
+				inboxaiAjax( action, { offset, ...baseArgs } )
 					.then( ( data ) => {
 						importedSoFar += data.imported;
 

@@ -1,24 +1,24 @@
 <?php
 /**
- * Renderer for the Settings admin page (`cf7ai-settings`).
+ * Renderer for the Settings admin page (`inboxai-settings`).
  *
- * @package CF7AIInbox\Admin\Pages
+ * @package InboxAI\Admin\Pages
  */
 
-namespace CF7AIInbox\Admin\Pages;
+namespace InboxAI\Admin\Pages;
 
 // Prevent direct file access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use CF7AIInbox\Admin\AjaxController;
-use CF7AIInbox\Database\MessageRepository;
-use CF7AIInbox\Database\UsageRepository;
-use CF7AIInbox\Migration\FlamingoImporter;
-use CF7AIInbox\Security\Capabilities;
-use CF7AIInbox\Settings\Repository as SettingsRepository;
-use CF7AIInbox\Support\Template;
+use InboxAI\Admin\AjaxController;
+use InboxAI\Database\MessageRepository;
+use InboxAI\Database\UsageRepository;
+use InboxAI\Migration\FlamingoImporter;
+use InboxAI\Security\Capabilities;
+use InboxAI\Settings\Repository as SettingsRepository;
+use InboxAI\Support\Template;
 
 /**
  * Class SettingsPage
@@ -29,9 +29,9 @@ use CF7AIInbox\Support\Template;
  * off to `includes/Templates/settings.php` (the shared six-tab shell) and
  * the six per-tab template files it in turn includes.
  *
- * This class enqueues nothing itself — {@see \CF7AIInbox\Admin\Menu}
+ * This class enqueues nothing itself — {@see \InboxAI\Admin\Menu}
  * enqueues the one shared admin script/style bundle for every plugin page.
- * {@see self::localize_data()} hooks that class's shared `cf7ai_inbox_localize_data`
+ * {@see self::localize_data()} hooks that class's shared `inboxai_localize_data`
  * filter to add this page's own AJAX nonce to the shared localized JS object.
  */
 final class SettingsPage {
@@ -44,21 +44,21 @@ final class SettingsPage {
 	private const TABS = array( 'ai-settings', 'general-settings', 'prompts', 'usage', 'notifications', 'flamingo' );
 
 	/**
-	 * Hooks this page's data into {@see \CF7AIInbox\Admin\Menu::enqueue_assets()}.
+	 * Hooks this page's data into {@see \InboxAI\Admin\Menu::enqueue_assets()}.
 	 */
 	public function __construct() {
-		add_filter( 'cf7ai_inbox_localize_data', array( $this, 'localize_data' ), 10, 2 );
+		add_filter( 'inboxai_localize_data', array( $this, 'localize_data' ), 10, 2 );
 	}
 
 	/**
 	 * Renders the page. Registered as the `add_submenu_page()` callback for
-	 * `cf7ai-settings` by {@see \CF7AIInbox\Admin\Menu}.
+	 * `inboxai-settings` by {@see \InboxAI\Admin\Menu}.
 	 *
 	 * @return void
 	 */
 	public function render(): void {
 		if ( ! current_user_can( Capabilities::MANAGE_SETTINGS ) ) {
-			wp_die( esc_html__( 'You do not have permission to access this page.', 'cf7-ai-inbox' ) );
+			wp_die( esc_html__( 'You do not have permission to access this page.', 'inbox-ai' ) );
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only tab selector (which of six already-rendered sections to show first); not a state-changing request.
@@ -72,11 +72,11 @@ final class SettingsPage {
 	}
 
 	/**
-	 * Adds this page's AJAX nonce to the shared `cf7aiInboxAdmin` JS object.
+	 * Adds this page's AJAX nonce to the shared `inboxaiAdmin` JS object.
 	 *
-	 * Hooked onto the shared `cf7ai_inbox_localize_data` filter by
+	 * Hooked onto the shared `inboxai_localize_data` filter by
 	 * {@see self::__construct()}; applied by
-	 * {@see \CF7AIInbox\Admin\Menu::enqueue_assets()} right before its one
+	 * {@see \InboxAI\Admin\Menu::enqueue_assets()} right before its one
 	 * `wp_localize_script()` call, on every plugin page — bails out via the
 	 * `$slug` argument on any page that isn't this one, so Menu never needs
 	 * to know anything Settings-specific.
@@ -87,7 +87,7 @@ final class SettingsPage {
 	 * @return array<string, mixed>
 	 */
 	public function localize_data( array $data, string $slug ): array {
-		if ( 'cf7ai-settings' !== $slug ) {
+		if ( 'inboxai-settings' !== $slug ) {
 			return $data;
 		}
 

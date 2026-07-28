@@ -88,7 +88,7 @@ export function initReplyComposer() {
 				'This reply will be emailed to <b style="color:var(--text-primary);">' +
 				recipientEmail +
 				'</b> and the message status will change to <b style="color:var(--text-primary);">Replied</b>. This can\'t be undone.' +
-				'<div class="cf7-ai-inbox-modal__preview" id="modal-preview-text"><b>Subject:</b> ' +
+				'<div class="inboxai-modal__preview" id="modal-preview-text"><b>Subject:</b> ' +
 				subject +
 				'<br><br>' +
 				bodyText.slice( 0, 140 ) +
