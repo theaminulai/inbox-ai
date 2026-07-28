@@ -10,10 +10,11 @@
 // confidence, empty/error states, pagination + row menus, breadcrumb,
 // layout grids) live in Common/. Partials specific to one page (Settings:
 // layout, provider, prompts, kpi, usage-bar, wizard; AI Inbox List: table
-// toolbar, messages grid-table, activity timeline) live in that page's own
-// same-named folder. Each future page (Overview/, Contacts/, Analytics/)
-// gets its own folder alongside Common/ the same way, keeping the scss/
-// folder organized by which page a partial belongs to.
+// toolbar, messages grid-table, activity timeline; Contacts List: contacts
+// grid-table column layout, reusing every other AI Inbox List table/toolbar
+// rule as-is) live in that page's own same-named folder. Each future page
+// (Overview/, Analytics/) gets its own folder alongside Common/ the same
+// way, keeping the scss/ folder organized by which page a partial belongs to.
 
 @use 'common/variables';
 @use 'common/base';
@@ -38,3 +39,4 @@
 @use 'inbox/toolbar';
 @use 'inbox/table';
 @use 'inbox/timeline';
+@use 'contacts/table' as contacts-table;

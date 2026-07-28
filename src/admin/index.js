@@ -12,6 +12,7 @@ import '../admin/scss/index.scss';
 
 import { initSettingsPage } from './componets/settings/index.js';
 import { initInboxPage } from './componets/inbox/index.js';
+import { initContactsPage } from './componets/contacts/index.js';
 
 function boot() {
 	const page = document.getElementById( 'main' )?.dataset.page;
@@ -23,6 +24,10 @@ function boot() {
 
 		case 'inbox':
 			initInboxPage();
+			break;
+
+		case 'contacts':
+			initContactsPage();
 			break;
 	}
 }

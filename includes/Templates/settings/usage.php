@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 $inboxai_breakdown_colors = array( '#3A5CF6', '#8A7EF0', '#1F9254', '#DA8A2E', '#D93B3B' );
 $inboxai_breakdown_total  = array_sum( $usage_breakdown );
 
-// Matches AjaxController::USAGE_PERIODS — the page always loads with
+// Matches SettingsAjaxController::USAGE_PERIODS — the page always loads with
 // 30_days server-rendered; switching this select re-fetches the figures
 // below via `inboxai_get_settings` (see usageBillingTab.js) without a full
 // page reload.
