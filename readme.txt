@@ -1,8 +1,8 @@
 === Inbox AI ===
 Contributors: theaminuldev
-Tags: contact form 7, wpcf7, ai, inbox, openai, anthropic, gemini, flamingo
+Tags: contact form 7, ai, inbox, openai, flamingo
 Requires at least: 6.7
-Tested up to: 7.2
+Tested up to: 7.0
 Requires PHP: 8.1
 Stable tag: 0.7.0
 License: GPL-3.0-or-later
@@ -12,13 +12,13 @@ Turn Contact Form 7 submissions into an AI-powered inbox: AI drafts the summary,
 
 == Description ==
 
-**Inbox AI** adds a unified, searchable Contact Form 7 (CF7) inbox on top of your existing forms — without modifying Contact Form 7 itself. Every submission is stored, analyzed by your chosen AI provider, and turned into something your team can actually work from: a plain-language AI email summary, a suggested category and priority, a confidence score, and a ready-to-edit draft reply.
+**Inbox AI** adds a unified, searchable **Contact Form 7** **(CF7)** inbox on top of your existing forms — without modifying Contact Form 7 itself. Every submission is stored, analyzed by your chosen AI provider, and turned into something your team can actually work from: a plain-language AI email summary, a suggested category and priority, a confidence score, and a ready-to-edit draft reply.
 
 If you've ever dug through email notifications trying to figure out which contact form submissions actually need a reply, Inbox AI is built for exactly that problem. Think of it as a Contact Form 7 AI layer: a lightweight support inbox, contact form management tool, and lead management layer that turns what your forms already collect into a focused, triage-ready queue.
 
 = How it works =
 
-1. A visitor submits one of your monitored Contact Form 7 forms.
+1. A visitor submits one of your monitored **Contact Form 7** forms.
 2. Inbox AI stores the submission locally in your WordPress database.
 3. Your connected AI provider (OpenAI, Anthropic, or Google Gemini) analyzes it in the background and returns a summary, category, priority, confidence score, and a suggested reply.
 4. You review everything in the AI Inbox screen and, when you're happy with it, send the reply yourself. Nothing is ever sent to a visitor automatically.
@@ -44,6 +44,12 @@ If you've ever dug through email notifications trying to figure out which contac
 * A per-submission detail screen with the full AI analysis and an activity timeline (who did what, and when) — closer to a support ticket assistant than a plain message list.
 * CSV export of the current filtered view, for reporting or import into another contact form database or CRM.
 * Manual "Mark reviewed," "Archive," and "Delete" actions, each gated behind its own WordPress capability.
+
+= Not just a Contact Form 7 database plugin =
+
+Inbox AI stores every submission to a monitored Contact Form 7 form directly in your own WordPress database, the same way a dedicated **Contact Form 7 database** plugin would — and lets you search, filter, and export those contact form entries to CSV without running anything else alongside it. Where it goes further is the AI layer on top of that stored data: a plain-language summary, a suggested category and priority, and a draft reply for every submission, so you're not just archiving messages, you're actually working through them.
+
+It isn't a full replacement for a dedicated database add-on, though. Inbox AI doesn't currently offer multisite-wide storage, capture or store form attachments, support generic CSV import with custom field mapping, or let you rename field labels — if your site depends on any of those specific features, a dedicated Contact Form 7 database plugin running alongside Inbox AI still makes sense.
 
 = Contacts =
 
@@ -144,6 +150,10 @@ What data is sent, and when: each time a monitored form is submitted (or an admi
 
 Only one provider is contacted per request — whichever one is currently selected in Settings → AI Provider. The plugin never uses a shared or proxy key; the site owner must supply and pay for their own API key directly with the provider.
 
+* **OpenAI** — used when you select OpenAI as your provider. [Terms of Use](https://openai.com/policies/terms-of-use/), [Privacy Policy](https://openai.com/policies/privacy-policy/).
+* **Anthropic** — used when you select Anthropic as your provider. [Commercial Terms of Service](https://www.anthropic.com/legal/commercial-terms), [Privacy Policy](https://www.anthropic.com/legal/privacy).
+* **Google Gemini** — used when you select Google Gemini as your provider. [Gemini API Additional Terms of Service](https://ai.google.dev/gemini-api/terms), [Google Privacy Policy](https://policies.google.com/privacy).
+
 == Screenshots ==
 
 1. AI Inbox — the filterable, searchable list of Contact Form 7 submissions.
@@ -153,37 +163,50 @@ Only one provider is contacted per request — whichever one is currently select
 5. Settings — General tab, Monitored Forms and Automatic Processing.
 
 == Changelog ==
+= Inbox AI/v0.8.0 - 2026-07-30 =
+*Fixed*
+
+* Fixed Tested up to and Stable tag drifting out of sync with the plugin version.
+* Fixed Tags Issues: the readme.txt tags were not updated to match the plugin header tags.
+
+*Improved*
+
+* Split the shared AJAX handler into one controller per page.
 
 = Inbox AI/v0.7.0 - 2026-07-28 =
+*Added*
 
-**Added**
 * Added the Contacts List page, grouped by sender.
 * Added search, category, and priority filters, plus CSV export.
 * Added a "Delete contact" action that archives that sender's messages.
 
-**Improved**
+*Improved*
+
 * Split the shared AJAX handler into one controller per page.
 * Consolidated repeated field-reading code into shared helpers.
 * Reorganized Contacts templates into their own folder.
 
-**Fixed**
+*Fixed*
+
 * Fixed the version-bump script crashing on a first release.
 
 = Inbox AI/v0.6.0 - 2026-07-28 =
+*Changed*
 
-**Changed**
 * Shortened the plugin name to "Inbox AI" (was "InboxAI for Contact Form 7").
 * Finalized the slug/text domain as `inbox-ai` (was `inboxai-for-contact-form-7`).
 * Confirmed with WordPress.org that the slug could still change before the first SVN push.
 * Kept the internal PHP namespace (`InboxAI\`) unchanged.
 * Kept the code-level hook/option/capability prefix (`inboxai_`) unchanged.
-**Added**
+
+*Added*
+
 * Added the plugin icon (`icon-128x128.png`) to `.wordpress-org/`.
 * Added the plugin banner (`banner-772x250.png`) to `.wordpress-org/`.
 
 = Inbox AI/v0.5.0 - 2026-07-27 =
+*Changed*
 
-**Changed**
 * Renamed the plugin from "CF7 AI Inbox" to "InboxAI for Contact Form 7".
 * Set the new slug/text domain to `inboxai-for-contact-form-7`.
 * Made the rename to avoid implying affiliation with the Contact Form 7 project.
@@ -192,13 +215,15 @@ Only one provider is contacted per request — whichever one is currently select
 * Corrected the Google Gemini Terms of Service link to the Gemini API Additional Terms.
 * Rewrote the "Current status" section, which had been left describing an early pre-release state.
 * Rewrote the "Screenshots" section to match the AI Inbox and Settings screens that were actually built.
-**Added**
+
+*Added*
+
 * Added a "Source Code" section to the readme.
 * Documented where the human-readable source for the compiled admin assets is maintained.
 
 = Inbox AI/v0.4.0 - 2026-07-25 =
+*Added*
 
-**Added**
 * Added a real "Received" date-range filter to the AI Inbox List.
 * Filter options cover 7/30/90 days, this month, and 1/2/3/5 years.
 * Added the same period filter to the Usage & Billing tab.
@@ -206,16 +231,20 @@ Only one provider is contacted per request — whichever one is currently select
 * Added a live "N submissions this month" count under each form in Monitored Forms.
 * Added a full step-by-step user guide (`docs-platform/`).
 * The guide covers setup, every Settings tab, the AI Inbox list, submission replies, and troubleshooting.
-**Improved**
+
+*Improved*
+
 * Reorganized admin template files into per-page subfolders (`inbox/`, `settings/`) for maintainability.
 * Removed duplicate CSS rules from the settings stylesheet.
 * Removed conflicting CSS rules from the shared admin stylesheet.
-**Fixed**
+
+*Fixed*
+
 * Fixed the AI Provider Settings Model dropdown not updating when switching between OpenAI, Anthropic, and Google.
 
 = Inbox AI/v0.3.0 - 2026-07-15 =
-= 0.3.0 - 2026-07-15 =
-**Added**
+*Added*
+
 * Added AI Inbox with filters, search, sorting, pagination, and submission details.
 * Added AI reply composer with draft, regenerate, retry analysis, and send workflow.
 * Added background AI analysis queue with OpenAI, Anthropic, and Gemini support.
@@ -223,14 +252,19 @@ Only one provider is contacted per request — whichever one is currently select
 * Added spam auto-archive, validation, and normalization for AI results.
 * Added failure screen with one-click retry for failed AI analysis.
 * Added CSV export of the current filtered list.
-**Improved**
+
+*Improved*
+
 * Improved inbox actions, permissions, and overall admin experience.
-**Fixed**
+
+*Fixed*
+
 * Fixed AI Categories UI rendering on the Contact Form 7 editor.
 * Fixed admin stylesheet build issue.
 
 = Inbox AI/v0.2.0 - 2026-07-10 =
-**Added**
+*Added*
+
 * Added a settings page to configure AI providers and plugin options.
 * Added monitored forms management to choose which Contact Form 7 forms are analyzed.
 * Added customizable AI analysis prompts for better response quality.
@@ -239,7 +273,8 @@ Only one provider is contacted per request — whichever one is currently select
 * Added Flamingo import to migrate existing Contact Form 7 submissions.
 
 = Inbox AI/v0.1.0 - 2026-07-01 =
-**Added**
+*Added*
+
 * Initial release.
 * Added plugin setup, requirements checks, and Contact Form 7 dependency.
 * Added database schema and upgrade routines.
