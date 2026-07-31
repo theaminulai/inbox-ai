@@ -12,4 +12,15 @@
 		minmax(170px, 1.6fr) minmax(160px, 2.2fr) minmax(100px, 1fr)
 		minmax(90px, 0.9fr) minmax(80px, 0.7fr) minmax(80px, 0.7fr)
 		minmax(100px, 0.9fr) minmax(64px, 0.6fr);
+
+	// Only present for users who hold DELETE_MESSAGES (see `contacts/list.php`)
+	// — the checkbox column only exists in the DOM at all when there's a bulk
+	// action (Delete) that actually needs it, so the column count/template
+	// has to agree with whichever version got rendered.
+	&.inboxai-grid-table--with-checkbox {
+		grid-template-columns:
+			36px minmax(170px, 1.6fr) minmax(160px, 2.2fr) minmax(100px, 1fr)
+			minmax(90px, 0.9fr) minmax(80px, 0.7fr) minmax(80px, 0.7fr)
+			minmax(100px, 0.9fr) minmax(64px, 0.6fr);
+	}
 }

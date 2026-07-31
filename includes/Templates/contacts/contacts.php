@@ -41,6 +41,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				'per_page'   => $per_page,
 				'filters'    => $filters,
 				'categories' => $categories,
+				'can_delete' => $can_delete,
 			)
 		);
 		?>

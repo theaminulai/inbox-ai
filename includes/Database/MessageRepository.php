@@ -399,7 +399,12 @@ final class MessageRepository {
 	private static function build_contacts_where( array $filters ): array {
 		global $wpdb;
 
-		$clauses = array( 'm.deleted_at IS NULL' );
+		// A sender's latest message being `archived` is this plugin's own
+		// "delete contact" (see `self::archive_by_email()` — it archives
+		// every message from that sender specifically so the contact drops
+		// out of this list). Without this clause the row kept showing up
+		// after "Delete" even though the archive itself succeeded.
+		$clauses = array( 'm.deleted_at IS NULL', "m.workflow_status != 'archived'" );
 		$values  = array();
 
 		if ( ! empty( $filters['category'] ) && 'all' !== $filters['category'] ) {

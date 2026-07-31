@@ -81,3 +81,15 @@ export function deleteMessage( id ) {
 export function retryAnalysis( id ) {
 	return inboxaiAjax( 'inboxai_retry_analysis', { id } );
 }
+
+/**
+ * @param {Array<number>} ids
+ * @param {string}        action `reviewed`, `archive`, or `delete`.
+ * @return {Promise<Object>}
+ */
+export function bulkAction( ids, action ) {
+	return inboxaiAjax( 'inboxai_bulk_action', {
+		ids: JSON.stringify( ids ),
+		bulk_action: action,
+	} );
+}
