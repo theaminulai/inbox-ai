@@ -160,9 +160,22 @@ Only one provider is contacted per request — whichever one is currently select
 2. Submission detail — AI summary, category, priority, confidence, and the AI-drafted reply composer.
 3. Contacts — every sender grouped into one row, with search and filters.
 4. Settings — AI Provider connection screen.
-5. Settings — General tab, Monitored Forms and Automatic Processing.
+5. Settings — Notifications tab, where you can configure email notifications.
 
 == Changelog ==
+= Inbox AI/vx.x.x - (upcoming) =
+*Fixed*
+
+* Fixed CSS design issues on the Settings page for small screens.
+* Fixed CSS design issues with select fields on the AI Inbox page for small screens.
+* Fixed CSS design issues with filters on the AI Inbox page for small screens.
+* Fixed CSS design issues with filters on the Contacts page for small screens.
+*Improved*
+
+* Bulk actions on the AI Inbox page now support "Mark Reviewed" and "Archive" in addition to "Delete."
+* Bulk actions on the Contacts page now support "Mark Reviewed" and "Archive" in addition to "Delete."
+* Pagination on the AI Inbox/Contacts page now shows the total number of submissions and the current page number.
+
 = Inbox AI/v0.8.0 - 2026-07-30 =
 *Fixed*
 

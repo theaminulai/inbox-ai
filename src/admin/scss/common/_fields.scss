@@ -19,9 +19,10 @@
 
 	&__input {
 		width: 100%;
+		max-width: 100% !important;
 		border: 1px solid var(--border-strong);
-		border-radius: 8px;
-		padding: 9px 12px;
+		border-radius: 8px !important;
+		padding: 9px 12px !important;
 		font-size: 13px;
 		font-family: inherit;
 		background: var(--surface);
@@ -33,7 +34,9 @@
 		}
 	}
 }
-
+select.inboxai-field__input {
+	padding: 0 24px 0 12px !important;
+}
 textarea.inboxai-field__input {
 	resize: vertical;
 	min-height: 90px;

@@ -239,11 +239,10 @@ final class Format {
 	}
 
 	/**
-	 * Real, bookmarkable `<a href>` pagination links (`add_query_arg()`
-	 * against the current URL, only ever changing `paged`) — replaces the old
-	 * client-side pager that fetched each page over AJAX, so a large
-	 * submission table paginates the same way any other WordPress admin list
-	 * table does.
+	 * Real, bookmarkable `<a href>` pagination controls (`add_query_arg()`
+	 * against the current URL, only ever changing `paged`) — a compact
+	 * "first / prev / X of Y / next / last" control (no numbered page list),
+	 * matching the reference design the user provided.
 	 *
 	 * @param int $total        Total matching rows across every page.
 	 * @param int $current_page 1-indexed current page.
@@ -261,7 +260,7 @@ final class Format {
 
 		$current_page = min( $current_page, $total_pages );
 
-		$link = static function ( int $page, string $label, bool $disabled = false, bool $active = false ) {
+		$link = static function ( int $page, string $label, bool $disabled = false ) {
 			if ( $disabled ) {
 				// A plain `<span>`, not a `<button disabled>` — this is a link-based
 				// pager now (real URLs, no client-side pager button), so there's no
@@ -273,48 +272,30 @@ final class Format {
 			$url = add_query_arg( array( 'paged' => $page ) );
 
 			return sprintf(
-				'<a class="inboxai-pager__btn%1$s" href="%2$s">%3$s</a>',
-				$active ? ' inboxai-is-active' : '',
+				'<a class="inboxai-pager__btn" href="%1$s">%2$s</a>',
 				esc_url( $url ),
 				$label
 			);
 		};
 
-		$prev_icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>';
-		$next_icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>';
+		$first_icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 18l-6-6 6-6M18 18l-6-6 6-6"/></svg>';
+		$prev_icon  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>';
+		$next_icon  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>';
+		$last_icon  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 18l6-6-6-6M13 18l6-6-6-6"/></svg>';
 
-		$pages = array();
-
-		if ( $total_pages <= 7 ) {
-			$pages = range( 1, $total_pages );
-		} else {
-			$pages[] = 1;
-
-			if ( $current_page > 3 ) {
-				$pages[] = '…';
-			}
-
-			for ( $i = max( 2, $current_page - 1 ); $i <= min( $total_pages - 1, $current_page + 1 ); $i++ ) {
-				$pages[] = $i;
-			}
-
-			if ( $current_page < $total_pages - 2 ) {
-				$pages[] = '…';
-			}
-
-			$pages[] = $total_pages;
-		}
+		$label_text = sprintf(
+			/* translators: 1: current page, 2: total pages */
+			__( '%1$d of %2$d', 'inbox-ai' ),
+			$current_page,
+			$total_pages
+		);
 
 		$html  = '<div class="inboxai-pager">';
+		$html .= $link( 1, $first_icon, $current_page <= 1 );
 		$html .= $link( $current_page - 1, $prev_icon, $current_page <= 1 );
-
-		foreach ( $pages as $p ) {
-			$html .= '…' === $p
-				? '<span class="inboxai-pager__ellipsis">…</span>'
-				: $link( (int) $p, (string) $p, false, (int) $p === $current_page );
-		}
-
+		$html .= '<span class="inboxai-pager__label">' . esc_html( $label_text ) . '</span>';
 		$html .= $link( $current_page + 1, $next_icon, $current_page >= $total_pages );
+		$html .= $link( $total_pages, $last_icon, $current_page >= $total_pages );
 		$html .= '</div>';
 
 		return $html;

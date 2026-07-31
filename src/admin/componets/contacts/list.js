@@ -11,10 +11,11 @@
  * responsibility as `componets/inbox/list.js`.
  */
 
-import { deleteContact, listContacts } from './api.js';
+import { deleteContact, listContacts, bulkDeleteContacts } from './api.js';
 import { openRowMenu, closeRowMenu } from '../shared/rowMenu.js';
 import { showToast } from '../shared/toast.js';
 import { downloadCsv } from '../shared/csv.js';
+import { initBulkActions } from '../shared/bulkActions.js';
 
 // Read once from `#main`'s `data-can-delete` attribute (see
 // `includes/Templates/contacts-list.php`) — same pattern as
@@ -109,8 +110,14 @@ export function initListScreen() {
 	const filterForm = document.getElementById( 'contacts-filter-form' );
 
 	if ( filterForm ) {
+		// `:not(.inboxai-bulk-select)` matters here: the "Bulk actions"
+		// dropdown also carries `.inboxai-filter-select` (for shared
+		// styling only — see `_toolbar.scss`), so without this exclusion
+		// picking a bulk action was itself treated as a filter change and
+		// immediately submitted/reloaded the form, before Apply was ever
+		// clicked.
 		filterForm
-			.querySelectorAll( '.inboxai-filter-select' )
+			.querySelectorAll( '.inboxai-filter-select:not(.inboxai-bulk-select)' )
 			.forEach( ( select ) => {
 				select.addEventListener( 'change', () => filterForm.submit() );
 			} );
@@ -131,6 +138,24 @@ export function initListScreen() {
 	if ( exportBtn ) {
 		exportBtn.addEventListener( 'click', exportCsv );
 	}
+
+	// Only "Delete" exists on this page — see `contacts/list.php`, which
+	// only renders the bar at all for `DELETE_MESSAGES` holders — but it
+	// still always needs confirming, since it archives every message from
+	// the selected senders.
+	initBulkActions( {
+		tableBodyId: 'contacts-table-body',
+		selectAllId: 'contacts-select-all',
+		itemAttr: 'email',
+		noun: 'contact',
+		confirmMessage: ( count ) =>
+			'Delete ' +
+			count +
+			' contact' +
+			( 1 === count ? '' : 's' ) +
+			'? Every message from these senders will be archived. This cannot be undone from Contacts.',
+		apply: bulkDeleteContacts,
+	} );
 
 	// Row actions ("more") — delegated from the table body, matching
 	// `componets/inbox/list.js`.

@@ -8,7 +8,7 @@
 
 	&--messages {
 		grid-template-columns:
-			minmax(200px, 1.6fr) minmax(180px, 2.6fr) minmax(110px, 0.9fr)
+			36px minmax(200px, 1.6fr) minmax(180px, 2.6fr) minmax(110px, 0.9fr)
 			minmax(90px, 0.75fr) minmax(90px, 0.75fr) minmax(120px, 1fr)
 			minmax(110px, 0.9fr) minmax(80px, 0.7fr) minmax(96px, 0.8fr);
 	}
@@ -61,6 +61,28 @@
 			gap: 10px;
 			padding: 40px 20px;
 			color: var(--text-secondary);
+		}
+
+		&--checkbox {
+			padding: 12px 0 12px 14px;
+			justify-content: center;
+
+			input[type="checkbox"] {
+				margin: 0;
+				cursor: pointer;
+			}
+
+			// `.inboxai-grid-table__row--head .inboxai-grid-table__cell` (see
+			// above) sets its own `padding: 10px 14px` on every header cell,
+			// and — being two classes vs. this modifier's one — it otherwise
+			// wins the cascade on specificity, silently overriding this
+			// cell's padding just for the header's select-all checkbox. That
+			// mismatch was throwing the header checkbox out of alignment
+			// with the body rows' checkboxes below it. Reasserting the same
+			// padding here, scoped to the head row, restores the match.
+			.inboxai-grid-table__row--head & {
+				padding: 12px 0 12px 14px;
+			}
 		}
 	}
 }

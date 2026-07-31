@@ -30,3 +30,13 @@ export function listContacts( filters, page, perPage ) {
 export function deleteContact( email ) {
 	return inboxaiAjax( 'inboxai_delete_contact', { email } );
 }
+
+/**
+ * @param {Array<string>} emails
+ * @return {Promise<Object>}
+ */
+export function bulkDeleteContacts( emails ) {
+	return inboxaiAjax( 'inboxai_bulk_delete_contacts', {
+		emails: JSON.stringify( emails ),
+	} );
+}

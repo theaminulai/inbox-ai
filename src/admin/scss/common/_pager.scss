@@ -43,9 +43,12 @@
 		}
 	}
 
-	&__ellipsis {
-		padding: 0 4px;
-		color: var(--text-tertiary);
+	&__label {
+		padding: 0 8px;
+		font-size: 12.5px;
+		font-weight: 600;
+		color: var(--text-primary);
+		white-space: nowrap;
 	}
 }
 
