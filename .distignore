@@ -26,6 +26,7 @@ tsconfig.json
 
 # PHP dev tooling
 /vendor
+/tools
 composer.json
 composer.lock
 phpcs.xml

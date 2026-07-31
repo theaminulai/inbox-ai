@@ -45,6 +45,7 @@ final class ContactsAjaxController extends BaseAjaxController {
 	public function init(): void {
 		add_action( 'wp_ajax_inboxai_list_contacts', array( $this, 'list_contacts' ) );
 		add_action( 'wp_ajax_inboxai_delete_contact', array( $this, 'delete_contact' ) );
+		add_action( 'wp_ajax_inboxai_bulk_delete_contacts', array( $this, 'bulk_delete_contacts' ) );
 	}
 
 	/**
@@ -99,5 +100,44 @@ final class ContactsAjaxController extends BaseAjaxController {
 		}
 
 		wp_send_json_success( array( 'deleted' => true ) );
+	}
+
+	/**
+	 * `inboxai_bulk_delete_contacts` — the Contacts List's "Bulk actions" bar:
+	 * "Delete" is the only bulk action this page offers (there's no per-contact
+	 * equivalent of the AI Inbox List's "Mark reviewed"/"Archive"), so this
+	 * just loops {@see self::delete_contact()}'s own
+	 * {@see \InboxAI\Database\MessageRepository::archive_by_email()} call over
+	 * every selected email rather than a separate batch code path.
+	 *
+	 * @return void
+	 */
+	public function bulk_delete_contacts(): void {
+		$this->check( Capabilities::DELETE_MESSAGES, self::CONTACTS_NONCE_ACTION );
+
+		$emails = array_filter( array_map( 'sanitize_email', $this->post_json_array( 'emails' ) ) );
+
+		if ( array() === $emails ) {
+			wp_send_json_error( array( 'message' => __( 'No valid contacts were selected.', 'inbox-ai' ) ), 400 );
+		}
+
+		$user_id = get_current_user_id();
+		$deleted = 0;
+
+		foreach ( $emails as $email ) {
+			$archived_ids = MessageRepository::archive_by_email( (string) $email );
+
+			if ( array() === $archived_ids ) {
+				continue;
+			}
+
+			foreach ( $archived_ids as $archived_id ) {
+				ActivityRepository::log( $archived_id, 'archived', array( 'bulk' => true ), $user_id );
+			}
+
+			++$deleted;
+		}
+
+		wp_send_json_success( array( 'updated' => $deleted ) );
 	}
 }

@@ -21,6 +21,9 @@
  * @var array<string, mixed>             $filters    Current filter values
  *                                                    (see `ContactsListPage::get_filters_from_request()`).
  * @var string[]                         $categories Every AI category that exists site-wide.
+ * @var bool                             $can_delete Whether the current user holds `DELETE_MESSAGES`
+ *                                                    — gates the checkbox column and bulk-actions bar,
+ *                                                    same as `includes/Templates/inbox/list.php`.
  *
  * @package InboxAI\Templates
  */
@@ -79,9 +82,18 @@ $inboxai_inbox_search_url = static function ( string $email ) {
 	<div class="inboxai-card">
 		<form class="inboxai-table__toolbar" id="contacts-filter-form" method="get">
 			<input type="hidden" name="page" value="inboxai-contacts">
+			<?php if ( $can_delete ) : ?>
+				<div class="inboxai-bulk-bar" id="contacts-bulk-bar">
+					<select class="inboxai-filter-select inboxai-bulk-select" id="contacts-bulk-select">
+						<option value=""><?php esc_html_e( 'Bulk actions', 'inbox-ai' ); ?></option>
+						<option value="delete"><?php esc_html_e( 'Delete', 'inbox-ai' ); ?></option>
+					</select>
+					<button type="button" class="inboxai-btn--secondary inboxai-btn--tertiary inboxai-bulk-apply"><?php esc_html_e( 'Apply', 'inbox-ai' ); ?></button>
+				</div>
+			<?php endif; ?>
 			<div class="inboxai-search">
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-				<input type="text" name="search" id="contacts-search" value="<?php echo esc_attr( $filters['search'] ); ?>" placeholder="<?php esc_attr_e( 'Search contacts…', 'inbox-ai' ); ?>">
+				<input type="text" name="search" id="contacts-search" autocomplete="off" data-1p-ignore data-lpignore="true" value="<?php echo esc_attr( $filters['search'] ); ?>" placeholder="<?php esc_attr_e( 'Search contacts…', 'inbox-ai' ); ?>">
 			</div>
 			<select class="inboxai-filter-select" id="contacts-filter-category" name="category">
 				<option value=""><?php esc_html_e( 'All categories', 'inbox-ai' ); ?></option>
@@ -103,9 +115,9 @@ $inboxai_inbox_search_url = static function ( string $email ) {
 					<option value="<?php echo esc_attr( $inboxai_priority_value ); ?>" <?php selected( $filters['priority'], $inboxai_priority_value ); ?>><?php echo esc_html( $inboxai_priority_label ); ?></option>
 				<?php endforeach; ?>
 			</select>
-			<button type="submit" class="inboxai-btn--secondary"><?php esc_html_e( 'Filter', 'inbox-ai' ); ?></button>
+			<button type="submit" class="inboxai-btn--secondary inboxai-btn--tertiary"><?php esc_html_e( 'Filter', 'inbox-ai' ); ?></button>
 			<?php if ( $inboxai_has_active_filters ) : ?>
-				<a class="inboxai-btn--secondary" href="<?php echo esc_url( $inboxai_clear_url ); ?>"><?php esc_html_e( 'Clear filters', 'inbox-ai' ); ?></a>
+				<a class="inboxai-btn--secondary inboxai-btn--tertiary" href="<?php echo esc_url( $inboxai_clear_url ); ?>"><?php esc_html_e( 'Clear filters', 'inbox-ai' ); ?></a>
 			<?php endif; ?>
 		</form>
 		<?php if ( 0 === $total ) : ?>
@@ -115,9 +127,14 @@ $inboxai_inbox_search_url = static function ( string $email ) {
 			</div>
 		<?php else : ?>
 			<div style="overflow-x:auto;">
-				<div class="inboxai-grid-table inboxai-grid-table--contacts" role="table">
+				<div class="inboxai-grid-table inboxai-grid-table--contacts<?php echo $can_delete ? ' inboxai-grid-table--with-checkbox' : ''; ?>" role="table">
 					<div class="inboxai-grid-table__row inboxai-grid-table__row--head" role="row">
-						<div class="inboxai-grid-table__cell" role="columnheader"><?php esc_html_e( 'Contact', 'inbox-ai' ); ?></div>
+						<?php if ( $can_delete ) : ?>
+							<div class="inboxai-grid-table__cell inboxai-grid-table__cell--checkbox" role="columnheader">
+								<input type="checkbox" id="contacts-select-all" aria-label="<?php esc_attr_e( 'Select all', 'inbox-ai' ); ?>">
+							</div>
+						<?php endif; ?>
+						<div class="inboxai-grid-table__cell" role="columnheader"><?php esc_html_e( 'Contact', 'inbox-ai' ); ?><span class="inboxai-selected-count" data-bulk-count></span></div>
 						<div class="inboxai-grid-table__cell" role="columnheader"><?php esc_html_e( 'Email', 'inbox-ai' ); ?></div>
 						<div class="inboxai-grid-table__cell" role="columnheader"><?php esc_html_e( 'Category', 'inbox-ai' ); ?></div>
 						<div class="inboxai-grid-table__cell" role="columnheader"><?php esc_html_e( 'Priority', 'inbox-ai' ); ?></div>
@@ -133,6 +150,11 @@ $inboxai_inbox_search_url = static function ( string $email ) {
 							$inboxai_url  = $inboxai_inbox_search_url( (string) $inboxai_c['sender_email'] );
 							?>
 							<div class="inboxai-grid-table__row" role="row">
+								<?php if ( $can_delete ) : ?>
+									<div class="inboxai-grid-table__cell inboxai-grid-table__cell--checkbox" role="cell">
+										<input type="checkbox" class="inboxai-bulk-checkbox" data-email="<?php echo esc_attr( $inboxai_c['sender_email'] ); ?>" aria-label="<?php esc_attr_e( 'Select this contact', 'inbox-ai' ); ?>">
+									</div>
+								<?php endif; ?>
 								<div class="inboxai-grid-table__cell inboxai-customer__cell" role="cell">
 									<div class="inboxai-avatar" style="background:<?php echo esc_attr( \InboxAI\Support\Format::avatar_color( (string) $inboxai_c['sender_email'] ) ); ?>;"><?php echo esc_html( \InboxAI\Support\Format::avatar_initials( $inboxai_name ) ); ?></div>
 									<a class="inboxai-customer__name inboxai-customer__link" href="<?php echo esc_url( $inboxai_url ); ?>"><?php echo esc_html( $inboxai_name ); ?></a>

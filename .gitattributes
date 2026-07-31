@@ -59,6 +59,7 @@ tsconfig.json export-ignore
 
 # PHP dev tooling
 /vendor export-ignore
+/tools export-ignore
 composer.json export-ignore
 composer.lock export-ignore
 phpcs.xml export-ignore

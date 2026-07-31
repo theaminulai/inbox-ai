@@ -12,11 +12,12 @@
  * patch in place.
  */
 
-import { markReviewed, archiveMessage, retryAnalysis, deleteMessage } from './api.js';
+import { markReviewed, archiveMessage, retryAnalysis, deleteMessage, bulkAction } from './api.js';
 import { openRowMenu, closeRowMenu } from '../shared/rowMenu.js';
 import { showToast } from '../shared/toast.js';
 import { downloadCsv } from '../shared/csv.js';
 import { inboxaiAjax } from '../shared/api.js';
+import { initBulkActions } from '../shared/bulkActions.js';
 
 // Read once from `#main`'s `data-can-delete` attribute (see
 // `includes/Templates/inbox.php`) — the row-menu's "Delete" item is only
@@ -192,9 +193,17 @@ export function initListScreen() {
 	const filterForm = document.getElementById( 'inbox-filter-form' );
 
 	if ( filterForm ) {
-		filterForm.querySelectorAll( '.inboxai-filter-select' ).forEach( ( select ) => {
-			select.addEventListener( 'change', () => filterForm.submit() );
-		} );
+		// `:not(.inboxai-bulk-select)` matters here: the "Bulk actions"
+		// dropdown also carries `.inboxai-filter-select` (for shared
+		// styling only — see `_toolbar.scss`), so without this exclusion
+		// picking a bulk action was itself treated as a filter change and
+		// immediately submitted/reloaded the form, before Apply was ever
+		// clicked.
+		filterForm
+			.querySelectorAll( '.inboxai-filter-select:not(.inboxai-bulk-select)' )
+			.forEach( ( select ) => {
+				select.addEventListener( 'change', () => filterForm.submit() );
+			} );
 
 		const search = document.getElementById( 'inbox-search' );
 		let searchDebounce = null;
@@ -212,6 +221,25 @@ export function initListScreen() {
 	if ( exportBtn ) {
 		exportBtn.addEventListener( 'click', exportCsv );
 	}
+
+	initBulkActions( {
+		tableBodyId: 'inbox-table-body',
+		selectAllId: 'inbox-select-all',
+		itemAttr: 'id',
+		parseItem: ( value ) => parseInt( value, 10 ),
+		noun: 'submission',
+		// Only `delete` needs a confirmation prompt — `reviewed`/`archive`
+		// apply immediately, matching the row-menu's own single-row actions.
+		confirmMessage: ( count, action ) =>
+			'delete' === action
+				? 'Delete ' +
+				  count +
+				  ' submission' +
+				  ( 1 === count ? '' : 's' ) +
+				  '? This cannot be undone from the Inbox.'
+				: null,
+		apply: bulkAction,
+	} );
 
 	// Row actions ("more") — delegated from the table body, since it's the
 	// one part of this screen large enough to matter for a single listener.

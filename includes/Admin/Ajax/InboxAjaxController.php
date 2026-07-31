@@ -55,6 +55,7 @@ final class InboxAjaxController extends BaseAjaxController {
 		add_action( 'wp_ajax_inboxai_archive_message', array( $this, 'archive_message' ) );
 		add_action( 'wp_ajax_inboxai_delete_message', array( $this, 'delete_message' ) );
 		add_action( 'wp_ajax_inboxai_retry_analysis', array( $this, 'retry_analysis' ) );
+		add_action( 'wp_ajax_inboxai_bulk_action', array( $this, 'bulk_action' ) );
 	}
 
 	/**
@@ -233,5 +234,57 @@ final class InboxAjaxController extends BaseAjaxController {
 		AnalysisQueue::enqueue( $id );
 
 		wp_send_json_success( array( 'queued' => true ) );
+	}
+
+	/**
+	 * `inboxai_bulk_action` — the AI Inbox List's "Bulk actions" bar: applies
+	 * `reviewed`/`archive`/`delete` to every selected row id in one request,
+	 * reusing the exact same per-row methods the row-menu's single actions
+	 * already call rather than a separate batch code path.
+	 *
+	 * @return void
+	 */
+	public function bulk_action(): void {
+		$this->check( Capabilities::EDIT_MESSAGES, self::INBOX_NONCE_ACTION );
+
+		$action = $this->post_key( 'bulk_action' );
+		$ids    = array_filter( array_map( 'absint', $this->post_json_array( 'ids' ) ) );
+
+		if ( array() === $ids || ! in_array( $action, array( 'reviewed', 'archive', 'delete' ), true ) ) {
+			wp_send_json_error( array( 'message' => __( 'No valid submissions were selected.', 'inbox-ai' ) ), 400 );
+		}
+
+		// `delete` needs its own, stricter capability — everything else this
+		// bar offers only needs the same EDIT_MESSAGES already checked above.
+		if ( 'delete' === $action && ! current_user_can( Capabilities::DELETE_MESSAGES ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to delete submissions.', 'inbox-ai' ) ), 403 );
+		}
+
+		$updated    = 0;
+		$user_id    = get_current_user_id();
+		$status_map = array(
+			'reviewed' => 'reviewed',
+			'archive'  => 'archived',
+		);
+
+		foreach ( $ids as $id ) {
+			$ok = false;
+
+			if ( 'delete' === $action ) {
+				$ok = MessageRepository::soft_delete( $id );
+			} elseif ( isset( $status_map[ $action ] ) ) {
+				$ok = MessageRepository::update_status( $id, $status_map[ $action ] );
+
+				if ( $ok ) {
+					ActivityRepository::log( $id, $status_map[ $action ], array( 'bulk' => true ), $user_id );
+				}
+			}
+
+			if ( $ok ) {
+				++$updated;
+			}
+		}
+
+		wp_send_json_success( array( 'updated' => $updated ) );
 	}
 }
