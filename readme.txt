@@ -164,17 +164,14 @@ Only one provider is contacted per request — whichever one is currently select
 
 == Changelog ==
 
-= 0.9.0 =
-* Merge pull request #16 from theaminulai/development
-* Merge pull request #15 from theaminulai/Fixed-Tested-up-to-and-Stable-tag
-* Fix all issue
-= Inbox AI/vx.x.x - (upcoming) =
+= Inbox AI/v0.9.0 - (2026-07-31) =
 *Fixed*
 
 * Fixed CSS design issues on the Settings page for small screens.
 * Fixed CSS design issues with select fields on the AI Inbox page for small screens.
 * Fixed CSS design issues with filters on the AI Inbox page for small screens.
 * Fixed CSS design issues with filters on the Contacts page for small screens.
+
 *Improved*
 
 * Bulk actions on the AI Inbox page now support "Mark Reviewed" and "Archive" in addition to "Delete."
