@@ -4,7 +4,7 @@ Tags: contact form 7, ai, inbox, openai, flamingo
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.8.0
+Stable tag: 0.9.0
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -163,6 +163,11 @@ Only one provider is contacted per request — whichever one is currently select
 5. Settings — Notifications tab, where you can configure email notifications.
 
 == Changelog ==
+
+= 0.9.0 =
+* Merge pull request #16 from theaminulai/development
+* Merge pull request #15 from theaminulai/Fixed-Tested-up-to-and-Stable-tag
+* Fix all issue
 = Inbox AI/vx.x.x - (upcoming) =
 *Fixed*
 
