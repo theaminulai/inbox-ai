@@ -127,8 +127,40 @@ final class Format {
 			return $event_type;
 		}
 
-		// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText, WordPress.WP.I18n.LowLevelTranslationFunction -- self::EVENT_LABELS is a small, fixed, plugin-authored set (not user input); translated by value like the original inline array this replaced (see inbox/detail.php's history) so translators who've already translated these strings keep working.
-		return __( self::EVENT_LABELS[ $event_type ], 'inbox-ai' );
+		// Each case calls __() with a literal string so the WordPress.org
+		// translation parser (which reads source statically, without
+		// executing it) can actually see and extract these strings. The
+		// previous `__( self::EVENT_LABELS[ $event_type ], 'inbox-ai' )` form
+		// passed a variable as the text argument, which the parser cannot
+		// resolve — flagged as a guideline violation in the 2026-08-02
+		// WordPress.org plugin review. self::EVENT_LABELS is kept as the
+		// canonical fixed set (used by the isset() check above and as the
+		// default below); the switch below only supplies literal copies of
+		// those same values for translation purposes.
+		switch ( $event_type ) {
+			case 'received':
+				return __( 'Submission received', 'inbox-ai' );
+			case 'ai_analysis_completed':
+				return __( 'AI analysis completed', 'inbox-ai' );
+			case 'ai_analysis_failed':
+				return __( 'AI analysis failed', 'inbox-ai' );
+			case 'draft_saved':
+				return __( 'Reply draft saved', 'inbox-ai' );
+			case 'reply_sent':
+				return __( 'Reply sent', 'inbox-ai' );
+			case 'reviewed':
+				return __( 'Marked as reviewed', 'inbox-ai' );
+			case 'archived':
+				return __( 'Archived', 'inbox-ai' );
+			case 'retry_requested':
+				return __( 'Analysis retry requested', 'inbox-ai' );
+			default:
+				// Unreachable given the isset() guard above (every key in
+				// EVENT_LABELS is handled by a case), but kept as a safe
+				// fallback rather than assuming the switch will always stay
+				// exhaustive as EVENT_LABELS changes.
+				return self::EVENT_LABELS[ $event_type ];
+		}
 	}
 
 	/**
