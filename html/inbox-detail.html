@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bulk enterprise pricing request — AI Inbox</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3F4F7;
+    --surface:#FFFFFF;
+    --surface-sunken:#F8F9FB;
+    --ai-surface:#F3F1FC;
+    --ai-border:#D9D2F5;
+    --border:#E4E6EC;
+    --border-strong:#D3D6DE;
+    --ink-900:#161A22;
+    --ink-700:#3C4250;
+    --ink-500:#6B7280;
+    --ink-400:#98A0AD;
+    --brand:#33417A;
+    --brand-soft:#EAEDF8;
+    --customer:#2F5D8A;
+    --customer-soft:#E7F0F9;
+    --staff:#2B63C9;
+    --staff-soft:#E4ECFB;
+    --ai-dot:#7A5FD1;
+    --success:#1F9E6C;
+    --success-soft:#E5F5EE;
+    --confidence:#1FA971;
+    --confidence-soft:#DDF3E7;
+    --urgent:#C4443A;
+    --urgent-soft:#FBEAE8;
+    --new:#33417A;
+    --radius:12px;
+    --radius-sm:8px;
+    --shadow-sm: 0 1px 2px rgba(22,26,34,0.04);
+    --shadow-md: 0 4px 16px rgba(22,26,34,0.06);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    font-family:'Inter',system-ui,sans-serif;
+    color:var(--ink-900);
+    -webkit-font-smoothing:antialiased;
+    padding:28px 24px 80px;
+  }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  a{ color:var(--brand); }
+
+  /* ---------- Top nav ---------- */
+  .topnav{
+    max-width:1180px;
+    margin:0 auto 20px;
+    display:flex;
+    align-items:center;
+    gap:26px;
+    padding-bottom:14px;
+    border-bottom:1px solid var(--border);
+  }
+  .topnav .brand{
+    font-weight:800; font-size:15px; letter-spacing:-0.01em; color:var(--ink-900);
+    display:flex; align-items:center; gap:8px; margin-right:8px;
+  }
+  .topnav .brand .dot{ width:8px;height:8px;border-radius:50%;background:var(--brand); }
+  .topnav a{
+    font-size:13.5px; font-weight:500; color:var(--ink-500); text-decoration:none;
+    padding:6px 2px; border-bottom:2px solid transparent;
+  }
+  .topnav a.active{ color:var(--ink-900); border-bottom-color:var(--brand); font-weight:600; }
+
+  .wrap{ max-width:1180px; margin:0 auto; }
+
+  /* ---------- Header card ---------- */
+  .header-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:22px 24px;
+    box-shadow:var(--shadow-sm);
+    margin-bottom:18px;
+    display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap;
+  }
+  .header-card h1{
+    font-size:21px; font-weight:800; letter-spacing:-0.015em; margin:0 0 6px;
+  }
+  .header-meta{ font-size:13.5px; color:var(--ink-500); display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+  .header-meta b{ color:var(--ink-700); font-weight:600; }
+  .badges{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .badge{
+    font-size:12px; font-weight:700; padding:4px 10px; border-radius:999px;
+    display:inline-flex; align-items:center; gap:5px; white-space:nowrap;
+  }
+  .badge.urgent{ background:var(--urgent-soft); color:var(--urgent); }
+  .badge.urgent::before{ content:''; width:6px;height:6px;border-radius:50%;background:var(--urgent); }
+  .badge.new{ background:var(--brand-soft); color:var(--new); }
+  .badge.date{ background:var(--surface-sunken); color:var(--ink-500); font-weight:500; border:1px solid var(--border); }
+
+  /* ---------- Main grid ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns: 1fr 320px;
+    gap:20px;
+    align-items:start;
+  }
+  @media (max-width:900px){
+    .grid{ grid-template-columns:1fr; }
+  }
+
+  /* ---------- Section labels ---------- */
+  .section-label{
+    font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;
+    color:var(--ink-400); margin:0 0 10px 2px;
+  }
+
+  /* ---------- Thread ---------- */
+  .thread{ position:relative; }
+  .thread-item{
+    position:relative;
+    display:grid;
+    grid-template-columns:40px 1fr;
+    gap:14px;
+    margin-bottom:14px;
+  }
+  .thread-spine{
+    position:absolute; left:19px; top:40px; bottom:-14px; width:2px;
+    background:var(--border-strong);
+  }
+  .thread-item.ai .thread-spine{ background-image:linear-gradient(var(--ai-border) 60%, rgba(0,0,0,0) 0%); background-size: 2px 8px; background-repeat:repeat-y; background-color:transparent; }
+  .thread-item:last-of-type .thread-spine{ display:none; }
+
+  .avatar{
+    width:40px; height:40px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:14px; color:#fff;
+    flex-shrink:0; z-index:1;
+  }
+  .avatar.customer{ background:var(--customer); }
+  .avatar.staff{ background:var(--staff); }
+  .avatar.ai{ background:#fff; color:var(--ai-dot); border:2px solid var(--ai-dot); }
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow-sm);
+    overflow:hidden;
+  }
+  .thread-item.ai .card{ background:var(--ai-surface); border:1px dashed var(--ai-border); box-shadow:none; }
+  .thread-item.staff .card{ border-color:var(--staff-soft); }
+
+  .card-head{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:12px 16px; cursor:pointer; user-select:none;
+  }
+  .card-head-left{ display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; }
+  .sender-name{ font-weight:700; font-size:14px; color:var(--ink-900); }
+  .sender-role{ font-size:11.5px; font-weight:600; padding:2px 7px; border-radius:5px; }
+  .sender-role.customer{ background:var(--customer-soft); color:var(--customer); }
+  .sender-role.staff{ background:var(--staff-soft); color:var(--staff); }
+  .sender-role.ai{ background:#fff; color:var(--ai-dot); border:1px solid var(--ai-border); }
+  .sender-sub{ font-size:12.5px; color:var(--ink-400); }
+  .card-head-right{ display:flex; align-items:center; gap:10px; flex-shrink:0; }
+  .timestamp{ font-size:12px; color:var(--ink-400); }
+  .chevron{ width:16px; height:16px; color:var(--ink-400); transition:transform .15s ease; flex-shrink:0; }
+  .thread-item.collapsed .chevron{ transform:rotate(-90deg); }
+  .thread-item.collapsed .card-body{ display:none; }
+
+  .card-body{ padding:0 16px 16px; }
+  .msg-text{ font-size:14px; line-height:1.65; color:var(--ink-700); margin:0 0 12px; white-space:pre-line; }
+  .msg-meta-row{ font-size:12px; color:var(--ink-400); margin-bottom:10px; }
+  .attachment-chip{
+    display:inline-flex; align-items:center; gap:7px;
+    font-size:12.5px; font-weight:500; color:var(--ink-700);
+    background:var(--surface-sunken); border:1px solid var(--border);
+    padding:6px 10px; border-radius:8px; text-decoration:none;
+  }
+  .attachment-chip svg{ width:14px; height:14px; color:var(--ink-500); flex-shrink:0; }
+  .attachment-chip .size{ color:var(--ink-400); }
+
+  /* AI analysis specifics */
+  .ai-summary{ font-size:14px; line-height:1.65; color:var(--ink-700); margin:0 0 14px; }
+  .ai-grid{ display:flex; gap:26px; margin-bottom:14px; flex-wrap:wrap; }
+  .ai-field-label{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-400); margin-bottom:5px; }
+  .pill{ font-size:12.5px; font-weight:700; padding:3px 10px; border-radius:999px; display:inline-block; }
+  .pill.sales{ background:#E1E9FA; color:var(--brand); }
+  .pill.urgent{ background:var(--urgent-soft); color:var(--urgent); }
+  .confidence-bar{ width:220px; max-width:100%; height:6px; border-radius:99px; background:var(--confidence-soft); overflow:hidden; margin-top:6px; }
+  .confidence-fill{ height:100%; background:linear-gradient(90deg,#4ADE94,var(--confidence)); border-radius:99px; }
+  .confidence-label{ font-size:12.5px; font-weight:600; color:var(--confidence); margin-top:6px; }
+  .ai-reasoning{
+    font-size:13px; line-height:1.6; color:var(--ink-500);
+    background:#fff; border:1px solid var(--ai-border); border-radius:8px; padding:12px 14px;
+  }
+  .ai-actions{ display:flex; gap:8px; margin-top:12px; }
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;
+    padding:8px 14px; border-radius:8px; border:1px solid var(--border-strong);
+    background:#fff; color:var(--ink-700); display:inline-flex; align-items:center; gap:6px;
+    transition:background .12s ease, border-color .12s ease;
+  }
+  .btn:hover{ background:var(--surface-sunken); }
+  .btn.primary{ background:#3A5CF6; border-color:#3A5CF6; color:#fff; }
+  .btn.primary:hover{ background:#2E49D6; }
+  .btn.ghost{ border-color:transparent; background:transparent; color:var(--ink-500); }
+  .btn.ghost:hover{ background:var(--surface-sunken); }
+  .btn.small{ padding:6px 11px; font-size:12.5px; }
+  .btn svg{ width:14px; height:14px; }
+
+  /* ---------- Composer (Gmail-style, anchored at bottom of thread) ---------- */
+  .composer-wrap{
+    display:grid; grid-template-columns:40px 1fr; gap:14px; margin-top:4px;
+  }
+  .composer-card{
+    background:var(--surface); border:1px solid var(--border-strong); border-radius:var(--radius);
+    box-shadow:var(--shadow-md);
+  }
+  .composer-collapsed{
+    padding:12px 16px; font-size:14px; color:var(--ink-400); cursor:text;
+  }
+  .composer-open{ padding:18px 18px 16px; }
+  .composer-fields-row{ display:flex; gap:16px; margin-bottom:16px; }
+  .composer-fields-row .field-group{ flex:1; }
+  .field-group{ margin-bottom:16px; }
+  .field-group > label{
+    display:block; font-size:13px; font-weight:700; color:var(--ink-900); margin-bottom:7px;
+  }
+  .field-group input[type="text"], .field-group select{
+    width:100%; font-family:inherit; font-size:13.5px; color:var(--ink-900);
+    border:1px solid var(--border-strong); border-radius:8px; padding:10px 12px;
+    outline:none; background:#fff; transition:border-color .12s ease;
+  }
+  .field-group input[type="text"]:focus, .field-group select:focus{ border-color:var(--brand); }
+  .field-group select{ appearance:none; -webkit-appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2398A0AD' stroke-width='2.4'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 12px center; padding-right:34px; cursor:pointer;
+  }
+  .message-field{
+    border:1px solid var(--border-strong); border-radius:8px; overflow:hidden; background:#fff;
+  }
+  .message-toolbar{
+    display:flex; align-items:center; gap:4px; padding:8px 10px;
+    background:var(--surface-sunken); border-bottom:1px solid var(--border);
+  }
+  .toolbar-select{
+    font-family:inherit; font-size:12.5px; font-weight:500; color:var(--ink-700);
+    border:1px solid var(--border-strong); border-radius:6px; background:#fff;
+    padding:5px 8px; margin-right:6px; outline:none; cursor:pointer;
+  }
+  .toolbar-btn{
+    width:28px; height:28px; display:flex; align-items:center; justify-content:center;
+    border:none; background:transparent; border-radius:6px; color:var(--ink-700); cursor:pointer;
+    font-size:13px; font-weight:700;
+  }
+  .toolbar-btn:hover{ background:#E9EBF0; }
+  .toolbar-btn svg{ width:15px; height:15px; }
+  .toolbar-btn.underline{ text-decoration:underline; }
+  .toolbar-divider{ width:1px; height:18px; background:var(--border-strong); margin:0 4px; }
+  .composer-textarea{
+    display:block; width:100%; min-height:150px; border:none; outline:none; resize:vertical;
+    font-family:inherit; font-size:14px; line-height:1.65; color:var(--ink-700); padding:14px;
+  }
+  .composer-footer{ display:flex; align-items:center; justify-content:space-between; margin-top:10px; }
+  .composer-footer-left{ display:flex; gap:8px; }
+  .autosave-note{ font-size:11.5px; color:var(--ink-400); }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{ display:flex; flex-direction:column; gap:14px; }
+  .panel{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    box-shadow:var(--shadow-sm); overflow:hidden;
+  }
+  .panel-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:13px 16px; cursor:pointer; user-select:none;
+  }
+  .panel-head h3{ margin:0; font-size:13px; font-weight:700; letter-spacing:-0.01em; }
+  .panel-body{ padding:0 16px 16px; }
+  .panel.collapsed .panel-body{ display:none; }
+  .panel.collapsed .chevron{ transform:rotate(-90deg); }
+
+  .customer-row{ display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .customer-row .avatar{ width:38px; height:38px; font-size:13px; }
+  .customer-row .name{ font-weight:700; font-size:14.5px; }
+  .customer-row .email{ font-size:12.5px; color:var(--ink-500); }
+
+  .kv{ display:flex; flex-direction:column; gap:12px; }
+  .kv-item .k{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-400); margin-bottom:3px; }
+  .kv-item .v{ font-size:13.5px; color:var(--ink-900); }
+  .kv-item .v.muted{ color:var(--ink-500); }
+  .kv-item .v a{ text-decoration:none; }
+  .status-chip{ display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:var(--success); background:var(--success-soft); padding:3px 9px; border-radius:999px; }
+  .status-chip::before{ content:''; width:6px;height:6px;border-radius:50%;background:var(--success); }
+
+  .timeline{ display:flex; flex-direction:column; gap:0; }
+  .timeline-item{ position:relative; padding-left:20px; padding-bottom:16px; }
+  .timeline-item:last-child{ padding-bottom:0; }
+  .timeline-item::before{ content:''; position:absolute; left:3px; top:4px; width:7px; height:7px; border-radius:50%; background:var(--success); }
+  .timeline-item::after{ content:''; position:absolute; left:6px; top:14px; bottom:0; width:1px; background:var(--border-strong); }
+  .timeline-item:last-child::after{ display:none; }
+  .timeline-item .t-title{ font-size:12.5px; font-weight:600; color:var(--ink-900); }
+  .timeline-item .t-sub{ font-size:11.5px; color:var(--ink-400); margin-top:2px; }
+
+  .quick-actions{ display:flex; flex-direction:column; gap:8px; }
+  .quick-actions .btn{ justify-content:flex-start; width:100%; }
+
+  /* ---------- Toast ---------- */
+  .toast{
+    position:fixed; bottom:24px; right:24px; background:var(--ink-900); color:#fff;
+    padding:12px 18px; border-radius:10px; font-size:13.5px; font-weight:500;
+    box-shadow:0 8px 24px rgba(0,0,0,0.2); display:flex; align-items:center; gap:8px;
+    opacity:0; transform:translateY(10px); pointer-events:none; transition:all .25s ease; z-index:50;
+  }
+  .toast.show{ opacity:1; transform:translateY(0); }
+  .toast svg{ width:16px; height:16px; color:#6FE0A8; flex-shrink:0; }
+</style>
+</head>
+<body>
+
+<div class="topnav">
+  <a href="#">Dashboard</a>
+  <a href="#" class="active">AI Inbox</a>
+  <a href="#">Contacts</a>
+  <a href="#">Analytics</a>
+  <a href="#">Campaigns</a>
+  <a href="#">Settings</a>
+</div>
+
+<div class="wrap">
+
+  <div class="header-card">
+    <div>
+      <h1>Bulk enterprise pricing request</h1>
+      <div class="header-meta">From <b>Rashida Karim</b> · rashida.karim@nexbuild.co · <span>Sales Contact</span></div>
+    </div>
+    <div class="badges">
+      <span class="badge urgent">Urgent</span>
+      <span class="badge new">New</span>
+      <span class="badge date">Jul 20, 2026 · 2:14 PM</span>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- ============ MAIN THREAD COLUMN ============ -->
+    <div>
+      <div class="section-label">Conversation</div>
+
+      <div class="thread" id="thread">
+
+        <!-- Original customer message -->
+        <div class="thread-item customer" data-role="customer">
+          <div>
+            <div class="avatar customer">RK</div>
+            <div class="thread-spine"></div>
+          </div>
+          <div class="card">
+            <div class="card-head" onclick="toggleItem(this)">
+              <div class="card-head-left">
+                <span class="sender-name">Rashida Karim</span>
+                <span class="sender-role customer">Customer</span>
+                <span class="sender-sub">rashida.karim@nexbuild.co</span>
+              </div>
+              <div class="card-head-right">
+                <span class="timestamp mono">Jul 20, 2:14 PM</span>
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+            </div>
+            <div class="card-body">
+              <p class="msg-text">Interested in a bulk quote for the enterprise plan — 40 seats, need pricing by Friday if possible. Also want to know if there's a discount for annual billing and whether SSO is included at this tier.</p>
+              <a class="attachment-chip" href="#">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+                requirements.pdf <span class="size">· 245 KB</span>
+              </a>
+              <div class="msg-meta-row" style="margin-top:10px;">Submitted via Sales Contact form on nexbuild.co/pricing/enterprise · Submission #4801</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI analysis note -->
+        <div class="thread-item ai" data-role="ai">
+          <div>
+            <div class="avatar ai">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z"/></svg>
+            </div>
+            <div class="thread-spine"></div>
+          </div>
+          <div class="card">
+            <div class="card-head" onclick="toggleItem(this)">
+              <div class="card-head-left">
+                <span class="sender-name">AI Analysis</span>
+                <span class="sender-role ai">Automated · internal</span>
+              </div>
+              <div class="card-head-right">
+                <span class="timestamp mono">2h ago</span>
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+            </div>
+            <div class="card-body">
+              <p class="ai-summary">A qualified enterprise lead requesting a 40-seat bulk quote with a Friday deadline. Asking specifically about annual-billing discounts and SSO availability — both are buying-decision signals worth a fast, detailed response.</p>
+              <div class="ai-grid">
+                <div>
+                  <div class="ai-field-label">Category</div>
+                  <span class="pill sales">Sales</span>
+                </div>
+                <div>
+                  <div class="ai-field-label">Priority</div>
+                  <span class="pill urgent">Urgent</span>
+                </div>
+                <div>
+                  <div class="ai-field-label">Confidence</div>
+                  <div class="confidence-bar"><div class="confidence-fill" style="width:94%;"></div></div>
+                  <div class="confidence-label">94% confident</div>
+                </div>
+              </div>
+              <div class="ai-field-label">Reasoning</div>
+              <div class="ai-reasoning">Flagged urgent due to an explicit deadline ("by Friday") combined with a 40-seat volume signal. Category set to Sales based on pricing and plan-tier language. High confidence driven by clear, unambiguous intent language.</div>
+              <div class="ai-actions">
+                <button class="btn small">Regenerate analysis</button>
+                <button class="btn small ghost">Not helpful</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sent replies will be inserted here dynamically -->
+        <div id="sent-replies"></div>
+
+      </div>
+
+      <!-- Composer -->
+      <div class="section-label" style="margin-top:22px;">Reply</div>
+      <div class="composer-wrap">
+        <div>
+          <div class="avatar staff">AH</div>
+        </div>
+        <div class="composer-card">
+          <div class="composer-collapsed" id="composerCollapsed" onclick="openComposer()">Reply to Rashida Karim…</div>
+          <div class="composer-open" id="composerOpen" style="display:none;">
+            <div class="composer-fields-row">
+              <div class="field-group">
+                <label>Recipient</label>
+                <input type="text" value="rashida.karim@nexbuild.co">
+              </div>
+              <div class="field-group">
+                <label>Template</label>
+                <select><option>Select a template…</option><option>Enterprise quote follow-up</option><option>Pricing objection</option></select>
+              </div>
+            </div>
+            <div class="field-group">
+              <label>Subject</label>
+              <input type="text" value="Re: Bulk enterprise pricing request">
+            </div>
+            <div class="field-group" style="margin-bottom:14px;">
+              <label>Message</label>
+              <div class="message-field">
+                <div class="message-toolbar">
+                  <select class="toolbar-select"><option>Paragraph</option><option>Heading 1</option><option>Heading 2</option></select>
+                  <button type="button" class="toolbar-btn" style="font-weight:800;">B</button>
+                  <button type="button" class="toolbar-btn" style="font-style:italic;">I</button>
+                  <button type="button" class="toolbar-btn underline">U</button>
+                  <div class="toolbar-divider"></div>
+                  <button type="button" class="toolbar-btn" title="Bullet list">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>
+                  </button>
+                  <button type="button" class="toolbar-btn" title="Insert link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10 13a5 5 0 007.07 0l2.83-2.83a5 5 0 00-7.07-7.07l-1.5 1.5"/><path d="M14 11a5 5 0 00-7.07 0l-2.83 2.83a5 5 0 007.07 7.07l1.5-1.5"/></svg>
+                  </button>
+                  <button type="button" class="toolbar-btn" title="Reset formatting">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0115-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 01-15 6.7L3 16"/></svg>
+                  </button>
+                </div>
+                <textarea class="composer-textarea" id="composerText">Hi Rashida,
+
+Thanks for reaching out about the enterprise plan for NexBuild's team of 40. Happy to put a formal quote together for you before Friday.
+
+To confirm: our annual-billing plans include a 15% discount versus monthly, and SSO (SAML/OIDC) is included at the Enterprise tier by default.
+
+I'll send over a detailed quote shortly — let me know if you'd like a short call to walk through it.
+
+Best,
+Aminul</textarea>
+              </div>
+            </div>
+            <div class="composer-footer">
+              <div class="composer-footer-left">
+                <button class="btn primary" onclick="sendReply()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>
+                  Send reply
+                </button>
+                <button class="btn" onclick="closeComposer()">Save draft</button>
+                <button class="btn ghost">Preview</button>
+              </div>
+              <span class="autosave-note">Draft auto-saved just now</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============ SIDEBAR ============ -->
+    <div class="sidebar">
+
+      <div class="panel">
+        <div class="panel-head" onclick="togglePanel(this)">
+          <h3>Customer</h3>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="panel-body">
+          <div class="customer-row">
+            <div class="avatar customer">RK</div>
+            <div>
+              <div class="name">Rashida Karim</div>
+              <div class="email">rashida.karim@nexbuild.co</div>
+            </div>
+          </div>
+          <div class="kv">
+            <div class="kv-item"><div class="k">Company</div><div class="v">NexBuild Technologies</div></div>
+            <div class="kv-item"><div class="k">Phone</div><div class="v mono">+1 (415) 555-0142</div></div>
+            <div class="kv-item"><div class="k">Location</div><div class="v">San Francisco, USA</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head" onclick="togglePanel(this)">
+          <h3>Submission details</h3>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="panel-body">
+          <div class="kv">
+            <div class="kv-item"><div class="k">Submission ID</div><div class="v mono">#4801</div></div>
+            <div class="kv-item"><div class="k">Form</div><div class="v">Sales Contact</div></div>
+            <div class="kv-item"><div class="k">Source page</div><div class="v"><a href="#">nexbuild.co/pricing/enterprise</a></div></div>
+            <div class="kv-item"><div class="k">IP address</div><div class="v mono muted">104.28.14.62</div></div>
+            <div class="kv-item"><div class="k">Mail status</div><div class="v"><span class="status-chip">Sent successfully</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head" onclick="togglePanel(this)">
+          <h3>Activity</h3>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="panel-body">
+          <div class="timeline" id="activityTimeline">
+            <div class="timeline-item">
+              <div class="t-title">AI analysis completed — 94% confidence</div>
+              <div class="t-sub">System · 2h ago</div>
+            </div>
+            <div class="timeline-item">
+              <div class="t-title">Submission received via Sales Contact</div>
+              <div class="t-sub">System · 2h ago</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head" onclick="togglePanel(this)">
+          <h3>Quick actions</h3>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="panel-body">
+          <div class="quick-actions">
+            <button class="btn">Mark as resolved</button>
+            <button class="btn">Assign to teammate</button>
+            <button class="btn">Add to contacts</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+  <span>Reply sent to Rashida Karim</span>
+</div>
+
+<script>
+function toggleItem(headEl){
+  const item = headEl.closest('.thread-item');
+  item.classList.toggle('collapsed');
+}
+function togglePanel(headEl){
+  const panel = headEl.closest('.panel');
+  panel.classList.toggle('collapsed');
+}
+function openComposer(){
+  document.getElementById('composerCollapsed').style.display = 'none';
+  document.getElementById('composerOpen').style.display = 'block';
+}
+function closeComposer(){
+  document.getElementById('composerOpen').style.display = 'none';
+  document.getElementById('composerCollapsed').style.display = 'block';
+}
+
+let replyCount = 0;
+function sendReply(){
+  const text = document.getElementById('composerText').value.trim();
+  if(!text) return;
+
+  replyCount++;
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+
+  const container = document.getElementById('sent-replies');
+  const item = document.createElement('div');
+  item.className = 'thread-item staff';
+  item.innerHTML = `
+    <div>
+      <div class="avatar staff">AH</div>
+      <div class="thread-spine"></div>
+    </div>
+    <div class="card">
+      <div class="card-head" onclick="toggleItem(this)">
+        <div class="card-head-left">
+          <span class="sender-name">Aminul Haque</span>
+          <span class="sender-role staff">You · Sent</span>
+        </div>
+        <div class="card-head-right">
+          <span class="timestamp mono">${timeStr}</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="card-body">
+        <p class="msg-text">${text.replace(/</g,'&lt;')}</p>
+      </div>
+    </div>
+  `;
+  container.appendChild(item);
+
+  // add to activity timeline
+  const timeline = document.getElementById('activityTimeline');
+  const t = document.createElement('div');
+  t.className = 'timeline-item';
+  t.innerHTML = `<div class="t-title">Reply sent to Rashida Karim</div><div class="t-sub">Aminul Haque · just now</div>`;
+  timeline.prepend(t);
+
+  closeComposer();
+  document.getElementById('composerText').value = '';
+
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(()=> toast.classList.remove('show'), 2800);
+}
+</script>
+
+</body>
+</html>

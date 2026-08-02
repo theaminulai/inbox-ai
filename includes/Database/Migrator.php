@@ -42,7 +42,7 @@ final class Migrator {
 	 *
 	 * @var string
 	 */
-	private const SCHEMA_VERSION = '0.2.0';
+	private const SCHEMA_VERSION = '0.3.0';
 
 	/**
 	 * Option name tracking which schema version has been applied.
@@ -116,6 +116,7 @@ final class Migrator {
 			spam_status TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 			priority VARCHAR(30) NOT NULL DEFAULT '',
 			category VARCHAR(100) NOT NULL DEFAULT '',
+			source_category VARCHAR(100) NOT NULL DEFAULT '',
 			confidence DECIMAL(5,2) NULL,
 			ai_summary LONGTEXT NULL,
 			ai_reasoning LONGTEXT NULL,

@@ -22,7 +22,8 @@
  * List view also gets: $messages, $total, $page, $per_page, $filters,
  * $form_titles, $categories (see `list.php`).
  *
- * Detail view also gets: $message, $activities (see `detail.php`).
+ * Detail view also gets: $message, $activities, and also forwards $can_delete
+ * (the Quick Actions panel's "Delete" button needs it — see `detail.php`).
  *
  * @package InboxAI\Templates
  */
@@ -48,6 +49,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					'activities' => $activities,
 					'can_reply'  => $can_reply,
 					'can_edit'   => $can_edit,
+					'can_delete' => $can_delete,
 				)
 			);
 		} elseif ( 'not-found' === $view ) {

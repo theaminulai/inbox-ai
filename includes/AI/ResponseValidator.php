@@ -18,10 +18,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Categories have no fixed vocabulary — every form owns its own
  * admin-editable list (see {@see \InboxAI\CF7\CategoryTaxonomy}), so
  * there is deliberately no `CATEGORIES` constant or default category here
- * any more; {@see self::normalize_category()} is only ever as permissive as
- * whatever list the caller actually passes it. Priorities remain a fixed,
- * non-editable vocabulary (matching every badge/CSS class already built
- * around exactly these four values), so that part is unchanged.
+ * any more; {@see self::normalize_category()} matches against whatever list
+ * the caller passes it, or — for a form with no list of its own — accepts
+ * the AI's own free-form suggestion instead of leaving the message
+ * uncategorized. Priorities remain a fixed, non-editable vocabulary
+ * (matching every badge/CSS class already built around exactly these four
+ * values), so that part is unchanged.
  */
 final class ResponseValidator {
 
@@ -61,24 +63,38 @@ final class ResponseValidator {
 	}
 
 	/**
-	 * Normalizes a raw category value to one of `$allowed` — the submitting
-	 * form's own {@see \InboxAI\CF7\CategoryTaxonomy} terms, as passed by
-	 * {@see \InboxAI\AI\AnalysisQueue::process()}.
+	 * Normalizes a raw category value from the AI response.
 	 *
-	 * There is no fallback/default category to fall back to: a value that
-	 * doesn't case-insensitively match anything in `$allowed` (including the
-	 * case where `$allowed` is empty — a form with no categories of its own
-	 * yet) normalizes to `''`, leaving the message uncategorized rather than
-	 * inventing a category the admin never created.
+	 * When `$allowed` is non-empty (the submitting form has its own
+	 * {@see \InboxAI\CF7\CategoryTaxonomy} terms — see
+	 * {@see \InboxAI\AI\AnalysisQueue::process()}), the model was asked to
+	 * pick one of them, so the result is matched case-insensitively against
+	 * that list; a value that doesn't match anything in it normalizes to
+	 * `''` rather than inventing a category the admin never created.
+	 *
+	 * When `$allowed` is empty (no categories configured for that form yet),
+	 * {@see \InboxAI\AI\PromptBuilder::build_analysis_prompt()} instead asks
+	 * the model to propose its own short category label — that free-form
+	 * value is accepted as-is (trimmed, length-capped to match the
+	 * `category` column's `VARCHAR(100)`), so the AI's own classification
+	 * (`category`) still gets populated even for forms nobody has set up a
+	 * fixed vocabulary for. This is deliberately independent from
+	 * `source_category`, which is the fixed, form-defined value captured
+	 * once at submission time and never touched by AI analysis.
 	 *
 	 * @param string   $value   Raw value from the AI response.
 	 * @param string[] $allowed The category names the AI was actually asked
-	 *                          to choose from for this particular message.
+	 *                          to choose from for this particular message;
+	 *                          empty if it was asked to propose its own.
 	 *
 	 * @return string
 	 */
 	public static function normalize_category( string $value, array $allowed ): string {
 		$value = trim( $value );
+
+		if ( array() === $allowed ) {
+			return mb_substr( $value, 0, 100 );
+		}
 
 		foreach ( $allowed as $category ) {
 			if ( 0 === strcasecmp( $category, $value ) ) {

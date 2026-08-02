@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use InboxAI\Admin\Ajax\SettingsAjaxController;
+use InboxAI\CF7\CategoryTaxonomy;
 use InboxAI\Database\MessageRepository;
 use InboxAI\Database\UsageRepository;
 use InboxAI\Migration\FlamingoImporter;
@@ -37,7 +38,11 @@ use InboxAI\Support\Template;
 final class SettingsPage {
 
 	/**
-	 * Valid `?tab=` values, in the same order as the mockup's subnav.
+	 * Valid `?tab=` values, in the same order as the mockup's subnav. The
+	 * `flamingo` tab's own wizard covers both import paths this plugin
+	 * supports (Flamingo migration and the plugin-native
+	 * {@see \InboxAI\Migration\InboxCsvImporter} CSV path) — see
+	 * `includes/Templates/settings/flamingo.php`'s docblock.
 	 *
 	 * @var string[]
 	 */
@@ -108,6 +113,7 @@ final class SettingsPage {
 			'has_api_key'     => SettingsRepository::has_api_key(),
 			'general'         => SettingsRepository::get_general(),
 			'cf7_forms'       => $this->get_cf7_forms(),
+			'categories'      => $this->get_categories(),
 			'prompts'         => SettingsRepository::get_prompts(),
 			'notifications'   => SettingsRepository::get_notifications(),
 			'usage_totals'    => UsageRepository::get_period_totals( '30_days' ),
@@ -140,5 +146,47 @@ final class SettingsPage {
 		}
 
 		return $list;
+	}
+
+	/**
+	 * Every {@see \InboxAI\CF7\CategoryTaxonomy} term, for the General tab's
+	 * "Manage Categories" card — the only place a category can be renamed
+	 * or deleted (the per-form checklist on each CF7 form's own edit screen
+	 * is deliberately add/assign-only; see
+	 * {@see \InboxAI\CF7\CategoryTaxonomy::render_metabox()}'s docblock).
+	 *
+	 * `$term->count` is WordPress's own object-count for the term (kept in
+	 * sync automatically since the taxonomy is registered on the
+	 * `wpcf7_contact_form` post type) — how many forms currently have this
+	 * category checked, not how many messages have ever been tagged with it
+	 * (that's the separate, per-message `category` column, unaffected by
+	 * renaming/deleting the term; see `MessageRepository::insert()`'s
+	 * docblock on `source_category` for the same "term vs. stored string"
+	 * distinction).
+	 *
+	 * @return array<int, array{term_id:int,name:string,count:int}>
+	 */
+	private function get_categories(): array {
+		$terms = get_terms(
+			array(
+				'taxonomy'   => CategoryTaxonomy::TAXONOMY,
+				'hide_empty' => false,
+			)
+		);
+
+		if ( ! is_array( $terms ) ) {
+			return array();
+		}
+
+		return array_map(
+			static function ( $term ) {
+				return array(
+					'term_id' => (int) $term->term_id,
+					'name'    => (string) $term->name,
+					'count'   => (int) $term->count,
+				);
+			},
+			$terms
+		);
 	}
 }

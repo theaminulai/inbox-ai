@@ -1,16 +1,26 @@
 /**
- * Settings page — Import & Migration (Flamingo) tab.
+ * Settings page — Import & Migration tab.
  *
- * A 4-step wizard, messages-only, with two source paths:
- *  - "live": reads this site's own Flamingo `flamingo_inbound` posts
- *    directly (`inboxai_flamingo_detect` / `inboxai_flamingo_import_batch`).
- *  - "csv": a Flamingo Inbound Messages CSV export uploaded from disk
+ * A 5-step wizard: Type → Source → Options → Import → Complete. Step 1
+ * picks which of the two import paths this plugin supports the rest of the
+ * wizard is for:
+ *  - "flamingo": this site's own live Flamingo `flamingo_inbound` posts
+ *    (`inboxai_flamingo_detect` / `inboxai_flamingo_import_batch`), or a
+ *    Flamingo Inbound Messages CSV export uploaded from disk
  *    (`inboxai_flamingo_upload_csv` to parse+stage it, then
- *    `inboxai_flamingo_import_csv_batch` to import in the same batched-loop
- *    shape as the live path).
+ *    `inboxai_flamingo_import_csv_batch` to import in batches) — chosen via
+ *    the Step 2 "live"/"csv" sub-radio, same as before.
+ *  - "native": a CSV shaped for this plugin's own columns directly
+ *    (`inboxai_native_csv_upload` / `inboxai_native_csv_import_batch`,
+ *    backed by `InboxCsvImporter`) — Step 2 shows just a single upload
+ *    panel, no sub-choice.
  *
- * Both paths converge on the same step 2/3/4 panels; only the summary text
- * and which batch endpoint step 3 calls differ.
+ * Steps 3–5 (Options/Import/Complete) are shared by both paths; only the
+ * summary text and which batch endpoint step 4 calls differ. This file used
+ * to have a sibling `nativeImportTab.js` + its own Settings tab for the
+ * "native" path — that duplicated the whole wizard shell for one extra
+ * step's worth of difference, so it was merged in here instead; there is
+ * only ever one Import & Migration tab now.
  *
  * This tab also had a contacts-import path at one point (a second Flamingo
  * Address Book pass on the live side, and a Contacts-CSV shape on the
@@ -32,55 +42,89 @@ export function initFlamingoImportTab() {
 		return;
 	}
 
+	const typeFlamingoRadio = document.getElementById( 'flamingo-type-flamingo' );
+	const typeNativeRadio = document.getElementById( 'flamingo-type-native' );
 	const sourceLiveRadio = document.getElementById( 'flamingo-source-live' );
 	const sourceCsvRadio = document.getElementById( 'flamingo-source-csv' );
 
 	// Nothing left to wire if this tab's markup isn't present.
-	if ( ! sourceLiveRadio || ! sourceCsvRadio ) {
+	if ( ! typeFlamingoRadio || ! sourceLiveRadio || ! sourceCsvRadio ) {
 		return;
 	}
 
+	const flamingoWrap = document.getElementById( 'flamingo-source-flamingo-wrap' );
+	const nativeWrap = document.getElementById( 'flamingo-source-native-wrap' );
 	const livePanel = document.getElementById( 'flamingo-source-live-panel' );
 	const csvPanel = document.getElementById( 'flamingo-source-csv-panel' );
 	const checkLiveBtn = document.getElementById( 'flamingo-check-live-btn' );
 	const liveDetectedInfo = document.getElementById( 'flamingo-detected-info' );
 	const fileInput = document.getElementById( 'flamingo-file-input' );
 	const fileNameEl = document.getElementById( 'flamingo-file-name' );
-	const csvDetectedInfo = document.getElementById(
-		'flamingo-csv-detected-info'
-	);
+	const csvDetectedInfo = document.getElementById( 'flamingo-csv-detected-info' );
+	const nativeFileInput = document.getElementById( 'flamingo-native-file-input' );
+	const nativeFileNameEl = document.getElementById( 'flamingo-native-file-name' );
+	const nativeDetectedInfo = document.getElementById( 'flamingo-native-detected-info' );
 	const next1 = document.getElementById( 'flamingo-next-1' );
+	const next2 = document.getElementById( 'flamingo-next-2' );
 
-	// Detection results, per source — cleared whenever the source switches
-	// or a new check/upload starts, so step 3 can never run against stale
-	// counts from the other path.
+	// Detection results, per source — cleared whenever the relevant source
+	// switches or a new check/upload starts, so later steps can never run
+	// against stale counts from a different source.
 	let detected = {
 		live: { messages: 0 },
 		csv: { token: '', count: 0 },
+		native: { token: '', count: 0 },
 	};
 
+	/**
+	 * @return {string} "flamingo" or "native" — Step 1's choice.
+	 */
+	function currentType() {
+		return typeNativeRadio.checked ? 'native' : 'flamingo';
+	}
+
+	/**
+	 * @return {string} "live", "csv", or "native" — which detected.* bucket
+	 *                   Steps 3+ should read from.
+	 */
 	function currentSource() {
+		if ( 'native' === currentType() ) {
+			return 'native';
+		}
+
 		return sourceCsvRadio.checked ? 'csv' : 'live';
 	}
 
-	function updateSourcePanels() {
-		const source = currentSource();
-		livePanel.style.display = 'live' === source ? '' : 'none';
-		csvPanel.style.display = 'csv' === source ? '' : 'none';
+	function detectedCount( source ) {
+		if ( 'live' === source ) {
+			return detected.live.messages;
+		}
 
-		const ready =
-			'live' === source
-				? detected.live.messages > 0
-				: detected.csv.count > 0;
-
-		next1.disabled = ! ready;
+		return 'csv' === source ? detected.csv.count : detected.native.count;
 	}
 
+	function updateSourcePanels() {
+		const type = currentType();
+
+		flamingoWrap.style.display = 'flamingo' === type ? '' : 'none';
+		nativeWrap.style.display = 'native' === type ? '' : 'none';
+
+		if ( 'flamingo' === type ) {
+			const source = currentSource();
+			livePanel.style.display = 'live' === source ? '' : 'none';
+			csvPanel.style.display = 'csv' === source ? '' : 'none';
+		}
+
+		next2.disabled = detectedCount( currentSource() ) < 1;
+	}
+
+	typeFlamingoRadio.addEventListener( 'change', updateSourcePanels );
+	typeNativeRadio.addEventListener( 'change', updateSourcePanels );
 	sourceLiveRadio.addEventListener( 'change', updateSourcePanels );
 	sourceCsvRadio.addEventListener( 'change', updateSourcePanels );
 
 	function goStep( n ) {
-		for ( let i = 1; i <= 4; i++ ) {
+		for ( let i = 1; i <= 5; i++ ) {
 			const panel = document.getElementById( 'flamingo-panel-' + i );
 
 			if ( panel ) {
@@ -113,13 +157,19 @@ export function initFlamingoImportTab() {
 		detected = {
 			live: { messages: 0 },
 			csv: { token: '', count: 0 },
+			native: { token: '', count: 0 },
 		};
+
+		typeFlamingoRadio.checked = true;
 
 		fileInput.value = '';
 		fileNameEl.textContent = 'No file chosen';
 		liveDetectedInfo.style.display = 'none';
 		csvDetectedInfo.style.display = 'none';
-		next1.disabled = true;
+
+		nativeFileInput.value = '';
+		nativeFileNameEl.textContent = 'No file chosen';
+		nativeDetectedInfo.style.display = 'none';
 
 		document.getElementById( 'flamingo-progress-wrap' ).style.display =
 			'none';
@@ -136,7 +186,7 @@ export function initFlamingoImportTab() {
 
 	checkLiveBtn.addEventListener( 'click', () => {
 		liveDetectedInfo.style.display = 'none';
-		next1.disabled = true;
+		next2.disabled = true;
 		showToast( 'Checking for Flamingo data…' );
 
 		inboxaiAjax( 'inboxai_flamingo_detect' )
@@ -168,7 +218,7 @@ export function initFlamingoImportTab() {
 
 		fileNameEl.textContent = file.name;
 		csvDetectedInfo.style.display = 'none';
-		next1.disabled = true;
+		next2.disabled = true;
 		detected.csv = { token: '', count: 0 };
 		showToast( 'Uploading and checking file…' );
 
@@ -192,21 +242,55 @@ export function initFlamingoImportTab() {
 			} );
 	} );
 
+	nativeFileInput.addEventListener( 'change', function () {
+		const file = this.files[ 0 ];
+
+		if ( ! file ) {
+			return;
+		}
+
+		nativeFileNameEl.textContent = file.name;
+		nativeDetectedInfo.style.display = 'none';
+		next2.disabled = true;
+		detected.native = { token: '', count: 0 };
+		showToast( 'Uploading and checking file…' );
+
+		inboxaiUpload( 'inboxai_native_csv_upload', file )
+			.then( ( data ) => {
+				detected.native = {
+					token: data.token,
+					count: data.count || 0,
+				};
+
+				nativeDetectedInfo.style.display = 'flex';
+				nativeDetectedInfo.querySelector( 'span' ).textContent =
+					detected.native.count +
+					' row(s) found in this file and ready to import.';
+
+				updateSourcePanels();
+				showToast( 'File checked', 'success' );
+			} )
+			.catch( ( err ) => {
+				showToast( err.message, 'error' );
+			} );
+	} );
+
 	next1.addEventListener( 'click', () => {
-		const source = currentSource();
-		const summaryRow = document.getElementById(
-			'flamingo-options-summary-row'
-		);
+		const type = currentType();
+		const sourceTitle = document.getElementById( 'flamingo-source-title' );
+		const sourceSub = document.getElementById( 'flamingo-source-sub' );
 
-		summaryRow.innerHTML =
-			'live' === source
-				? '<span>Source</span><b>Live Flamingo data — ' +
-				  detected.live.messages +
-				  ' message(s)</b>'
-				: '<span>Source</span><b>CSV upload — ' +
-				  detected.csv.count +
-				  ' message(s)</b>';
+		if ( 'native' === type ) {
+			sourceTitle.textContent = 'Upload a CSV';
+			sourceSub.textContent =
+				'A CSV shaped for this plugin\'s own columns';
+		} else {
+			sourceTitle.textContent = 'Choose a Source';
+			sourceSub.textContent =
+				'Read this site\'s live Flamingo data, or upload a CSV exported from Flamingo';
+		}
 
+		updateSourcePanels();
 		goStep( 2 );
 	} );
 
@@ -215,33 +299,85 @@ export function initFlamingoImportTab() {
 		back2.addEventListener( 'click', () => goStep( 1 ) );
 	}
 
-	const next2 = document.getElementById( 'flamingo-next-2' );
-	if ( next2 ) {
-		next2.addEventListener( 'click', () => {
-			const source = currentSource();
-			const sourceEl = document.getElementById( 'flamingo-summary-source' );
+	next2.addEventListener( 'click', () => {
+		const type = currentType();
+		const source = currentSource();
+		const summaryRow = document.getElementById(
+			'flamingo-options-summary-row'
+		);
+		const toggleAiText = document.getElementById( 'flamingo-toggle-ai-text' );
 
-			sourceEl.textContent =
-				'live' === source ? 'Flamingo (live data)' : 'Flamingo (CSV upload)';
-			document.getElementById( 'flamingo-summary-messages' ).textContent =
-				String(
-					'live' === source ? detected.live.messages : detected.csv.count
-				);
+		if ( 'native' === type ) {
+			summaryRow.innerHTML =
+				'<span>Source</span><b>Inbox AI CSV upload — ' +
+				detected.native.count +
+				' row(s)</b>';
+			toggleAiText.textContent =
+				'Run AI analysis on rows with no category/priority of their own';
+		} else {
+			summaryRow.innerHTML =
+				'live' === source
+					? '<span>Source</span><b>Live Flamingo data — ' +
+					  detected.live.messages +
+					  ' message(s)</b>'
+					: '<span>Source</span><b>CSV upload — ' +
+					  detected.csv.count +
+					  ' message(s)</b>';
+			toggleAiText.textContent = 'Run AI analysis on imported messages';
+		}
 
-			goStep( 3 );
-		} );
-	}
+		goStep( 3 );
+	} );
 
 	const back3 = document.getElementById( 'flamingo-back-3' );
 	if ( back3 ) {
 		back3.addEventListener( 'click', () => goStep( 2 ) );
 	}
 
+	const next3 = document.getElementById( 'flamingo-next-3' );
+	if ( next3 ) {
+		next3.addEventListener( 'click', () => {
+			const type = currentType();
+			const source = currentSource();
+			const sourceEl = document.getElementById( 'flamingo-summary-source' );
+
+			if ( 'native' === type ) {
+				sourceEl.textContent = 'Inbox AI CSV upload';
+				document.getElementById( 'flamingo-summary-messages' ).textContent =
+					String( detected.native.count );
+			} else {
+				sourceEl.textContent =
+					'live' === source
+						? 'Flamingo (live data)'
+						: 'Flamingo (CSV upload)';
+				document.getElementById( 'flamingo-summary-messages' ).textContent =
+					String(
+						'live' === source ? detected.live.messages : detected.csv.count
+					);
+			}
+
+			goStep( 4 );
+		} );
+	}
+
+	const back4 = document.getElementById( 'flamingo-back-4' );
+	if ( back4 ) {
+		back4.addEventListener( 'click', () => goStep( 3 ) );
+	}
+
 	const startBtn = document.getElementById( 'flamingo-start-import-btn' );
 	if ( startBtn ) {
-		startBtn.addEventListener( 'click', () =>
-			openModal( 'import-modal-overlay' )
-		);
+		startBtn.addEventListener( 'click', () => {
+			const type = currentType();
+			const modalBody = document.getElementById( 'flamingo-modal-body' );
+
+			modalBody.textContent =
+				'native' === type
+					? 'This will import every row in the uploaded CSV into AI Inbox as new submissions, and optionally queue AI analysis for rows that didn\'t already include their own category/priority.'
+					: 'This will import the detected Flamingo messages into AI Inbox, and optionally run AI analysis on each one. Original Flamingo entries are left untouched.';
+
+			openModal( 'import-modal-overlay' );
+		} );
 	}
 
 	const confirmBtn = document.getElementById( 'modal-confirm-import' );
@@ -268,12 +404,12 @@ export function initFlamingoImportTab() {
 					document.getElementById(
 						'flamingo-complete-summary'
 					).textContent =
-						totalImported + ' message(s) were imported successfully.';
+						totalImported + ' row(s) were imported successfully.';
 					showToast(
-						totalImported + ' messages imported from Flamingo',
+						totalImported + ' rows imported',
 						'success'
 					);
-					setTimeout( () => goStep( 4 ), 400 );
+					setTimeout( () => goStep( 5 ), 400 );
 				} )
 				.catch( ( err ) => {
 					showToast( err.message, 'error' );
@@ -290,24 +426,31 @@ export function initFlamingoImportTab() {
 
 	/**
 	 * Runs the chosen source's batch loop, updating the progress bar, and
-	 * resolves with the total number of messages actually imported.
+	 * resolves with the total number of rows actually imported.
 	 *
-	 * @param {string}  source Either `live` or `csv`.
-	 * @param {boolean} runAi  Whether imported messages should be queued for
-	 *                         AI analysis.
+	 * @param {string}  source "live", "csv", or "native" — see {@see currentSource}.
+	 * @param {boolean} runAi  Whether imported rows should be queued for AI
+	 *                         analysis.
 	 * @return {Promise<number>}
 	 */
 	function runImport( source, runAi ) {
-		const action =
-			'live' === source
-				? 'inboxai_flamingo_import_batch'
-				: 'inboxai_flamingo_import_csv_batch';
-		const total =
-			'live' === source ? detected.live.messages : detected.csv.count;
-		const baseArgs =
-			'live' === source
-				? { run_ai: runAi ? 1 : 0 }
-				: { token: detected.csv.token, run_ai: runAi ? 1 : 0 };
+		let action;
+		let total;
+		let baseArgs;
+
+		if ( 'native' === source ) {
+			action = 'inboxai_native_csv_import_batch';
+			total = detected.native.count;
+			baseArgs = { token: detected.native.token, run_ai: runAi ? 1 : 0 };
+		} else if ( 'csv' === source ) {
+			action = 'inboxai_flamingo_import_csv_batch';
+			total = detected.csv.count;
+			baseArgs = { token: detected.csv.token, run_ai: runAi ? 1 : 0 };
+		} else {
+			action = 'inboxai_flamingo_import_batch';
+			total = detected.live.messages;
+			baseArgs = { run_ai: runAi ? 1 : 0 };
+		}
 
 		let importedSoFar = 0;
 

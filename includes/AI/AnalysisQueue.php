@@ -188,13 +188,22 @@ final class AnalysisQueue {
 		$analysis_fields = array(
 			'ai_summary'      => $summary,
 			'ai_reasoning'    => $reasoning,
-			'category'        => $category,
 			'priority'        => $priority,
 			'confidence'      => $confidence,
 			'ai_provider'     => $provider_settings['provider'],
 			'ai_model'        => $provider_settings['model'],
 			'workflow_status' => $workflow_status,
 		);
+
+		// Only overwrite the stored category when this run actually produced
+		// one. `$category` comes back '' both when the form currently has no
+		// categories configured (so the model was never asked) and when the
+		// model's answer didn't match any allowed category — neither case
+		// should blow away a category a previous, successful run already
+		// set. See `ResponseValidator::normalize_category()`.
+		if ( '' !== $category ) {
+			$analysis_fields['category'] = $category;
+		}
 
 		// Only draft a reply for rows that are actually headed for human
 		// review — never for auto-archived spam, and never below the
@@ -286,14 +295,16 @@ final class AnalysisQueue {
 	}
 
 	/**
-	 * The category names a specific form's submissions may be classified
-	 * into — that form's own {@see \InboxAI\CF7\CategoryTaxonomy} terms.
+	 * The category names a specific form's submissions should preferably be
+	 * classified into — that form's own {@see \InboxAI\CF7\CategoryTaxonomy}
+	 * terms.
 	 *
 	 * There is no fallback list: a form nobody has added categories to yet
-	 * returns an empty array, and {@see \InboxAI\AI\PromptBuilder::build_analysis_prompt()}
-	 * responds to that by not asking the model for a category at all — the
-	 * message still gets summarized/prioritized/scored normally, just left
-	 * uncategorized until the admin adds real categories to that form.
+	 * returns an empty array. That doesn't leave the AI category blank,
+	 * though — {@see \InboxAI\AI\PromptBuilder::build_analysis_prompt()}
+	 * still asks the model for a category either way, just without
+	 * constraining it to a fixed list when this comes back empty (see
+	 * {@see \InboxAI\AI\ResponseValidator::normalize_category()}).
 	 *
 	 * @param int $form_id Contact Form 7 form post id.
 	 *

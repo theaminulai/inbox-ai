@@ -163,8 +163,27 @@ Only one provider is contacted per request — whichever one is currently select
 5. Settings — Notifications tab, where you can configure email notifications.
 
 == Changelog ==
+= Inbox AI/vx.x.x - (upcoming) =
+*Added*
 
-= Inbox AI/v0.9.0 - (2026-07-31) =
+* Added a source category, captured once from the form's own category assignment at submission time, that stays fixed even when the AI's own category is regenerated.
+* Added a "Source category" field to the Submission Detail page.
+* Added a native CSV import format, built for this plugin's own data, as an alternative to importing a Flamingo CSV export.
+* Added a Manage Categories card to Settings → General for adding, renaming, and deleting AI categories.
+* Added a separate "AI Categories" box on the Contact Form 7 editor screen (previously nested inside the Status box).
+
+*Fixed*
+
+* Fixed the AI-generated category being cleared whenever analysis was regenerated.
+* Fixed misaligned spacing in the Manage Categories edit row.
+
+*Improved*
+* Improved the AI Inbox detail page to show the source category, AI category, and AI confidence in a single row for easier scanning.
+* The category column and filter on the AI Inbox and Contacts pages now use the source category instead of the AI-generated category.
+* The AI now always suggests a category for a submission, even for forms with no categories configured.
+* Merged the Flamingo and native CSV import flows into a single guided wizard, with a first step to choose which one to use.
+
+= Inbox AI/v0.9.0 - 2026-07-31 =
 *Fixed*
 
 * Fixed CSS design issues on the Settings page for small screens.

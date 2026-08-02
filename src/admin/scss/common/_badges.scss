@@ -72,7 +72,7 @@
 	&--drafted {
 		background: var(--purple-soft);
 		color: var(--purple);
-		border-color: #DCD3FB;
+		border-color: var(--purple-soft-border);
 	}
 
 	&--replied {
