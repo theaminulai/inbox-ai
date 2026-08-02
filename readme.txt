@@ -174,11 +174,6 @@ That repository is the canonical, always-up-to-date source for every compiled fi
 
 == Changelog ==
 
-= 0.10.1 =
-* Merge pull request #22 from theaminulai/development
-* Merge pull request #21 from theaminulai/new-feature
-* Update readme guide path to wiki folder
-* Fix i18n extraction and source code docs
 = Inbox AI/v0.10.1 - 2026-08-02 =
 *Fixed*
 
