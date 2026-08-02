@@ -154,6 +154,16 @@ Only one provider is contacted per request — whichever one is currently select
 * **Anthropic** — used when you select Anthropic as your provider. [Commercial Terms of Service](https://www.anthropic.com/legal/commercial-terms), [Privacy Policy](https://www.anthropic.com/legal/privacy).
 * **Google Gemini** — used when you select Google Gemini as your provider. [Gemini API Additional Terms of Service](https://ai.google.dev/gemini-api/terms), [Google Privacy Policy](https://policies.google.com/privacy).
 
+== Source Code ==
+
+This plugin's distributed assets (`build/admin/admin.js`, `build/admin/admin.css`, `build/cf7/category.js`, and related compiled/minified files) are built from human-readable source via `npm run build` (webpack, through `@wordpress/scripts`).
+
+The uncompiled source — the `src/` directory, along with `package.json`, `webpack.config.js`, and build configuration — is publicly available at:
+
+https://github.com/theaminulai/inbox-ai
+
+That repository is the canonical, always-up-to-date source for every compiled file shipped in this plugin.
+
 == Screenshots ==
 
 1. AI Inbox — the filterable, searchable list of Contact Form 7 submissions.
@@ -163,8 +173,13 @@ Only one provider is contacted per request — whichever one is currently select
 5. Settings — Notifications tab, where you can configure email notifications.
 
 == Changelog ==
+= Inbox AI/v0.10.1 - 2026-08-02 =
+*Fixed*
 
-= Inbox AI/v0.10.0 - 2016-08-2 =
+* Fixed a guideline violation flagged by the WordPress.org Plugins Team: no publicly documented, human-readable source was linked for the plugin's compiled JavaScript. Added a "Source Code" section to this readme linking to the public GitHub repository the compiled files are built from.
+* Fixed a translation string in the activity log that passed a variable to `__()` instead of a literal string, which prevented translators from picking it up.
+
+= Inbox AI/v0.10.0 - 2026-08-2 =
 *Added*
 
 * Added a source category, captured once from the form's own category assignment at submission time, that stays fixed even when the AI's own category is regenerated.
@@ -179,6 +194,7 @@ Only one provider is contacted per request — whichever one is currently select
 * Fixed misaligned spacing in the Manage Categories edit row.
 
 *Improved*
+
 * Improved the AI Inbox detail page to show the source category, AI category, and AI confidence in a single row for easier scanning.
 * The category column and filter on the AI Inbox and Contacts pages now use the source category instead of the AI-generated category.
 * The AI now always suggests a category for a submission, even for forms with no categories configured.
