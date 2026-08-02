@@ -229,15 +229,21 @@ final class PromptBuilder {
 	 * @param array<string, string> $vars      Placeholder => value map. Expected keys:
 	 *                                         `{message}`, `{customer_name}`, `{form_name}`,
 	 *                                         `{submitted_fields}`, `{categories}`.
-	 * @param string[]              $categories The category names the model is actually
-	 *                                          allowed to choose from for this message —
-	 *                                          the submitting form's own
-	 *                                          {@see \InboxAI\CF7\CategoryTaxonomy}
-	 *                                          terms. Empty for a form with no categories
-	 *                                          of its own added yet, in which case the
-	 *                                          model isn't asked for a category at all
-	 *                                          (rather than being handed an empty "choose
-	 *                                          one of:" list, or a made-up default).
+	 * @param string[]              $categories The category names the model should
+	 *                                          prefer, if any — the submitting form's
+	 *                                          own {@see \InboxAI\CF7\CategoryTaxonomy}
+	 *                                          terms. The model is always asked for a
+	 *                                          category (this is the AI's own, editable
+	 *                                          classification — separate from the fixed
+	 *                                          `source_category` captured at submission
+	 *                                          time; see
+	 *                                          {@see \InboxAI\Database\MessageRepository::insert()}).
+	 *                                          When this list is non-empty the model is
+	 *                                          asked to pick one of them; when it's
+	 *                                          empty (a form with no categories of its
+	 *                                          own configured yet) the model is asked to
+	 *                                          propose its own short, best-fit category
+	 *                                          instead of being left uncategorized.
 	 *
 	 * @return string
 	 */
@@ -246,7 +252,7 @@ final class PromptBuilder {
 
 		$category_key = array() !== $categories
 			? sprintf( '"category" (exactly one of: %s), ', implode( ', ', $categories ) )
-			: '';
+			: '"category" (a short, 1-3 word category label you judge best fits this submission), ';
 
 		$prompt .= "\n\n" . sprintf(
 			'Respond with ONLY a single valid JSON object (no markdown code fences, no commentary before or after) with exactly these keys: "summary" (a short 1-2 sentence string), %1$s"priority" (exactly one of: %2$s), "confidence" (an integer from 0 to 100), "reasoning" (a short 1-2 sentence string).',

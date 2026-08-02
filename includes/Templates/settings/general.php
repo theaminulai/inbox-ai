@@ -5,6 +5,7 @@
  * @var string $active_tab Currently visible tab key.
  * @var array  $general    {@see \InboxAI\Settings\Repository::get_general()}.
  * @var array  $cf7_forms  Real Contact Form 7 forms: array{id:int,title:string,monitored:bool,submissions_this_month:int}[].
+ * @var array  $categories Every {@see \InboxAI\CF7\CategoryTaxonomy} term: array{term_id:int,name:string,count:int}[].
  *
  * @package InboxAI\Templates
  */
@@ -68,6 +69,48 @@ $inboxai_retention_labels = array(
 							</div>
 						<?php endforeach; ?>
 					<?php endif; ?>
+				</div>
+			</div>
+
+			<div class="inboxai-card" id="manage-categories-card">
+				<div class="inboxai-card__header">
+					<h2><?php esc_html_e( 'Manage Categories', 'inbox-ai' ); ?></h2>
+					<span class="inboxai-card__muted"><?php esc_html_e( 'Add, rename, or delete an AI category — renaming/deleting affects every form that uses it. Categories added here (or on any form\'s own edit screen) are available to every form.', 'inbox-ai' ); ?></span>
+				</div>
+				<div class="inboxai-card__body">
+					<div class="inboxai-category-add">
+						<input type="text" class="inboxai-category-add__input" id="category-add-input" placeholder="<?php esc_attr_e( 'New category name', 'inbox-ai' ); ?>">
+						<button type="button" class="inboxai-btn--secondary" id="category-add-btn"><?php esc_html_e( 'Add category', 'inbox-ai' ); ?></button>
+					</div>
+					<div id="categories-list">
+						<?php if ( array() === $categories ) : ?>
+							<p id="categories-empty" style="color:var(--text-tertiary);font-size:13px;"><?php esc_html_e( 'No categories yet — add one above.', 'inbox-ai' ); ?></p>
+						<?php else : ?>
+							<?php foreach ( $categories as $inboxai_category ) : ?>
+								<div class="inboxai-category-row" data-category-row data-term-id="<?php echo (int) $inboxai_category['term_id']; ?>">
+									<div class="inboxai-category-row__main">
+										<div class="inboxai-category-row__display" data-category-display><?php echo esc_html( $inboxai_category['name'] ); ?></div>
+										<input type="text" class="inboxai-category-row__input" data-category-input style="display:none;" value="<?php echo esc_attr( $inboxai_category['name'] ); ?>">
+										<div class="inboxai-category-row__sub">
+											<?php
+											printf(
+												/* translators: %d: number of forms this category is assigned to. */
+												esc_html( _n( 'Used by %d form', 'Used by %d forms', $inboxai_category['count'], 'inbox-ai' ) ),
+												absint( $inboxai_category['count'] )
+											);
+											?>
+										</div>
+									</div>
+									<div class="inboxai-category-row__actions">
+										<button type="button" class="inboxai-btn--icon" data-category-edit title="<?php esc_attr_e( 'Rename', 'inbox-ai' ); ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></svg></button>
+										<button type="button" class="inboxai-btn--icon" data-category-save title="<?php esc_attr_e( 'Save', 'inbox-ai' ); ?>" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button>
+										<button type="button" class="inboxai-btn--icon" data-category-cancel title="<?php esc_attr_e( 'Cancel', 'inbox-ai' ); ?>" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+										<button type="button" class="inboxai-btn--icon" data-category-delete title="<?php esc_attr_e( 'Delete', 'inbox-ai' ); ?>" style="color:var(--urgent);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg></button>
+									</div>
+								</div>
+							<?php endforeach; ?>
+						<?php endif; ?>
+					</div>
 				</div>
 			</div>
 

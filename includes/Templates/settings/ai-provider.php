@@ -105,7 +105,7 @@ $inboxai_provider_label    = $inboxai_providers[ $inboxai_selected_provider ]['l
 						<label><?php esc_html_e( 'API key', 'inbox-ai' ); ?></label>
 						<input
 							class="inboxai-field__input"
-							type="password"
+							type="text"
 							data-field="api_key"
 							value="<?php echo esc_attr( $api_key_masked ); ?>"
 							placeholder="<?php esc_attr_e( 'sk-…', 'inbox-ai' ); ?>"

@@ -88,7 +88,14 @@ final class InboxAjaxController extends BaseAjaxController {
 
 	/**
 	 * `inboxai_get_message` — the Submission Detail screen's data, including
-	 * its activity timeline.
+	 * its activity timeline. Also returns that same data pre-rendered as
+	 * HTML fragments (`ai_card_html`/`timeline_html`/the two badges) — used
+	 * by `detail.js`'s polling after a retried/regenerated analysis (see
+	 * `wireRegeneratingAction()`) to swap the finished result into the page
+	 * in place, without a full reload, while staying visually identical to
+	 * what a real page load would render (same PHP templates either way; see
+	 * `inbox/detail-ai-body.php`/`inbox/detail-timeline.php` and
+	 * {@see \InboxAI\Support\Template::render_to_string()}).
 	 *
 	 * @return void
 	 */
@@ -102,10 +109,18 @@ final class InboxAjaxController extends BaseAjaxController {
 			wp_send_json_error( array( 'message' => __( 'This submission could not be found.', 'inbox-ai' ) ), 404 );
 		}
 
+		$activities = ActivityRepository::get_for_message( $id );
+		$can_edit   = current_user_can( Capabilities::EDIT_MESSAGES );
+
 		wp_send_json_success(
 			array(
-				'message'    => $message,
-				'activities' => ActivityRepository::get_for_message( $id ),
+				'message'        => $message,
+				'activities'     => $activities,
+				'ai_card_html'   => \InboxAI\Support\Template::render_to_string( 'inbox/detail-ai-body', array( 'message' => $message, 'can_edit' => $can_edit ) ),
+				'timeline_html'  => \InboxAI\Support\Template::render_to_string( 'inbox/detail-timeline', array( 'activities' => $activities ) ),
+				'priority_badge' => \InboxAI\Support\Format::priority_badge_html( (string) $message['priority'] ),
+				'status_badge'   => \InboxAI\Support\Format::status_badge_html( (string) $message['workflow_status'] ),
+				'ai_time_ago'    => \InboxAI\Support\Format::time_ago( (string) $message['updated_at'] ),
 			)
 		);
 	}

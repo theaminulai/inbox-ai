@@ -1,30 +1,10 @@
-// The generic multi-column grid the Submission Detail screen's two-up
-// layout is built from — ported from html/assets/css/inboxai.css.
-// Distinct from settings/_layout.scss, which is that page's own two-column
-// (subnav + content) shell, not a general-purpose grid utility.
-
-.inboxai-content-grid {
-	display: grid;
-	grid-template-columns: 2fr 1fr;
-	gap: 16px;
-	align-items: start;
-
-	&--split {
-		grid-template-columns: 1fr 1fr;
-	}
-
-	&--wide {
-		grid-template-columns: 1.4fr 1fr;
-	}
-
-	@media (max-width: 900px) {
-		&,
-		&--split,
-		&--wide {
-			grid-template-columns: 1fr;
-		}
-	}
-}
+// `.inboxai-stack` is a generic vertical-stack utility shared by every
+// Settings tab (General, AI Provider, Notifications, Prompts, Usage — see
+// includes/Templates/settings/*.php). The Submission Detail screen's own
+// two-up layout used to live here too (`.inboxai-content-grid`), but that
+// screen now has its own thread + sidebar grid in inbox/_detail.scss, so
+// that generic grid (only ever used by the old detail layout) was removed
+// rather than kept around unused.
 
 .inboxai-stack {
 	display: flex;

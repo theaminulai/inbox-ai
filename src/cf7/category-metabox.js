@@ -1,7 +1,7 @@
 /**
- * AI Categories checklist box, for the box CategoryTaxonomy::render_metabox()
- * adds to Contact Form 7's "Edit Contact Form" / "Add Contact Form" screens
- * — a checkbox per existing category plus a WooCommerce-"Product
+ * AI Categories box, for the box CategoryTaxonomy::render_metabox() adds to
+ * Contact Form 7's "Edit Contact Form" / "Add Contact Form" screens — a
+ * checkbox per existing category plus a WooCommerce-"Product
  * categories"-style "+ Add new category" toggle.
  *
  * A plain, unbundled static file (enqueued directly by
@@ -14,12 +14,44 @@
 ( function () {
 	'use strict';
 
-	function init() {
-		var box = document.querySelector( '.inboxai-categories' );
+	/**
+	 * Contact Form 7 has no hook that renders a genuinely separate postbox
+	 * in this screen's sidebar — `render_metabox()` has nowhere else to
+	 * render into, so it renders the whole `#inboxai-category-postbox`
+	 * `<section class="postbox">` hidden, right where CF7's own
+	 * `wpcf7_admin_misc_pub_section` hook fires (inside the "Status" box's
+	 * `#misc-publishing-actions` div). This moves that section out to
+	 * `#postbox-container-1` (the sidebar) as its own sibling, directly
+	 * after "Status" and before "Do you need help?", then reveals it — a
+	 * plain DOM move on page load, so it never visibly flashes inside
+	 * Status first.
+	 */
+	function moveIntoSidebar( postbox ) {
+		var sidebar = document.getElementById( 'postbox-container-1' );
+		var statusBox = document.getElementById( 'submitdiv' );
 
-		if ( ! box ) {
+		if ( ! sidebar ) {
+			postbox.style.display = '';
 			return;
 		}
+
+		if ( statusBox && statusBox.parentNode === sidebar ) {
+			statusBox.insertAdjacentElement( 'afterend', postbox );
+		} else {
+			sidebar.insertBefore( postbox, sidebar.firstChild );
+		}
+
+		postbox.style.display = '';
+	}
+
+	function init() {
+		var postbox = document.getElementById( 'inboxai-category-postbox' );
+
+		if ( ! postbox ) {
+			return;
+		}
+
+		moveIntoSidebar( postbox );
 
 		var list = document.getElementById( 'inboxai-category-list' );
 		var empty = document.getElementById( 'inboxai-category-empty' );

@@ -38,6 +38,7 @@ $inboxai_settings_vars = array(
 	'has_api_key'     => $has_api_key,
 	'general'         => $general,
 	'cf7_forms'       => $cf7_forms,
+	'categories'      => $categories,
 	'prompts'         => $prompts,
 	'notifications'   => $notifications,
 	'usage_totals'    => $usage_totals,
@@ -64,13 +65,22 @@ $inboxai_settings_vars = array(
 <div class="inboxai-modal" id="import-modal-overlay" style="display:none;">
 	<div class="inboxai-modal__box">
 		<div class="inboxai-modal__header">
-			<h3><?php esc_html_e( 'Start Flamingo import?', 'inbox-ai' ); ?></h3>
+			<h3><?php esc_html_e( 'Start import?', 'inbox-ai' ); ?></h3>
 			<div class="inboxai-btn--icon" data-close-modal="import-modal-overlay" style="width:26px;height:26px;">
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
 			</div>
 		</div>
 		<div class="inboxai-modal__body" id="flamingo-modal-body">
-			<?php esc_html_e( 'This will import the detected Flamingo messages into AI Inbox, and optionally run AI analysis on each one. Original Flamingo entries are left untouched.', 'inbox-ai' ); ?>
+			<?php
+			/*
+			 * Static fallback text only — `flamingoImportTab.js` always
+			 * overwrites this right before opening the modal, with copy
+			 * matching whichever import type (Flamingo or Inbox AI CSV)
+			 * Step 1 of the wizard chose. One shared modal for both paths,
+			 * not two.
+			 */
+			esc_html_e( 'This will import the selected data into AI Inbox, and optionally run AI analysis on each row.', 'inbox-ai' );
+			?>
 		</div>
 		<div class="inboxai-modal__footer">
 			<button class="inboxai-btn--secondary" data-close-modal="import-modal-overlay"><?php esc_html_e( 'Cancel', 'inbox-ai' ); ?></button>

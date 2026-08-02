@@ -55,4 +55,26 @@ final class Template {
 
 		include $file;
 	}
+
+	/**
+	 * Same as {@see self::render()}, but captures and returns the output
+	 * instead of echoing it — used where a template's markup is needed as an
+	 * HTML string rather than printed directly, e.g. the AI Inbox List
+	 * Submission Detail screen's AJAX polling (see
+	 * {@see \InboxAI\Admin\Ajax\InboxAjaxController::get_message()}), which
+	 * re-renders the AI Analysis card/timeline server-side and hands the
+	 * markup back to `detail.js` to swap in, rather than re-implementing
+	 * that formatting twice (once in PHP, once in JS).
+	 *
+	 * @param string               $template Same as {@see self::render()}.
+	 * @param array<string, mixed> $vars     Same as {@see self::render()}.
+	 *
+	 * @return string
+	 */
+	public static function render_to_string( string $template, array $vars = array() ): string {
+		ob_start();
+		self::render( $template, $vars );
+
+		return (string) ob_get_clean();
+	}
 }

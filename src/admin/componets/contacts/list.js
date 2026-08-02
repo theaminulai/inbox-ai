@@ -80,7 +80,7 @@ function exportCsv() {
 			const rows = items.map( ( c ) => [
 				c.sender_name,
 				c.sender_email,
-				c.category,
+				c.source_category,
 				c.priority,
 				c.message_count,
 				c.replied_count,

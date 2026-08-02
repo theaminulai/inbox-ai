@@ -138,12 +138,35 @@ final class CategoryTaxonomy {
 	}
 
 	/**
-	 * Renders the "AI Categories" checklist box inside the CF7 edit-form
-	 * screen's sidebar "Status" box — a checkbox per existing category
-	 * (checked if assigned to this form) plus a WooCommerce-"Product
-	 * categories"-style "+ Add new category" toggle. Only markup here; all
-	 * behavior is wired up by `assets/js/category-metabox.js` (see the
-	 * comment at the end of this method for why nothing is inlined).
+	 * Renders the "AI Categories" box as its own, visually separate postbox
+	 * in the CF7 edit-form screen's sidebar — a checkbox per existing
+	 * category (checked if assigned to this form) plus a
+	 * WooCommerce-"Product categories"-style "+ Add new category" toggle.
+	 * This box is deliberately add/assign-only: there is no rename or
+	 * delete control here on purpose, so a category can't be renamed or
+	 * removed (affecting every form that uses it) from a screen that's
+	 * scoped to just one form. Renaming/deleting categories globally is a
+	 * separate, deliberate action — see the "Manage Categories" card on the
+	 * Settings page's General tab
+	 * ({@see \InboxAI\Admin\Ajax\SettingsAjaxController::rename_category()}/
+	 * {@see \InboxAI\Admin\Ajax\SettingsAjaxController::delete_category()}).
+	 *
+	 * Contact Form 7 has no hook that renders a genuinely separate,
+	 * sibling postbox in this screen's sidebar — {@see self::init()}'s own
+	 * `wpcf7_admin_misc_pub_section` hook is CF7's only sidebar extension
+	 * point, and it fires *inside* the "Status" box's own
+	 * `#misc-publishing-actions` div (confirmed by reading CF7's own
+	 * `admin/edit-contact-form.php`: `#postbox-container-1` hardcodes
+	 * exactly two `<section class="postbox">`s — "Status" and "Do you need
+	 * help?" — with no action hook around or between them). So this method
+	 * still renders here (there's nowhere else to hook into), but as a
+	 * complete, hidden `<section class="postbox">` of its own; the
+	 * conditionally-enqueued `category-metabox.js` moves that whole section
+	 * out of the Status box and into `#postbox-container-1` as its own
+	 * sibling, then reveals it — a plain DOM move, not a second render.
+	 * Only markup here; all behavior (including that move) is wired up by
+	 * that script (see the comment at the end of this method for why
+	 * nothing is inlined).
 	 *
 	 * @param int|string $post_id The form's post id, or a non-numeric/`-1`
 	 *                            placeholder for a not-yet-saved new form.
@@ -165,33 +188,40 @@ final class CategoryTaxonomy {
 		$all_terms = is_array( $all_terms ) ? $all_terms : array();
 		sort( $all_terms );
 
+		$manage_url = add_query_arg( 'tab', 'general-settings', \InboxAI\Admin\Menu::url( 'inboxai-settings' ) );
+
 		?>
-		<div class="misc-pub-section inboxai-categories" style="border-top:1px solid #eee;padding:10px 10px 12px;">
-			<strong style="display:block;margin-bottom:6px;"><?php esc_html_e( 'AI Categories', 'inbox-ai' ); ?></strong>
-			<p style="margin:0 0 8px;font-size:12px;color:#646970;">
-				<?php esc_html_e( 'The categories the AI can assign to this form\'s submissions.', 'inbox-ai' ); ?>
-			</p>
-			<div id="inboxai-category-list" style="max-height:200px;overflow-y:auto;border:1px solid #dcdcde;border-radius:3px;padding:8px 10px;background:#fff;margin-bottom:8px;">
-				<?php if ( array() === $all_terms ) : ?>
-					<p id="inboxai-category-empty" style="margin:0;font-size:12px;color:#646970;font-style:italic;">
-						<?php esc_html_e( 'No categories yet.', 'inbox-ai' ); ?>
-					</p>
-				<?php else : ?>
-					<?php foreach ( $all_terms as $term_name ) : ?>
-						<label style="display:block;font-size:13px;margin-bottom:4px;">
-							<input type="checkbox" name="inboxai_categories[]" value="<?php echo esc_attr( $term_name ); ?>" <?php checked( in_array( $term_name, $assigned, true ) ); ?> />
-							<?php echo esc_html( $term_name ); ?>
-						</label>
-					<?php endforeach; ?>
-				<?php endif; ?>
+		<section class="postbox inboxai-categories-postbox" id="inboxai-category-postbox" style="display:none;">
+			<h2><?php esc_html_e( 'AI Categories', 'inbox-ai' ); ?></h2>
+			<div class="inside inboxai-categories">
+				<p style="margin:0 0 8px;font-size:12px;color:#646970;">
+					<?php esc_html_e( 'The categories the AI can assign to this form\'s submissions. Check the ones that apply, or add a new one — renaming or deleting a category (for every form that uses it) is done from Settings, not here.', 'inbox-ai' ); ?>
+				</p>
+				<div id="inboxai-category-list" style="max-height:200px;overflow-y:auto;border:1px solid #dcdcde;border-radius:3px;padding:8px 10px;background:#fff;margin-bottom:8px;">
+					<?php if ( array() === $all_terms ) : ?>
+						<p id="inboxai-category-empty" style="margin:0;font-size:12px;color:#646970;font-style:italic;">
+							<?php esc_html_e( 'No categories yet.', 'inbox-ai' ); ?>
+						</p>
+					<?php else : ?>
+						<?php foreach ( $all_terms as $term_name ) : ?>
+							<label style="display:block;font-size:13px;margin-bottom:4px;">
+								<input type="checkbox" name="inboxai_categories[]" value="<?php echo esc_attr( $term_name ); ?>" <?php checked( in_array( $term_name, $assigned, true ) ); ?> />
+								<?php echo esc_html( $term_name ); ?>
+							</label>
+						<?php endforeach; ?>
+					<?php endif; ?>
+				</div>
+				<a href="#" id="inboxai-add-toggle"><?php esc_html_e( '+ Add new category', 'inbox-ai' ); ?></a>
+				<div id="inboxai-add-new" style="display:none;margin-top:8px;">
+					<input type="text" id="inboxai-add-input" style="width:100%;box-sizing:border-box;margin-bottom:6px;" placeholder="<?php esc_attr_e( 'New category name', 'inbox-ai' ); ?>" />
+					<button type="button" class="button" id="inboxai-add-submit"><?php esc_html_e( 'Add new category', 'inbox-ai' ); ?></button>
+				</div>
+				<p style="margin:10px 0 0;font-size:11.5px;">
+					<a href="<?php echo esc_url( $manage_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Rename or delete categories →', 'inbox-ai' ); ?></a>
+				</p>
+				<?php wp_nonce_field( self::NONCE_ACTION, 'inboxai_categories_nonce' ); ?>
 			</div>
-			<a href="#" id="inboxai-add-toggle"><?php esc_html_e( '+ Add new category', 'inbox-ai' ); ?></a>
-			<div id="inboxai-add-new" style="display:none;margin-top:8px;">
-				<input type="text" id="inboxai-add-input" style="width:100%;box-sizing:border-box;margin-bottom:6px;" placeholder="<?php esc_attr_e( 'New category name', 'inbox-ai' ); ?>" />
-				<button type="button" class="button" id="inboxai-add-submit"><?php esc_html_e( 'Add new category', 'inbox-ai' ); ?></button>
-			</div>
-			<?php wp_nonce_field( self::NONCE_ACTION, 'inboxai_categories_nonce' ); ?>
-		</div>
+		</section>
 		<?php
 		/*
 		 * No inline <style>/<script> here on purpose: CF7's edit-form screen

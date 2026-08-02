@@ -160,7 +160,7 @@ $inboxai_inbox_search_url = static function ( string $email ) {
 									<a class="inboxai-customer__name inboxai-customer__link" href="<?php echo esc_url( $inboxai_url ); ?>"><?php echo esc_html( $inboxai_name ); ?></a>
 								</div>
 								<a class="inboxai-grid-table__cell inboxai-customer__link" href="<?php echo esc_url( $inboxai_url ); ?>" role="cell" style="color:var(--text-secondary);"><?php echo esc_html( $inboxai_c['sender_email'] ); ?></a>
-								<div class="inboxai-grid-table__cell" role="cell"><?php echo esc_html( $inboxai_c['category'] ?: '—' ); ?></div>
+								<div class="inboxai-grid-table__cell" role="cell"><?php echo esc_html( $inboxai_c['source_category'] ?: '—' ); ?></div>
 								<div class="inboxai-grid-table__cell" role="cell"><?php echo \InboxAI\Support\Format::priority_badge_html( (string) $inboxai_c['priority'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Format::priority_badge_html() escapes every dynamic piece internally; see includes/Support/Format.php. ?></div>
 								<div class="inboxai-grid-table__cell" role="cell"><span style="font-family:var(--mono);"><?php echo (int) $inboxai_c['message_count']; ?></span></div>
 								<div class="inboxai-grid-table__cell" role="cell"><span style="font-family:var(--mono);"><?php echo (int) $inboxai_c['replied_count']; ?></span></div>

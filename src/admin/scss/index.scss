@@ -28,6 +28,7 @@
 @use 'settings/kpi';
 @use 'settings/usage-bar';
 @use 'settings/wizard';
+@use 'settings/categories';
 @use 'common/modal';
 @use 'common/toast';
 @use 'common/layout' as common-layout;
@@ -39,4 +40,5 @@
 @use 'inbox/toolbar';
 @use 'inbox/table';
 @use 'inbox/timeline';
+@use 'inbox/detail';
 @use 'contacts/table' as contacts-table;
