@@ -4,7 +4,7 @@ Tags: contact form 7, ai, inbox, openai, flamingo
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.9.0
+Stable tag: 0.10.0
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -163,7 +163,8 @@ Only one provider is contacted per request — whichever one is currently select
 5. Settings — Notifications tab, where you can configure email notifications.
 
 == Changelog ==
-= Inbox AI/vx.x.x - (upcoming) =
+
+= Inbox AI/v0.10.0 - 2016-08-2 =
 *Added*
 
 * Added a source category, captured once from the form's own category assignment at submission time, that stays fixed even when the AI's own category is regenerated.
