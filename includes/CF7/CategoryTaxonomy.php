@@ -270,8 +270,8 @@ final class CategoryTaxonomy {
 		// is unchecked and nothing new was added — an empty list is a
 		// legitimate, intentional state (unassign every category from this
 		// form), not "the field wasn't submitted".
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- wp_unslash() only; every element is run through sanitize_text_field() in the array_map() immediately below before it's used for anything.
 		$posted = isset( $_POST['inboxai_categories'] ) && is_array( $_POST['inboxai_categories'] )
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- wp_unslash() only; every element is run through sanitize_text_field() in the array_map() immediately below before it's used for anything.
 			? wp_unslash( $_POST['inboxai_categories'] )
 			: array();
 
