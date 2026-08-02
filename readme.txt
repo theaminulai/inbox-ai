@@ -174,12 +174,11 @@ That repository is the canonical, always-up-to-date source for every compiled fi
 
 == Changelog ==
 
-= 0.10.2 =
-* Merge pull request #26 from theaminulai/development
-* Merge pull request #25 from theaminulai/Add-generated-inbox-ai-translation-template
+= Inbox AI/v0.10.2 - 2026-08-02 =
+*Fixed*
+
 * Fixed PHPCS ignore placement in category save
-* Merge pull request #24 from theaminulai/Add-generated-inbox-ai-translation-template
-* Added generated inbox-ai translation template
+* Fixed generated inbox-ai translation template POT
 
 = Inbox AI/v0.10.1 - 2026-08-02 =
 *Fixed*
