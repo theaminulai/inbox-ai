@@ -164,11 +164,7 @@ Only one provider is contacted per request — whichever one is currently select
 
 == Changelog ==
 
-= 0.10.0 =
-* Merge pull request #19 from theaminulai/development
-* Merge pull request #18 from theaminulai/new-feature
-* Add source categories and native CSV import
-= Inbox AI/vx.x.x - (upcoming) =
+= Inbox AI/v0.10.0 - 2016-08-2 =
 *Added*
 
 * Added a source category, captured once from the form's own category assignment at submission time, that stays fixed even when the AI's own category is regenerated.
