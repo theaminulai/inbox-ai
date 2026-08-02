@@ -135,7 +135,7 @@ function exportCsv() {
 				m.message,
 				m.form_title,
 				m.priority,
-				m.category,
+				m.source_category,
 				null === m.confidence || undefined === m.confidence
 					? ''
 					: m.confidence + '%',

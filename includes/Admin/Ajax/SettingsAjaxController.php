@@ -13,9 +13,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use InboxAI\AI\ProviderFactory;
+use InboxAI\CF7\CategoryTaxonomy;
 use InboxAI\Database\UsageRepository;
 use InboxAI\Migration\FlamingoCsvImporter;
 use InboxAI\Migration\FlamingoImporter;
+use InboxAI\Migration\InboxCsvImporter;
 use InboxAI\Security\Capabilities;
 use InboxAI\Settings\Repository as SettingsRepository;
 
@@ -23,12 +25,17 @@ use InboxAI\Settings\Repository as SettingsRepository;
  * Class SettingsAjaxController
  *
  * Every Settings page AJAX action (see docs/plans/05-settings-plan.md,
- * section 3): the six settings tabs' get/save, the AI Provider tab's
- * connection test and model list, and the Import & Migration wizard's four
- * steps (both the Flamingo-table path and the CSV-upload path). Split out of
- * the original single `AjaxController` (see `BaseAjaxController`'s
- * docblock) — the Settings page's own slice of that file, unchanged in
- * behavior. Every `$_POST` read here goes through a
+ * section 3): the settings tabs' get/save, the AI Provider tab's
+ * connection test and model list, and every endpoint the one Import &
+ * Migration wizard's five steps call across its two import paths — the
+ * Flamingo-table path and the Flamingo-CSV-upload path
+ * ({@see FlamingoImporter}/{@see FlamingoCsvImporter}), and the plugin-native
+ * CSV path ({@see self::native_csv_upload()}/{@see self::native_csv_import_batch()},
+ * backed by {@see InboxCsvImporter}). All three read/write completely
+ * separate transient namespaces and tables; nothing here couples one path's
+ * behavior to another's. Split out of the original single `AjaxController`
+ * (see `BaseAjaxController`'s docblock) — the Settings page's own slice of
+ * that file, unchanged in behavior. Every `$_POST` read here goes through a
  * `BaseAjaxController::post_*()` helper rather than a repeated
  * `isset()`/sanitize/`wp_unslash()` one-liner.
  */
@@ -69,6 +76,11 @@ final class SettingsAjaxController extends BaseAjaxController {
 		add_action( 'wp_ajax_inboxai_flamingo_import_batch', array( $this, 'flamingo_import_batch' ) );
 		add_action( 'wp_ajax_inboxai_flamingo_upload_csv', array( $this, 'flamingo_upload_csv' ) );
 		add_action( 'wp_ajax_inboxai_flamingo_import_csv_batch', array( $this, 'flamingo_import_csv_batch' ) );
+		add_action( 'wp_ajax_inboxai_native_csv_upload', array( $this, 'native_csv_upload' ) );
+		add_action( 'wp_ajax_inboxai_native_csv_import_batch', array( $this, 'native_csv_import_batch' ) );
+		add_action( 'wp_ajax_inboxai_add_category', array( $this, 'add_category' ) );
+		add_action( 'wp_ajax_inboxai_rename_category', array( $this, 'rename_category' ) );
+		add_action( 'wp_ajax_inboxai_delete_category', array( $this, 'delete_category' ) );
 	}
 
 	/**
@@ -307,6 +319,177 @@ final class SettingsAjaxController extends BaseAjaxController {
 		}
 
 		wp_send_json_success( FlamingoCsvImporter::import_batch( $token, $offset, 25, $run_ai ) );
+	}
+
+	/**
+	 * `inboxai_native_csv_upload` — the Import & Migration wizard's step 2
+	 * upload path when Step 1 chose "Inbox AI CSV": validates and parses a
+	 * CSV shaped for this plugin's own columns (see {@see InboxCsvImporter}'s
+	 * docblock for the recognized header), stages its rows, and reports back
+	 * what was detected. Entirely independent of
+	 * {@see self::flamingo_upload_csv()} — different importer, different
+	 * recognized shape, different transient namespace.
+	 *
+	 * @return void
+	 */
+	public function native_csv_upload(): void {
+		$this->check( Capabilities::MANAGE_SETTINGS, self::SETTINGS_NONCE_ACTION );
+
+		if ( empty( $_FILES['file']['tmp_name'] ) || ! is_uploaded_file( $_FILES['file']['tmp_name'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce already verified in self::check() above; $_FILES['file']['tmp_name'] is only used with is_uploaded_file()/wp_handle_upload(), which validate the path themselves; never echoed or used in a filesystem call directly.
+			wp_send_json_error( array( 'message' => __( 'No file was uploaded.', 'inbox-ai' ) ), 400 );
+		}
+
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+
+		$overrides = array(
+			'test_form' => false,
+			'mimes'     => array( 'csv' => 'text/csv' ),
+		);
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- this request's own nonce was already verified in self::check() above; wp_handle_upload() has no nonce concept of its own.
+		$moved = wp_handle_upload( $_FILES['file'], $overrides );
+
+		if ( ! isset( $moved['file'] ) ) {
+			wp_send_json_error(
+				array( 'message' => $moved['error'] ?? __( 'The file could not be uploaded.', 'inbox-ai' ) ),
+				400
+			);
+		}
+
+		$staged = InboxCsvImporter::stage( $moved['file'] );
+
+		// The parsed rows are already safely in a transient (or the upload
+		// was rejected) — nothing further needs this temp copy.
+		wp_delete_file( $moved['file'] );
+
+		if ( is_wp_error( $staged ) ) {
+			wp_send_json_error( array( 'message' => $staged->get_error_message() ), 400 );
+		}
+
+		wp_send_json_success( $staged );
+	}
+
+	/**
+	 * `inboxai_native_csv_import_batch` — the Import & Migration wizard's
+	 * step 4 batch loop for the "Inbox AI CSV" path, called repeatedly
+	 * (increasing offset) until `done` is true, same shape as
+	 * {@see self::flamingo_import_csv_batch()} but backed by
+	 * {@see InboxCsvImporter}.
+	 *
+	 * @return void
+	 */
+	public function native_csv_import_batch(): void {
+		$this->check( Capabilities::MANAGE_SETTINGS, self::SETTINGS_NONCE_ACTION );
+
+		$token  = $this->post_string( 'token' );
+		$offset = $this->post_int( 'offset' );
+		$run_ai = $this->post_bool( 'run_ai' );
+
+		if ( '' === $token ) {
+			wp_send_json_error( array( 'message' => __( 'This import session has expired. Please upload the file again.', 'inbox-ai' ) ), 400 );
+		}
+
+		wp_send_json_success( InboxCsvImporter::import_batch( $token, $offset, 25, $run_ai ) );
+	}
+
+	/**
+	 * `inboxai_add_category` — the General tab's "Manage Categories" card's
+	 * own "+ Add category" row: creates a brand-new
+	 * {@see \InboxAI\CF7\CategoryTaxonomy} term, unassigned to any form yet
+	 * (same end state a category added from the per-form checklist reaches
+	 * before any form actually checks it) — it becomes available to every
+	 * form's own checklist immediately, matching the per-form box's own
+	 * "+ Add new category" behavior; the two are just two entry points to
+	 * the same term-creation action.
+	 *
+	 * @return void
+	 */
+	public function add_category(): void {
+		$this->check( Capabilities::MANAGE_SETTINGS, self::SETTINGS_NONCE_ACTION );
+
+		$name = sanitize_text_field( $this->post_string( 'name' ) );
+
+		if ( '' === $name ) {
+			wp_send_json_error( array( 'message' => __( 'A category name is required.', 'inbox-ai' ) ), 400 );
+		}
+
+		$result = wp_insert_term( $name, CategoryTaxonomy::TAXONOMY );
+
+		if ( is_wp_error( $result ) ) {
+			if ( 'term_exists' === $result->get_error_code() ) {
+				wp_send_json_error( array( 'message' => __( 'This category already exists.', 'inbox-ai' ) ), 400 );
+			}
+
+			wp_send_json_error( array( 'message' => $result->get_error_message() ), 400 );
+		}
+
+		wp_send_json_success(
+			array(
+				'term_id' => (int) $result['term_id'],
+				'name'    => $name,
+			)
+		);
+	}
+
+	/**
+	 * `inboxai_rename_category` — the General tab's "Manage Categories" card:
+	 * renames one {@see \InboxAI\CF7\CategoryTaxonomy} term. This is the only
+	 * place a category can be renamed — the per-form checklist on each CF7
+	 * form's own edit screen is deliberately add/assign-only (see
+	 * {@see \InboxAI\CF7\CategoryTaxonomy::render_metabox()}'s docblock).
+	 * Renaming the term does not touch any message already stored with the
+	 * old name in its own `category`/`source_category` column — those are
+	 * plain strings captured at the time, not a live reference to the term.
+	 *
+	 * @return void
+	 */
+	public function rename_category(): void {
+		$this->check( Capabilities::MANAGE_SETTINGS, self::SETTINGS_NONCE_ACTION );
+
+		$term_id = $this->post_int( 'term_id' );
+		$name    = sanitize_text_field( $this->post_string( 'name' ) );
+
+		if ( 0 === $term_id || '' === $name ) {
+			wp_send_json_error( array( 'message' => __( 'A category name is required.', 'inbox-ai' ) ), 400 );
+		}
+
+		$result = wp_update_term( $term_id, CategoryTaxonomy::TAXONOMY, array( 'name' => $name ) );
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( array( 'message' => $result->get_error_message() ), 400 );
+		}
+
+		wp_send_json_success( array( 'renamed' => true, 'name' => $name ) );
+	}
+
+	/**
+	 * `inboxai_delete_category` — the General tab's "Manage Categories" card:
+	 * deletes one {@see \InboxAI\CF7\CategoryTaxonomy} term outright
+	 * (unassigning it from every form that had it checked). This is the
+	 * only place a category can be deleted — see
+	 * {@see self::rename_category()}'s docblock for why it's not available
+	 * on the per-form checklist. Deleting the term does not touch any
+	 * message already stored with this category's name in its own
+	 * `category`/`source_category` column.
+	 *
+	 * @return void
+	 */
+	public function delete_category(): void {
+		$this->check( Capabilities::MANAGE_SETTINGS, self::SETTINGS_NONCE_ACTION );
+
+		$term_id = $this->post_int( 'term_id' );
+
+		if ( 0 === $term_id ) {
+			wp_send_json_error( array( 'message' => __( 'This category could not be found.', 'inbox-ai' ) ), 400 );
+		}
+
+		$result = wp_delete_term( $term_id, CategoryTaxonomy::TAXONOMY );
+
+		if ( is_wp_error( $result ) || false === $result ) {
+			wp_send_json_error( array( 'message' => __( 'This category could not be deleted.', 'inbox-ai' ) ), 400 );
+		}
+
+		wp_send_json_success( array( 'deleted' => true ) );
 	}
 
 	/**

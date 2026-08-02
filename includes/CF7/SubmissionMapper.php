@@ -115,7 +115,31 @@ final class SubmissionMapper {
 			'channel'           => 'contact-form-7',
 			'submission_status' => 'received',
 			'mail_status'       => 'pending',
+			'source_category'   => self::find_source_category( $contact_form ),
 		);
+	}
+
+	/**
+	 * The form's own, admin-assigned {@see CategoryTaxonomy} — captured once
+	 * at submission time as `source_category`, a fixed record of "what this
+	 * form was categorized as when it came in" that AI regenerate/retry never
+	 * touches (unlike `category`, the AI's own, re-computable classification;
+	 * see {@see \InboxAI\Database\MessageRepository::update_analysis()}).
+	 *
+	 * A form can have more than one category checked in its own edit-screen
+	 * checklist ({@see CategoryTaxonomy::render_metabox()}); this takes the
+	 * first one assigned (the checklist/`wp_set_object_terms()` order), not
+	 * an arbitrary alphabetical pick.
+	 *
+	 * @param \WPCF7_ContactForm $contact_form The form that was submitted.
+	 *
+	 * @return string The first assigned category name, or `''` if the form
+	 *                has none configured.
+	 */
+	private static function find_source_category( \WPCF7_ContactForm $contact_form ): string {
+		$terms = wp_get_post_terms( $contact_form->id(), CategoryTaxonomy::TAXONOMY, array( 'fields' => 'names' ) );
+
+		return is_array( $terms ) && isset( $terms[0] ) ? (string) $terms[0] : '';
 	}
 
 	/**

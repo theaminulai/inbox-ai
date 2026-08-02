@@ -52,6 +52,26 @@ final class Format {
 	);
 
 	/**
+	 * Human-readable labels for `ActivityRepository`'s `event_type` values —
+	 * shared by the Submission Detail screen's Activity timeline
+	 * (`inbox/detail-timeline.php`) and the AJAX poll that re-renders it
+	 * after a retried/regenerated analysis finishes (see
+	 * {@see \InboxAI\Admin\Ajax\InboxAjaxController::get_message()}).
+	 *
+	 * @var array<string, string>
+	 */
+	private const EVENT_LABELS = array(
+		'received'              => 'Submission received',
+		'ai_analysis_completed' => 'AI analysis completed',
+		'ai_analysis_failed'    => 'AI analysis failed',
+		'draft_saved'           => 'Reply draft saved',
+		'reply_sent'            => 'Reply sent',
+		'reviewed'              => 'Marked as reviewed',
+		'archived'              => 'Archived',
+		'retry_requested'       => 'Analysis retry requested',
+	);
+
+	/**
 	 * @var array<string, array{0:string,1:string}>
 	 */
 	private const STATUS_MAP = array(
@@ -92,6 +112,23 @@ final class Format {
 			esc_attr( $color ),
 			esc_html( $label )
 		);
+	}
+
+	/**
+	 * @param string $event_type An `ActivityRepository` `event_type` value.
+	 *
+	 * @return string The human-readable label, or `$event_type` itself if
+	 *                unrecognized (matches an activity event a future
+	 *                version logs that this map hasn't been updated for yet,
+	 *                rather than hiding it).
+	 */
+	public static function activity_event_label( string $event_type ): string {
+		if ( ! isset( self::EVENT_LABELS[ $event_type ] ) ) {
+			return $event_type;
+		}
+
+		// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText, WordPress.WP.I18n.LowLevelTranslationFunction -- self::EVENT_LABELS is a small, fixed, plugin-authored set (not user input); translated by value like the original inline array this replaced (see inbox/detail.php's history) so translators who've already translated these strings keep working.
+		return __( self::EVENT_LABELS[ $event_type ], 'inbox-ai' );
 	}
 
 	/**

@@ -8,9 +8,10 @@
  * rather than a dedicated export endpoint) and every row/composer action
  * that changes a message's state (mark reviewed, archive, delete, retry,
  * save draft, send reply) from `list.js`/`detail.js`/`replyComposer.js`.
- * `inboxai_get_message` has no wrapper here anymore — nothing on the client
- * fetches a single message's data over AJAX now that the detail screen's
- * initial render already has it.
+ * `getMessage()` is used by `detail.js` to poll for the AI analysis actually
+ * finishing after a retry/regenerate — see its own docblock for why: the
+ * queue action itself only schedules a WP-Cron job, it doesn't run the
+ * analysis inline.
  */
 
 import { inboxaiAjax } from '../shared/api.js';
@@ -80,6 +81,18 @@ export function deleteMessage( id ) {
  */
 export function retryAnalysis( id ) {
 	return inboxaiAjax( 'inboxai_retry_analysis', { id } );
+}
+
+/**
+ * One message's current data, including its activity timeline — used by
+ * `detail.js` to poll for a retried/regenerated analysis actually finishing
+ * (see {@see \InboxAI\Admin\Ajax\InboxAjaxController::get_message()}).
+ *
+ * @param {number} id
+ * @return {Promise<{message:Object, activities:Array<Object>}>}
+ */
+export function getMessage( id ) {
+	return inboxaiAjax( 'inboxai_get_message', { id } );
 }
 
 /**

@@ -59,6 +59,14 @@ $domains     = array( 'gmail.com', 'outlook.com', 'yahoo.com', 'acme-corp.test',
 
 $categories = array( 'Quote Request', 'Support', 'General Inquiry', 'Feedback', 'Bug Report', 'Partnership', 'Job Application' );
 $priorities = array( 'Urgent', 'High', 'Normal', 'Low' );
+
+// `source_category` is fixed per form (it's captured once from that form's
+// own CategoryTaxonomy assignment — see `SubmissionMapper::find_source_category()`
+// — not per submission), so it's assigned per demo form below, not per row.
+// Left blank for one form in three so seeded data also demonstrates the
+// "form has no category configured yet" case the AI category prompt has to
+// handle on its own (see `PromptBuilder::build_analysis_prompt()`).
+$source_category_pool = array( 'Sales', 'Support', 'Careers', 'General' );
 $providers  = array(
 	'openai'    => array( 'gpt-4o-mini', 'gpt-4.1' ),
 	'anthropic' => array( 'claude-haiku-4-5', 'claude-sonnet-4-5' ),
@@ -92,11 +100,17 @@ $cf7_forms = get_posts(
 );
 
 $forms = array();
-foreach ( $cf7_forms as $form_post ) {
-	$forms[] = array( 'id' => $form_post->ID, 'title' => $form_post->post_title );
+foreach ( $cf7_forms as $i => $form_post ) {
+	$forms[] = array(
+		'id'              => $form_post->ID,
+		'title'           => $form_post->post_title,
+		// Every third form seeded with no source category, so the demo data
+		// covers both cases (see the `$source_category_pool` note above).
+		'source_category' => ( 0 === $i % 3 ) ? '' : $source_category_pool[ $i % count( $source_category_pool ) ],
+	);
 }
 if ( array() === $forms ) {
-	$forms[] = array( 'id' => 1, 'title' => 'Contact form 1' );
+	$forms[] = array( 'id' => 1, 'title' => 'Contact form 1', 'source_category' => $source_category_pool[0] );
 }
 
 // A pool of ~25 recurring senders (rather than 100 unique) so the Contacts
@@ -139,6 +153,7 @@ for ( $n = 0; $n < $total; $n++ ) {
 			'channel'           => 'contact-form-7',
 			'submission_status' => 'mail_sent',
 			'mail_status'       => 'sent',
+			'source_category'   => $form['source_category'],
 		)
 	);
 

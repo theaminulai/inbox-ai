@@ -48,8 +48,16 @@ final class MessageRepository {
 	 * (string), `subject` (string), `message` (string), `fields` (array,
 	 * JSON-encoded), `meta` (array, JSON-encoded), `channel` (string),
 	 * `submission_status` (string), `mail_status` (string, default
-	 * `pending`). Always inserted with `workflow_status = 'new'` and
-	 * `spam_status = 0` unless explicitly overridden.
+	 * `pending`), `source_category` (string — the CF7 form's own
+	 * {@see \InboxAI\CF7\CategoryTaxonomy} assignment, captured once here;
+	 * see that column's own note below). Always inserted with
+	 * `workflow_status = 'new'` and `spam_status = 0` unless explicitly
+	 * overridden.
+	 *
+	 * `source_category` is set exactly once, right here, and is never part
+	 * of {@see self::update_analysis()}'s allowed-fields whitelist — unlike
+	 * `category` (the AI's own classification, which a regenerate/retry can
+	 * update), it stays fixed for the life of the row.
 	 *
 	 * @param array<string, mixed> $data Submission data.
 	 *
@@ -79,9 +87,10 @@ final class MessageRepository {
 				'workflow_status'   => (string) ( $data['workflow_status'] ?? 'new' ),
 				'mail_status'       => (string) ( $data['mail_status'] ?? 'pending' ),
 				'spam_status'       => ! empty( $data['spam_status'] ) ? 1 : 0,
+				'source_category'   => (string) ( $data['source_category'] ?? '' ),
 				'created_at'        => $now,
 			),
-			array( '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s' )
+			array( '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s' )
 		);
 
 		if ( false === $inserted ) {
@@ -253,7 +262,13 @@ final class MessageRepository {
 		}
 
 		if ( ! empty( $filters['category'] ) && 'all' !== $filters['category'] ) {
-			$clauses[] = 'category = %s';
+			// Filters against `source_category` (the form-defined category
+			// captured once at submission time), not `category` (the AI's
+			// own, re-computable classification) — the AI Inbox List's
+			// category filter is meant to slice by "what this form was
+			// tagged as", which stays stable across regenerates; see
+			// `MessageRepository::insert()`'s docblock.
+			$clauses[] = 'source_category = %s';
 			$values[]  = (string) $filters['category'];
 		}
 
@@ -408,7 +423,9 @@ final class MessageRepository {
 		$values  = array();
 
 		if ( ! empty( $filters['category'] ) && 'all' !== $filters['category'] ) {
-			$clauses[] = 'm.category = %s';
+			// See the matching comment in `build_where()` — filters by the
+			// fixed `source_category`, not the AI's own `category`.
+			$clauses[] = 'm.source_category = %s';
 			$values[]  = (string) $filters['category'];
 		}
 
