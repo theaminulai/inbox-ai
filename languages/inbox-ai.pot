@@ -1,0 +1,1559 @@
+# Copyright (C) 2026 theaminuldev
+# This file is distributed under the GPL-3.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Inbox AI 0.10.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/inbox-ai\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-08-02T17:16:14+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: inbox-ai\n"
+
+#. Plugin Name of the plugin
+#: inbox-ai.php:3
+msgid "Inbox AI"
+msgstr ""
+
+#. Description of the plugin
+#: inbox-ai.php:4
+msgid "An AI-powered review inbox for Contact Form 7 submissions — summaries, suggested replies, categorization, and priority scoring, with nothing ever sent automatically."
+msgstr ""
+
+#. Author of the plugin
+#: inbox-ai.php:9
+msgid "theaminuldev"
+msgstr ""
+
+#: includes/Admin/Ajax/BaseAjaxController.php:59
+msgid "You do not have permission to do this."
+msgstr ""
+
+#: includes/Admin/Ajax/ContactsAjaxController.php:89
+#: includes/Admin/Ajax/ContactsAjaxController.php:95
+msgid "This contact could not be found."
+msgstr ""
+
+#: includes/Admin/Ajax/ContactsAjaxController.php:121
+msgid "No valid contacts were selected."
+msgstr ""
+
+#: includes/Admin/Ajax/InboxAjaxController.php:109
+#: includes/Admin/Ajax/InboxAjaxController.php:243
+#: includes/Services/ReplyService.php:45
+msgid "This submission could not be found."
+msgstr ""
+
+#: includes/Admin/Ajax/InboxAjaxController.php:141
+msgid "The draft could not be saved."
+msgstr ""
+
+#: includes/Admin/Ajax/InboxAjaxController.php:183
+msgid "This submission could not be updated."
+msgstr ""
+
+#: includes/Admin/Ajax/InboxAjaxController.php:203
+msgid "This submission could not be archived."
+msgstr ""
+
+#: includes/Admin/Ajax/InboxAjaxController.php:223
+msgid "This submission could not be deleted."
+msgstr ""
+
+#: includes/Admin/Ajax/InboxAjaxController.php:269
+msgid "No valid submissions were selected."
+msgstr ""
+
+#: includes/Admin/Ajax/InboxAjaxController.php:275
+msgid "You do not have permission to delete submissions."
+msgstr ""
+
+#: includes/Admin/Ajax/SettingsAjaxController.php:178
+msgid "Unknown settings tab."
+msgstr ""
+
+#: includes/Admin/Ajax/SettingsAjaxController.php:194
+#: includes/Admin/Ajax/SettingsAjaxController.php:218
+msgid "Unknown provider."
+msgstr ""
+
+#: includes/Admin/Ajax/SettingsAjaxController.php:269
+#: includes/Admin/Ajax/SettingsAjaxController.php:339
+msgid "No file was uploaded."
+msgstr ""
+
+#: includes/Admin/Ajax/SettingsAjaxController.php:284
+#: includes/Admin/Ajax/SettingsAjaxController.php:354
+msgid "The file could not be uploaded."
+msgstr ""
+
+#: includes/Admin/Ajax/SettingsAjaxController.php:318
+#: includes/Admin/Ajax/SettingsAjaxController.php:389
+msgid "This import session has expired. Please upload the file again."
+msgstr ""
+
+#: includes/Admin/Ajax/SettingsAjaxController.php:413
+#: includes/Admin/Ajax/SettingsAjaxController.php:453
+msgid "A category name is required."
+msgstr ""
+
+#: includes/Admin/Ajax/SettingsAjaxController.php:420
+msgid "This category already exists."
+msgstr ""
+
+#: includes/Admin/Ajax/SettingsAjaxController.php:483
+msgid "This category could not be found."
+msgstr ""
+
+#: includes/Admin/Ajax/SettingsAjaxController.php:489
+msgid "This category could not be deleted."
+msgstr ""
+
+#: includes/Admin/Pages/ContactsListPage.php:51
+#: includes/Admin/Pages/InboxListPage.php:74
+#: includes/Admin/Pages/SettingsPage.php:66
+msgid "You do not have permission to access this page."
+msgstr ""
+
+#: includes/AI/AnalysisQueue.php:124
+msgid "No API key has been configured. Add one on the Settings page, then retry."
+msgstr ""
+
+#: includes/AI/AnalysisQueue.php:131
+msgid "The configured AI provider is not recognized."
+msgstr ""
+
+#: includes/AI/AnalysisQueue.php:160
+msgid "The AI response could not be parsed as JSON."
+msgstr ""
+
+#: includes/AI/AnthropicProvider.php:89
+#: includes/AI/GeminiProvider.php:85
+#: includes/AI/OpenAIProvider.php:87
+msgid "No API key has been configured."
+msgstr ""
+
+#: includes/AI/AnthropicProvider.php:121
+#: includes/AI/AnthropicProvider.php:189
+msgid "Could not reach Anthropic. Please try again."
+msgstr ""
+
+#: includes/AI/AnthropicProvider.php:135
+msgid "Anthropic returned an empty response."
+msgstr ""
+
+#. translators: %d: HTTP status code
+#: includes/AI/AnthropicProvider.php:162
+#, php-format
+msgid "Anthropic returned an unexpected error (HTTP %d)."
+msgstr ""
+
+#: includes/AI/AnthropicProvider.php:174
+#: includes/AI/GeminiProvider.php:166
+#: includes/AI/OpenAIProvider.php:178
+msgid "Enter an API key first."
+msgstr ""
+
+#: includes/AI/AnthropicProvider.php:195
+msgid "That API key was rejected by Anthropic."
+msgstr ""
+
+#: includes/AI/AnthropicProvider.php:199
+msgid "Anthropic returned an unexpected error. Please try again."
+msgstr ""
+
+#: includes/AI/GeminiProvider.php:113
+#: includes/AI/GeminiProvider.php:175
+msgid "Could not reach Google. Please try again."
+msgstr ""
+
+#: includes/AI/GeminiProvider.php:127
+msgid "Google returned an empty response."
+msgstr ""
+
+#. translators: %d: HTTP status code
+#: includes/AI/GeminiProvider.php:154
+#, php-format
+msgid "Google returned an unexpected error (HTTP %d)."
+msgstr ""
+
+#: includes/AI/GeminiProvider.php:181
+msgid "That API key was rejected by Google."
+msgstr ""
+
+#: includes/AI/GeminiProvider.php:185
+msgid "Google returned an unexpected error. Please try again."
+msgstr ""
+
+#: includes/AI/OpenAIProvider.php:123
+#: includes/AI/OpenAIProvider.php:192
+msgid "Could not reach OpenAI. Please try again."
+msgstr ""
+
+#: includes/AI/OpenAIProvider.php:137
+msgid "OpenAI returned an empty response."
+msgstr ""
+
+#. translators: %d: HTTP status code
+#: includes/AI/OpenAIProvider.php:164
+#, php-format
+msgid "OpenAI returned an unexpected error (HTTP %d)."
+msgstr ""
+
+#: includes/AI/OpenAIProvider.php:198
+msgid "That API key was rejected by OpenAI."
+msgstr ""
+
+#: includes/AI/OpenAIProvider.php:202
+msgid "OpenAI returned an unexpected error. Please try again."
+msgstr ""
+
+#: includes/CF7/CategoryTaxonomy.php:126
+#: includes/CF7/CategoryTaxonomy.php:195
+msgid "AI Categories"
+msgstr ""
+
+#: includes/CF7/CategoryTaxonomy.php:127
+msgid "AI Category"
+msgstr ""
+
+#: includes/CF7/CategoryTaxonomy.php:198
+msgid "The categories the AI can assign to this form's submissions. Check the ones that apply, or add a new one — renaming or deleting a category (for every form that uses it) is done from Settings, not here."
+msgstr ""
+
+#: includes/CF7/CategoryTaxonomy.php:203
+msgid "No categories yet."
+msgstr ""
+
+#: includes/CF7/CategoryTaxonomy.php:214
+msgid "+ Add new category"
+msgstr ""
+
+#: includes/CF7/CategoryTaxonomy.php:216
+#: includes/Templates/settings/general.php:82
+msgid "New category name"
+msgstr ""
+
+#: includes/CF7/CategoryTaxonomy.php:217
+msgid "Add new category"
+msgstr ""
+
+#: includes/CF7/CategoryTaxonomy.php:220
+msgid "Rename or delete categories →"
+msgstr ""
+
+#. translators: %s: form title
+#: includes/CF7/SubmissionMapper.php:96
+#, php-format
+msgid "New submission via %s"
+msgstr ""
+
+#: includes/Migration/FlamingoCsvImporter.php:75
+#: includes/Migration/InboxCsvImporter.php:116
+msgid "The uploaded file could not be read."
+msgstr ""
+
+#: includes/Migration/FlamingoCsvImporter.php:82
+#: includes/Migration/InboxCsvImporter.php:123
+msgid "The uploaded file is empty."
+msgstr ""
+
+#: includes/Migration/FlamingoCsvImporter.php:94
+msgid "This doesn't look like a Flamingo Inbound Messages export. Expected your form's own field names as columns, ending in a Date column."
+msgstr ""
+
+#: includes/Migration/FlamingoCsvImporter.php:119
+#: includes/Migration/InboxCsvImporter.php:164
+msgid "The uploaded file has a header row but no data rows."
+msgstr ""
+
+#: includes/Migration/InboxCsvImporter.php:135
+msgid "This doesn't look like an Inbox AI import CSV. Expected at least \"sender_email\" and \"message\" columns."
+msgstr ""
+
+#. translators: %s: sender name
+#: includes/Migration/InboxCsvImporter.php:391
+#, php-format
+msgid "Imported test data for %s."
+msgstr ""
+
+#: includes/Migration/InboxCsvImporter.php:394
+msgid "Category/priority provided directly by the imported CSV row, not computed by an AI call."
+msgstr ""
+
+#: includes/Plugin.php:184
+msgid "Activate Contact Form 7"
+msgstr ""
+
+#: includes/Plugin.php:196
+msgid "Install Contact Form 7"
+msgstr ""
+
+#: includes/Plugin.php:201
+msgid "Inbox AI needs Contact Form 7 to do anything — it will stay installed and switch its features on automatically as soon as Contact Form 7 is active."
+msgstr ""
+
+#. translators: 1: required PHP version, 2: current PHP version.
+#: includes/Requirements.php:103
+#, php-format
+msgid "Inbox AI requires PHP %1$s or newer. This site is running PHP %2$s."
+msgstr ""
+
+#. translators: 1: required WordPress version, 2: current WordPress version.
+#: includes/Requirements.php:114
+#, php-format
+msgid "Inbox AI requires WordPress %1$s or newer. This site is running WordPress %2$s."
+msgstr ""
+
+#: includes/Requirements.php:135
+msgid "Inbox AI requires Contact Form 7 to be installed and active."
+msgstr ""
+
+#: includes/Services/ReplyService.php:51
+msgid "This submission has no valid sender email to reply to."
+msgstr ""
+
+#: includes/Services/ReplyService.php:58
+msgid "The reply body is empty."
+msgstr ""
+
+#: includes/Services/ReplyService.php:70
+msgid "The reply could not be sent. Check your site's outgoing mail configuration."
+msgstr ""
+
+#: includes/Support/Format.php:142
+msgid "Submission received"
+msgstr ""
+
+#: includes/Support/Format.php:144
+msgid "AI analysis completed"
+msgstr ""
+
+#: includes/Support/Format.php:146
+msgid "AI analysis failed"
+msgstr ""
+
+#: includes/Support/Format.php:148
+msgid "Reply draft saved"
+msgstr ""
+
+#: includes/Support/Format.php:150
+msgid "Reply sent"
+msgstr ""
+
+#: includes/Support/Format.php:152
+msgid "Marked as reviewed"
+msgstr ""
+
+#: includes/Support/Format.php:154
+#: includes/Templates/inbox/list.php:148
+msgid "Archived"
+msgstr ""
+
+#: includes/Support/Format.php:156
+msgid "Analysis retry requested"
+msgstr ""
+
+#: includes/Support/Format.php:267
+msgid "just now"
+msgstr ""
+
+#. translators: %d: minutes
+#: includes/Support/Format.php:274
+#, php-format
+msgid "%dm ago"
+msgstr ""
+
+#. translators: %d: hours
+#: includes/Support/Format.php:281
+#, php-format
+msgid "%dh ago"
+msgstr ""
+
+#. translators: %d: days
+#: includes/Support/Format.php:287
+#, php-format
+msgid "%dd ago"
+msgstr ""
+
+#. translators: 1: current page, 2: total pages
+#: includes/Support/Format.php:357
+#, php-format
+msgid "%1$d of %2$d"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:56
+msgid "Contacts"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:57
+msgid "Everyone who has submitted a Contact Form 7 message, grouped by sender. Click a contact to see their messages."
+msgstr ""
+
+#: includes/Templates/contacts/list.php:62
+#: includes/Templates/inbox/list.php:94
+msgid "Export"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:74
+msgid "No contacts yet"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:75
+msgid "Contacts will appear here once a monitored form receives its first submission. Turn a form on in General Settings to start receiving messages."
+msgstr ""
+
+#: includes/Templates/contacts/list.php:77
+#: includes/Templates/inbox/list.php:109
+msgid "Select Forms"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:78
+#: includes/Templates/settings/flamingo.php:192
+msgid "View AI Inbox"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:88
+#: includes/Templates/inbox/list.php:119
+msgid "Bulk actions"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:89
+#: includes/Templates/inbox/detail.php:308
+#: includes/Templates/inbox/list.php:123
+#: includes/Templates/settings/general.php:108
+msgid "Delete"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:91
+#: includes/Templates/inbox/list.php:126
+msgid "Apply"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:96
+msgid "Search contacts…"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:99
+#: includes/Templates/inbox/list.php:170
+msgid "All categories"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:105
+#: includes/Templates/inbox/list.php:156
+msgid "All priorities"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:108
+#: includes/Templates/inbox/list.php:159
+msgid "Urgent"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:109
+#: includes/Templates/inbox/list.php:160
+msgid "High"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:110
+#: includes/Templates/inbox/list.php:161
+msgid "Normal"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:111
+#: includes/Templates/inbox/list.php:162
+msgid "Low"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:118
+#: includes/Templates/inbox/list.php:175
+msgid "Filter"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:120
+#: includes/Templates/contacts/list.php:126
+#: includes/Templates/inbox/list.php:177
+#: includes/Templates/inbox/list.php:183
+msgid "Clear filters"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:125
+msgid "No contacts match your filters."
+msgstr ""
+
+#: includes/Templates/contacts/list.php:134
+#: includes/Templates/inbox/list.php:190
+msgid "Select all"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:137
+msgid "Contact"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:138
+msgid "Email"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:139
+#: includes/Templates/inbox/detail-ai-body.php:54
+#: includes/Templates/inbox/list.php:196
+msgid "Category"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:140
+#: includes/Templates/inbox/detail-ai-body.php:58
+#: includes/Templates/inbox/list.php:195
+msgid "Priority"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:141
+msgid "Messages"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:142
+#: includes/Templates/inbox/inbox.php:101
+#: includes/Templates/inbox/list.php:146
+msgid "Replied"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:143
+msgid "Last Contact"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:149
+#: includes/Templates/inbox/detail.php:38
+#: includes/Templates/inbox/list.php:205
+msgid "(no name)"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:155
+msgid "Select this contact"
+msgstr ""
+
+#: includes/Templates/contacts/list.php:170
+#: includes/Templates/inbox/list.php:231
+msgid "More actions"
+msgstr ""
+
+#. translators: 1: first row number, 2: last row number, 3: total rows
+#: includes/Templates/contacts/list.php:187
+#, php-format
+msgid "Showing %1$d to %2$d of %3$d contacts"
+msgstr ""
+
+#: includes/Templates/inbox/detail-ai-body.php:36
+msgid "AI analysis could not be completed"
+msgstr ""
+
+#: includes/Templates/inbox/detail-ai-body.php:37
+msgid "The AI analysis request did not complete. This submission has not been summarized, categorized, or scored — it's safe to handle manually in the meantime."
+msgstr ""
+
+#: includes/Templates/inbox/detail-ai-body.php:42
+msgid "Retry"
+msgstr ""
+
+#: includes/Templates/inbox/detail-ai-body.php:44
+msgid "Mark Reviewed"
+msgstr ""
+
+#: includes/Templates/inbox/detail-ai-body.php:45
+msgid "Provider Settings"
+msgstr ""
+
+#: includes/Templates/inbox/detail-ai-body.php:51
+msgid "No AI analysis available for this submission. Regenerate the analysis or fill in details manually."
+msgstr ""
+
+#: includes/Templates/inbox/detail-ai-body.php:62
+msgid "Confidence"
+msgstr ""
+
+#: includes/Templates/inbox/detail-ai-body.php:66
+msgid "Reasoning"
+msgstr ""
+
+#: includes/Templates/inbox/detail-ai-body.php:67
+msgid "Not available."
+msgstr ""
+
+#: includes/Templates/inbox/detail-ai-body.php:70
+msgid "Regenerate analysis"
+msgstr ""
+
+#: includes/Templates/inbox/detail-timeline.php:24
+msgid "No activity recorded yet."
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:42
+msgid "Pending"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:43
+msgid "Sent successfully"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:44
+msgid "Delivery failed"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:56
+msgid "You"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:65
+#: includes/Templates/inbox/list.php:80
+msgid "AI Inbox"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:70
+msgid "(no subject)"
+msgstr ""
+
+#. translators: 1: sender name, 2: sender email, 3: form title
+#: includes/Templates/inbox/detail.php:75
+#, php-format
+msgid "From %1$s · %2$s · %3$s"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:93
+msgid "Conversation"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:106
+#: includes/Templates/inbox/detail.php:245
+#: includes/Templates/inbox/list.php:192
+msgid "Customer"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:115
+msgid "(no message)"
+msgstr ""
+
+#. translators: 1: form title, 2: source page URL, 3: submission id
+#: includes/Templates/inbox/detail.php:127
+#, php-format
+msgid "Submitted via %1$s · %2$s · Submission #%3$d"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:146
+msgid "AI Analysis"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:147
+msgid "Automated · internal"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:170
+msgid "You · Sent"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:187
+#: includes/Templates/inbox/list.php:230
+msgid "Reply"
+msgstr ""
+
+#. translators: %s: sender name
+#: includes/Templates/inbox/detail.php:197
+#, php-format
+msgid "Reply to %s…"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:204
+msgid "Recipient"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:205
+msgid "Drafted By"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:205
+msgid "Not yet drafted"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:207
+msgid "Subject"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:209
+#: includes/Templates/inbox/list.php:193
+msgid "Message"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:212
+msgid "Bold"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:213
+msgid "Italic"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:214
+msgid "Underline"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:215
+msgid "Bulleted list"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:217
+msgid "Regenerate reply with AI"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:227
+msgid "Send reply"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:230
+msgid "Save draft"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:257
+msgid "Company"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:258
+msgid "Phone"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:265
+msgid "Submission details"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:270
+msgid "Submission ID"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:271
+#: includes/Templates/inbox/list.php:194
+msgid "Form"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:272
+msgid "Source category"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:273
+msgid "Source page"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:274
+msgid "IP address"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:275
+msgid "Submitted"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:276
+msgid "Mail status"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:283
+msgid "Activity"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:296
+msgid "Quick actions"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:302
+msgid "Mark as reviewed"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:305
+#: includes/Templates/inbox/list.php:121
+msgid "Archive"
+msgstr ""
+
+#: includes/Templates/inbox/inbox.php:58
+msgid "Submission not found"
+msgstr ""
+
+#: includes/Templates/inbox/inbox.php:59
+msgid "This submission may have been deleted."
+msgstr ""
+
+#: includes/Templates/inbox/inbox.php:61
+msgid "Back to AI Inbox"
+msgstr ""
+
+#: includes/Templates/inbox/inbox.php:91
+msgid "Send this reply?"
+msgstr ""
+
+#. translators: %s: "Replied"
+#: includes/Templates/inbox/inbox.php:100
+#, php-format
+msgid "This reply will be emailed and the message status will change to %s. This can't be undone."
+msgstr ""
+
+#: includes/Templates/inbox/inbox.php:107
+#: includes/Templates/settings/general.php:107
+#: includes/Templates/settings/settings.php:86
+msgid "Cancel"
+msgstr ""
+
+#: includes/Templates/inbox/inbox.php:110
+msgid "Confirm & Send"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:51
+msgid "All time"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:52
+#: includes/Templates/settings/usage.php:30
+msgid "Last 7 days"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:53
+#: includes/Templates/settings/usage.php:31
+msgid "Last 30 days"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:54
+#: includes/Templates/settings/usage.php:32
+msgid "Last 90 days"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:55
+#: includes/Templates/settings/usage.php:33
+msgid "This month"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:56
+#: includes/Templates/settings/usage.php:34
+msgid "Last 1 year"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:57
+#: includes/Templates/settings/usage.php:35
+msgid "Last 2 years"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:58
+#: includes/Templates/settings/usage.php:36
+msgid "Last 3 years"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:59
+#: includes/Templates/settings/usage.php:37
+msgid "Last 5 years"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:81
+msgid "All Contact Form 7 submissions, sorted by priority and confidence."
+msgstr ""
+
+#: includes/Templates/inbox/list.php:89
+msgid "Refresh"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:106
+msgid "No submissions yet"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:107
+msgid "Contact Form 7 submissions will appear here once a form is monitored. Turn a form back on in General Settings to start receiving messages."
+msgstr ""
+
+#: includes/Templates/inbox/list.php:110
+msgid "Configure AI Provider"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:120
+msgid "Mark reviewed"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:130
+msgid "Search messages, customers, emails…"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:133
+msgid "All forms"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:139
+msgid "All statuses"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:142
+msgid "New"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:143
+msgid "Needs Review"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:144
+msgid "Reviewed"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:145
+msgid "Drafted"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:147
+msgid "Failed"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:182
+msgid "No messages match your filters."
+msgstr ""
+
+#: includes/Templates/inbox/list.php:197
+msgid "AI Confidence"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:198
+msgid "Status"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:199
+msgid "Received"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:211
+msgid "Select this submission"
+msgstr ""
+
+#: includes/Templates/inbox/list.php:229
+msgid "View"
+msgstr ""
+
+#. translators: 1: first row number, 2: last row number, 3: total rows
+#: includes/Templates/inbox/list.php:248
+#, php-format
+msgid "Showing %1$d to %2$d of %3$d messages"
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:59
+msgid "AI Provider Settings"
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:60
+msgid "Connect and configure the AI provider used to analyze submissions."
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:65
+#: includes/Templates/settings/flamingo.php:45
+#: includes/Templates/settings/general.php:35
+#: includes/Templates/settings/notifications.php:26
+#: includes/Templates/settings/prompts.php:33
+#: includes/Templates/settings/usage.php:57
+msgid "AI Provider"
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:66
+#: includes/Templates/settings/flamingo.php:46
+#: includes/Templates/settings/general.php:36
+#: includes/Templates/settings/notifications.php:27
+#: includes/Templates/settings/prompts.php:34
+#: includes/Templates/settings/usage.php:58
+msgid "General"
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:67
+#: includes/Templates/settings/flamingo.php:47
+#: includes/Templates/settings/general.php:37
+#: includes/Templates/settings/notifications.php:28
+#: includes/Templates/settings/prompts.php:35
+#: includes/Templates/settings/usage.php:59
+msgid "Prompts"
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:68
+#: includes/Templates/settings/flamingo.php:48
+#: includes/Templates/settings/general.php:38
+#: includes/Templates/settings/notifications.php:29
+#: includes/Templates/settings/prompts.php:36
+#: includes/Templates/settings/usage.php:60
+msgid "Usage & Billing"
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:69
+#: includes/Templates/settings/flamingo.php:49
+#: includes/Templates/settings/general.php:39
+#: includes/Templates/settings/notifications.php:20
+#: includes/Templates/settings/notifications.php:30
+#: includes/Templates/settings/prompts.php:37
+#: includes/Templates/settings/usage.php:61
+msgid "Notifications"
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:70
+#: includes/Templates/settings/flamingo.php:39
+#: includes/Templates/settings/flamingo.php:50
+#: includes/Templates/settings/general.php:40
+#: includes/Templates/settings/notifications.php:31
+#: includes/Templates/settings/prompts.php:38
+#: includes/Templates/settings/usage.php:62
+msgid "Import & Migration"
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:75
+msgid "Choose a provider"
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:97
+msgid "Configuration"
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:100
+msgid "Connected"
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:105
+msgid "API key"
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:111
+msgid "sk-…"
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:114
+msgid "Your key is encrypted at rest and never shown in full. It is not exposed in logs or error messages."
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:118
+msgid "Model"
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:124
+msgid "Request timeout"
+msgstr ""
+
+#. translators: %d: number of seconds.
+#: includes/Templates/settings/ai-provider.php:131
+#, php-format
+msgid "%d seconds"
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:141
+msgid "Test Connection"
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:142
+#: includes/Templates/settings/general.php:179
+msgid "Save Changes"
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:148
+msgid "Fallback Behavior"
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:152
+msgid "Retry failed requests automatically"
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:153
+msgid "Up to 3 attempts with exponential backoff"
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:159
+msgid "Fall back to manual review on repeated failure"
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:160
+msgid "Marks the submission as Needs Review instead of Failed"
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:166
+msgid "Send email alert on provider outage"
+msgstr ""
+
+#: includes/Templates/settings/ai-provider.php:167
+msgid "Notifies site admins if the provider is unreachable"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:40
+msgid "Import data from Flamingo, or a CSV shaped for this plugin's own columns."
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:55
+msgid "Type"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:57
+#: includes/Templates/settings/flamingo.php:171
+msgid "Source"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:59
+msgid "Options"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:61
+msgid "Import"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:63
+msgid "Complete"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:68
+msgid "What do you want to import?"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:68
+msgid "The rest of this wizard adapts to whichever you choose"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:72
+#: includes/Templates/settings/flamingo.php:171
+msgid "Flamingo"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:73
+msgid "Migrate data from the Flamingo plugin — this site's own live data, or a CSV exported from Flamingo's own Export button"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:79
+msgid "Inbox AI CSV"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:80
+msgid "Upload a CSV shaped for this plugin's own columns directly — useful for loading test/demo data"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:86
+#: includes/Templates/settings/flamingo.php:150
+#: includes/Templates/settings/flamingo.php:163
+msgid "Next"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:92
+msgid "Choose a Source"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:92
+msgid "Read this site's live Flamingo data, or upload a CSV exported from Flamingo"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:99
+msgid "Use live Flamingo data"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:100
+msgid "Read directly from Flamingo's data on this site"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:100
+msgid "Flamingo is not active on this site"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:106
+msgid "Upload a CSV export"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:107
+msgid "An Inbound Messages export from Flamingo's own Export button"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:113
+msgid "Check for Flamingo Data"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:122
+#: includes/Templates/settings/flamingo.php:137
+msgid "Choose File"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:124
+#: includes/Templates/settings/flamingo.php:139
+msgid "No file chosen"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:135
+msgid "Must include at least \"sender_email\" and \"message\" columns — see Notes below"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:149
+#: includes/Templates/settings/flamingo.php:162
+#: includes/Templates/settings/flamingo.php:179
+msgid "Back"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:156
+msgid "Import Options"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:156
+msgid "What will be brought into AI Inbox"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:159
+msgid "Run AI analysis on imported messages"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:159
+msgid "Optional — can also be run later in smaller batches to manage cost"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:169
+msgid "Review & Import"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:169
+msgid "A summary is shown before anything is permanently imported"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:172
+msgid "Rows to import"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:174
+msgid "Importing…"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:180
+msgid "Start Import"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:188
+msgid "Import Complete"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:191
+msgid "Import Another Batch"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:198
+msgid "Notes"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:200
+msgid "Flamingo: original Flamingo entries are left untouched — this creates copies inside AI Inbox. You can re-run this import later for any new Flamingo messages received after today."
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:201
+msgid "Inbox AI CSV recognized columns (any order, case-insensitive; only \"sender_email\" and \"message\" are required):"
+msgstr ""
+
+#: includes/Templates/settings/flamingo.php:203
+msgid "\"source_category\" is the fixed, form-defined category (never changed by AI regenerate). \"category\" is the AI's own classification — provide it directly, or leave it blank and enable \"Run AI analysis\" to have it generated for real. Re-uploading the same file is safe either way — rows already imported before are skipped, not duplicated."
+msgstr ""
+
+#: includes/Templates/settings/general.php:19
+msgid "Forever"
+msgstr ""
+
+#: includes/Templates/settings/general.php:20
+msgid "24 months"
+msgstr ""
+
+#: includes/Templates/settings/general.php:21
+msgid "12 months"
+msgstr ""
+
+#: includes/Templates/settings/general.php:22
+msgid "6 months"
+msgstr ""
+
+#: includes/Templates/settings/general.php:29
+msgid "General Settings"
+msgstr ""
+
+#: includes/Templates/settings/general.php:30
+msgid "Choose which forms feed the AI Inbox and how new submissions are handled."
+msgstr ""
+
+#: includes/Templates/settings/general.php:45
+msgid "Monitored Forms"
+msgstr ""
+
+#: includes/Templates/settings/general.php:48
+msgid "No Contact Form 7 forms found yet. Create a form to start monitoring submissions."
+msgstr ""
+
+#. translators: %d: number of submissions this calendar month.
+#: includes/Templates/settings/general.php:58
+#, php-format
+msgid "%d submission this month"
+msgid_plural "%d submissions this month"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/Templates/settings/general.php:77
+msgid "Manage Categories"
+msgstr ""
+
+#: includes/Templates/settings/general.php:78
+msgid "Add, rename, or delete an AI category — renaming/deleting affects every form that uses it. Categories added here (or on any form's own edit screen) are available to every form."
+msgstr ""
+
+#: includes/Templates/settings/general.php:83
+msgid "Add category"
+msgstr ""
+
+#: includes/Templates/settings/general.php:87
+msgid "No categories yet — add one above."
+msgstr ""
+
+#. translators: %d: number of forms this category is assigned to.
+#: includes/Templates/settings/general.php:98
+#, php-format
+msgid "Used by %d form"
+msgid_plural "Used by %d forms"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/Templates/settings/general.php:105
+msgid "Rename"
+msgstr ""
+
+#: includes/Templates/settings/general.php:106
+msgid "Save"
+msgstr ""
+
+#: includes/Templates/settings/general.php:118
+msgid "Automatic Processing"
+msgstr ""
+
+#: includes/Templates/settings/general.php:122
+msgid "Analyze new submissions automatically"
+msgstr ""
+
+#: includes/Templates/settings/general.php:123
+msgid "Runs AI analysis as soon as a message arrives"
+msgstr ""
+
+#: includes/Templates/settings/general.php:129
+msgid "Auto-draft replies for high-confidence messages"
+msgstr ""
+
+#: includes/Templates/settings/general.php:130
+msgid "Drafts are never sent without approval"
+msgstr ""
+
+#: includes/Templates/settings/general.php:136
+msgid "Auto-archive detected spam"
+msgstr ""
+
+#: includes/Templates/settings/general.php:137
+msgid "Applies only above 95% spam confidence"
+msgstr ""
+
+#: includes/Templates/settings/general.php:142
+msgid "Confidence threshold for \"Needs Review\""
+msgstr ""
+
+#. translators: %d: confidence percentage.
+#: includes/Templates/settings/general.php:148
+#, php-format
+msgid "Messages analyzed below %d%% confidence are flagged for manual review."
+msgstr ""
+
+#: includes/Templates/settings/general.php:158
+msgid "Data Retention"
+msgstr ""
+
+#: includes/Templates/settings/general.php:161
+msgid "Keep submissions for"
+msgstr ""
+
+#: includes/Templates/settings/general.php:170
+msgid "Delete attachments after reply is sent"
+msgstr ""
+
+#: includes/Templates/settings/general.php:171
+msgid "Reduces storage use; text content is kept"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:21
+msgid "Choose how you and your team hear about inbox activity."
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:36
+msgid "Email Notifications"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:40
+msgid "Notify me on urgent messages"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:41
+msgid "Sent immediately when priority is Urgent"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:47
+msgid "Daily summary digest"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:48
+msgid "Sent every morning at 9:00 AM"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:54
+msgid "Notify on AI analysis failure"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:55
+msgid "Sent when a submission fails processing"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:61
+msgid "Notify when a reply draft is ready"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:62
+msgid "For messages awaiting approval"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:70
+msgid "Slack Integration"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:74
+msgid "Send a Slack message for urgent submissions"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:75
+msgid "Requires a valid HTTPS webhook URL below"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:80
+msgid "Slack channel webhook URL"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:87
+msgid "Save Notification Settings"
+msgstr ""
+
+#: includes/Templates/settings/prompts.php:17
+msgid "Friendly and professional"
+msgstr ""
+
+#: includes/Templates/settings/prompts.php:18
+msgid "Formal"
+msgstr ""
+
+#: includes/Templates/settings/prompts.php:19
+msgid "Casual"
+msgstr ""
+
+#: includes/Templates/settings/prompts.php:20
+msgid "Concise"
+msgstr ""
+
+#: includes/Templates/settings/prompts.php:27
+msgid "Prompt Configuration"
+msgstr ""
+
+#: includes/Templates/settings/prompts.php:28
+msgid "Customize the instructions the AI uses to analyze submissions and draft replies."
+msgstr ""
+
+#: includes/Templates/settings/prompts.php:44
+msgid "Analysis Prompt"
+msgstr ""
+
+#: includes/Templates/settings/prompts.php:45
+msgid "Used to summarize, categorize, and score priority"
+msgstr ""
+
+#: includes/Templates/settings/prompts.php:49
+#: includes/Templates/settings/prompts.php:73
+msgid "Available variables"
+msgstr ""
+
+#: includes/Templates/settings/prompts.php:59
+#: includes/Templates/settings/prompts.php:82
+msgid "Prompt template"
+msgstr ""
+
+#: includes/Templates/settings/prompts.php:62
+msgid "Changes apply to new submissions only. Existing analyses are not reprocessed."
+msgstr ""
+
+#: includes/Templates/settings/prompts.php:68
+msgid "Reply Draft Prompt"
+msgstr ""
+
+#: includes/Templates/settings/prompts.php:69
+msgid "Used to generate suggested replies"
+msgstr ""
+
+#: includes/Templates/settings/prompts.php:89
+msgid "Reply Tone"
+msgstr ""
+
+#: includes/Templates/settings/prompts.php:92
+msgid "Default tone"
+msgstr ""
+
+#: includes/Templates/settings/prompts.php:103
+msgid "Reset to defaults"
+msgstr ""
+
+#: includes/Templates/settings/prompts.php:104
+msgid "Save Prompts"
+msgstr ""
+
+#: includes/Templates/settings/settings.php:68
+msgid "Start import?"
+msgstr ""
+
+#: includes/Templates/settings/settings.php:82
+msgid "This will import the selected data into AI Inbox, and optionally run AI analysis on each row."
+msgstr ""
+
+#: includes/Templates/settings/settings.php:89
+msgid "Confirm & Import"
+msgstr ""
+
+#: includes/Templates/settings/usage.php:44
+msgid "Usage Dashboard"
+msgstr ""
+
+#: includes/Templates/settings/usage.php:45
+msgid "Track AI requests, tokens, and estimated cost across providers."
+msgstr ""
+
+#: includes/Templates/settings/usage.php:68
+msgid "Total requests"
+msgstr ""
+
+#: includes/Templates/settings/usage.php:70
+msgid "Analysis + reply generation"
+msgstr ""
+
+#: includes/Templates/settings/usage.php:73
+msgid "Tokens used"
+msgstr ""
+
+#. translators: 1: prompt tokens, 2: completion tokens
+#: includes/Templates/settings/usage.php:79
+#, php-format
+msgid "%1$s in · %2$s out"
+msgstr ""
+
+#: includes/Templates/settings/usage.php:87
+msgid "Estimated cost"
+msgstr ""
+
+#. translators: %s: selected date-range label, e.g. "Last 30 days"
+#: includes/Templates/settings/usage.php:93
+#, php-format
+msgid "%s, all providers"
+msgstr ""
+
+#: includes/Templates/settings/usage.php:100
+msgid "Monthly budget"
+msgstr ""
+
+#: includes/Templates/settings/usage.php:102
+msgid "Not configured yet"
+msgstr ""
+
+#: includes/Templates/settings/usage.php:107
+msgid "Cost by Request Type"
+msgstr ""
+
+#: includes/Templates/settings/usage.php:110
+msgid "No AI usage recorded yet. This fills in once the AI Inbox List page starts analyzing submissions."
+msgstr ""
