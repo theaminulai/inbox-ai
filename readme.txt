@@ -4,7 +4,7 @@ Tags: contact form 7, ai, inbox, openai, flamingo
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.10.1
+Stable tag: 0.10.2
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -173,6 +173,13 @@ That repository is the canonical, always-up-to-date source for every compiled fi
 5. Settings — Notifications tab, where you can configure email notifications.
 
 == Changelog ==
+
+= 0.10.2 =
+* Merge pull request #26 from theaminulai/development
+* Merge pull request #25 from theaminulai/Add-generated-inbox-ai-translation-template
+* Fixed PHPCS ignore placement in category save
+* Merge pull request #24 from theaminulai/Add-generated-inbox-ai-translation-template
+* Added generated inbox-ai translation template
 
 = Inbox AI/v0.10.1 - 2026-08-02 =
 *Fixed*
