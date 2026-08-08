@@ -209,6 +209,12 @@ The uncompiled source is public at https://github.com/theaminulai/inbox-ai — t
 5. Settings — Notifications tab, where you can configure email notifications.
 
 == Changelog ==
+= Inbox AI for Contact Form 7/v1.0.0 - 2026-08-08 =
+**Improved**
+
+* Linked "Contact Form 7" in the Description to the official Contact Form 7 plugin page for easier navigation.
+* Rewrote the Description section to lead with the AI-powered analysis, rather than the inbox and search functionality.
+* Reordered and reformatted the Key Features list for better scannability.
 
 = Inbox AI for Contact Form 7/v1.0.0 - 2026-08-08 =
 **Added**
