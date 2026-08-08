@@ -42,7 +42,7 @@ final class Migrator {
 	 *
 	 * @var string
 	 */
-	private const SCHEMA_VERSION = '0.3.0';
+	private const SCHEMA_VERSION = '0.4.0';
 
 	/**
 	 * Option name tracking which schema version has been applied.
@@ -115,6 +115,7 @@ final class Migrator {
 			mail_status VARCHAR(50) NOT NULL DEFAULT '',
 			spam_status TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 			priority VARCHAR(30) NOT NULL DEFAULT '',
+			mood VARCHAR(20) NOT NULL DEFAULT '',
 			category VARCHAR(100) NOT NULL DEFAULT '',
 			source_category VARCHAR(100) NOT NULL DEFAULT '',
 			confidence DECIMAL(5,2) NULL,
@@ -134,6 +135,7 @@ final class Migrator {
 			KEY form_id (form_id),
 			KEY workflow_status (workflow_status),
 			KEY priority (priority),
+			KEY mood (mood),
 			KEY category (category),
 			KEY submission_hash (submission_hash),
 			KEY created_at (created_at)

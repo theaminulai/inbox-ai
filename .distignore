@@ -46,6 +46,7 @@ CONTRIBUTING.md
 AGENTS.md
 ARCHITECTURE.md
 SECURITY.md
+CLAUDE.md
 
 # Build artefacts and misc
 .distignore

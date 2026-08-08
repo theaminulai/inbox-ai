@@ -29,4 +29,34 @@ export function initNotificationsTab() {
 				.catch( ( err ) => showToast( err.message, 'error' ) );
 		} );
 	}
+
+	// Always tests the currently *saved* Inbound Email settings, not
+	// whatever's typed into the fields right now — see
+	// `SettingsAjaxController::test_inbound_connection()`'s own docblock for
+	// why. The button label says as much, so this isn't a surprise.
+	const testInboundBtn = document.getElementById( 'inbound-test-connection' );
+
+	if ( testInboundBtn ) {
+		testInboundBtn.addEventListener( 'click', () => {
+			const original = testInboundBtn.textContent;
+			testInboundBtn.disabled = true;
+			testInboundBtn.textContent = 'Testing…';
+
+			inboxaiAjax( 'inboxai_test_inbound_connection', {} )
+				.then( ( data ) => {
+					showToast( data.message, 'success' );
+
+					const lastCheck = document.getElementById( 'inbound-last-check' );
+
+					if ( lastCheck ) {
+						lastCheck.textContent = data.message + ' (just now)';
+					}
+				} )
+				.catch( ( err ) => showToast( err.message, 'error' ) )
+				.finally( () => {
+					testInboundBtn.disabled = false;
+					testInboundBtn.textContent = original;
+				} );
+		} );
+	}
 }

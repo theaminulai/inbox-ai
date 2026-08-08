@@ -13,22 +13,13 @@
  * which reload the page on success since they change server-side state the
  * whole page needs to re-render; and the three retry/regenerate-analysis
  * triggers, which do NOT reload — see `wireRegeneratingAction()`'s own
- * docblock for why a reload doesn't actually work for those (the AI call
- * runs on a later WP-Cron request, not inline) and how the result gets
- * patched into the page in place once it's actually ready.
+ * docblock for how the AJAX response (the AI call now runs synchronously,
+ * inline in that same request) gets patched into the page in place instead.
  */
 
-import { retryAnalysis, markReviewed, archiveMessage, deleteMessage, getMessage } from './api.js';
+import { retryAnalysis, markReviewed, archiveMessage, deleteMessage } from './api.js';
 import { showToast } from '../shared/toast.js';
 import { initReplyComposer } from './replyComposer.js';
-
-/**
- * How often to poll while waiting for a retried/regenerated analysis to
- * actually finish, and how long to keep trying before giving up — see
- * {@see wireRegeneratingAction}.
- */
-const POLL_INTERVAL_MS = 2500;
-const POLL_MAX_ATTEMPTS = 24; // ~60s — generous for a real AI provider round trip.
 
 function el( id ) {
 	return document.getElementById( id );
@@ -69,17 +60,18 @@ function wireReloadingAction( id, action, pendingMessage ) {
 }
 
 /**
- * Swaps the finished result into the page in place — no reload. Called once
- * {@see wireRegeneratingAction}'s polling sees the analysis has actually
- * finished. Every piece here is markup the server already rendered (via
- * {@see getMessage}'s `ai_card_html`/`timeline_html`/badges — see
- * `InboxAjaxController::get_message()`), not reconstructed in JS, so it's
+ * Swaps the finished result into the page in place — no reload. Called
+ * directly on {@see wireRegeneratingAction}'s AJAX response, once the
+ * synchronous AI call it triggered has finished. Every piece here is markup
+ * the server already rendered (`ai_card_html`/`timeline_html`/badges — see
+ * `InboxAjaxController::retry_analysis()`), not reconstructed in JS, so it's
  * guaranteed to look exactly like a real page load would.
  *
  * @param {Object}  data
  * @param {Object}  data.message
  * @param {string}  data.ai_card_html
  * @param {string}  data.timeline_html
+ * @param {string}  data.mood_panel_html
  * @param {string}  data.priority_badge
  * @param {string}  data.status_badge
  * @param {string}  data.ai_time_ago
@@ -104,6 +96,12 @@ function applyRegeneratedResult( data, updateComposer ) {
 
 	if ( timeline ) {
 		timeline.innerHTML = data.timeline_html;
+	}
+
+	const moodBody = el( 'detail-mood-body' );
+
+	if ( moodBody ) {
+		moodBody.innerHTML = data.mood_panel_html;
 	}
 
 	const priorityBadge = el( 'detail-priority-badge' );
@@ -151,33 +149,31 @@ function applyRegeneratedResult( data, updateComposer ) {
 	// renders "Regenerate analysis"; failure renders "Retry"/"Mark
 	// Reviewed" instead); each wiring function already no-ops if its id
 	// isn't present, so it's safe to call all three unconditionally.
-	wireRegeneratingAction( 'detail-regenerate-analysis', 'Re-queuing AI analysis…', data.message.id, false, data.activities.length );
-	wireRegeneratingAction( 'detail-retry-btn', 'Retrying analysis…', data.message.id, false, data.activities.length );
+	wireRegeneratingAction( 'detail-regenerate-analysis', 'Analyzing…', data.message.id, false );
+	wireRegeneratingAction( 'detail-retry-btn', 'Retrying analysis…', data.message.id, false );
 	wireReloadingAction( 'detail-manual-btn', () => markReviewed( data.message.id ) );
 }
 
 /**
  * Wires a retry/regenerate button to `retryAnalysis()` — but, unlike
  * {@see wireReloadingAction}, does NOT reload the page once that call
- * resolves, and does NOT reload the page once the analysis itself finishes
- * either. `inboxai_retry_analysis` only re-queues a WP-Cron job (see
- * {@see \InboxAI\AI\AnalysisQueue::enqueue()}) — the actual AI provider call
- * happens later, on a separate request — so this polls {@see getMessage}
- * every few seconds until a new activity timeline entry actually shows up
- * (`ai_analysis_completed` or `ai_analysis_failed` — re-queuing itself
- * already logs one `retry_requested` entry synchronously, so "done" means
- * the count has grown by two, not one) and then patches the finished result
- * into the page via {@see applyRegeneratedResult} instead of reloading.
+ * resolves. `inboxai_retry_analysis` now runs the AI call synchronously, in
+ * that same request (see the PHP handler's own docblock — this used to only
+ * re-queue a WP-Cron job and required polling {@see getMessage} for the
+ * result, which meant waiting on however long until WP-Cron next actually
+ * ran; that could be seconds or minutes depending on the site's cron setup).
+ * The AJAX response now already contains the finished result, so it's
+ * applied directly via {@see applyRegeneratedResult} — no reload, no
+ * polling, just however long the AI provider itself took to respond.
  *
  * @param {string}  id
  * @param {string}  pendingMessage
  * @param {number}  messageId
- * @param {boolean} updateComposer         See {@see applyRegeneratedResult}.
- * @param {number}  baselineActivityCount
+ * @param {boolean} updateComposer See {@see applyRegeneratedResult}.
  *
  * @return {void}
  */
-function wireRegeneratingAction( id, pendingMessage, messageId, updateComposer, baselineActivityCount ) {
+function wireRegeneratingAction( id, pendingMessage, messageId, updateComposer ) {
 	const btn = el( id );
 
 	if ( ! btn ) {
@@ -202,44 +198,21 @@ function wireRegeneratingAction( id, pendingMessage, messageId, updateComposer, 
 		}
 	}
 
-	function poll( attempt ) {
-		getMessage( messageId )
-			.then( ( data ) => {
-				if ( data.activities.length >= baselineActivityCount + 2 ) {
-					setPending( false );
-					applyRegeneratedResult( data, updateComposer );
-					showToast(
-						'failed' === data.message.workflow_status
-							? 'Analysis failed — see the details below.'
-							: 'Analysis updated.',
-						'failed' === data.message.workflow_status ? 'error' : 'success'
-					);
-					return;
-				}
-
-				if ( attempt >= POLL_MAX_ATTEMPTS ) {
-					showToast(
-						"This is taking longer than usual — it's still running in the background. Check back in a moment.",
-						'error'
-					);
-					setPending( false );
-					return;
-				}
-
-				setTimeout( () => poll( attempt + 1 ), POLL_INTERVAL_MS );
-			} )
-			.catch( ( err ) => {
-				showToast( err.message, 'error' );
-				setPending( false );
-			} );
-	}
-
 	btn.addEventListener( 'click', () => {
 		setPending( true );
 		showToast( pendingMessage );
 
 		retryAnalysis( messageId )
-			.then( () => setTimeout( () => poll( 1 ), POLL_INTERVAL_MS ) )
+			.then( ( data ) => {
+				setPending( false );
+				applyRegeneratedResult( data, updateComposer );
+				showToast(
+					'failed' === data.message.workflow_status
+						? 'Analysis failed — see the details below.'
+						: 'Analysis updated.',
+					'failed' === data.message.workflow_status ? 'error' : 'success'
+				);
+			} )
 			.catch( ( err ) => {
 				showToast( err.message, 'error' );
 				setPending( false );
@@ -328,11 +301,10 @@ export function initDetailScreen() {
 	}
 
 	const messageId = parseInt( screen.dataset.messageId, 10 );
-	const baselineActivityCount = parseInt( screen.dataset.activityCount, 10 ) || 0;
 
-	wireRegeneratingAction( 'detail-regenerate-analysis', 'Re-queuing AI analysis…', messageId, false, baselineActivityCount );
-	wireRegeneratingAction( 'detail-regenerate-reply', 'Re-queuing AI analysis to regenerate this reply…', messageId, true, baselineActivityCount );
-	wireRegeneratingAction( 'detail-retry-btn', 'Retrying analysis…', messageId, false, baselineActivityCount );
+	wireRegeneratingAction( 'detail-regenerate-analysis', 'Analyzing…', messageId, false );
+	wireRegeneratingAction( 'detail-regenerate-reply', 'Regenerating reply…', messageId, true );
+	wireRegeneratingAction( 'detail-retry-btn', 'Retrying analysis…', messageId, false );
 	wireReloadingAction( 'detail-manual-btn', () => markReviewed( messageId ) );
 
 	// Sidebar Quick Actions — the same per-row actions the AI Inbox List's

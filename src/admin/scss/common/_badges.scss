@@ -39,6 +39,32 @@
 		background: var(--low-soft);
 		color: var(--low);
 	}
+
+	// Customer Mood badges (Submission Detail sidebar) — deliberately its
+	// own set of modifier classes, not a reuse of --urgent/--high/--normal/
+	// --low above, so a mood badge is never visually confusable with a
+	// priority badge on the same screen. Same 4-tier severity color logic
+	// (green/grey/orange/red), plus a genuine green "positive" option
+	// priority's own 4 values don't have. See `Support\Format::MOOD_MAP`.
+	&--mood-positive {
+		background: var(--conf-good-soft);
+		color: var(--conf-good);
+	}
+
+	&--mood-neutral {
+		background: var(--low-soft);
+		color: var(--low);
+	}
+
+	&--mood-frustrated {
+		background: var(--high-soft);
+		color: var(--high);
+	}
+
+	&--mood-angry {
+		background: var(--urgent-soft);
+		color: var(--urgent);
+	}
 }
 
 .inboxai-status {

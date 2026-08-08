@@ -42,6 +42,25 @@ final class ResponseValidator {
 	public const DEFAULT_PRIORITY = 'normal';
 
 	/**
+	 * Allowed customer-mood values. A fixed, non-editable vocabulary for the
+	 * same reason priorities are — every mood badge/color already built
+	 * around exactly these four. Computed on every AI analysis call (both a
+	 * fresh submission's first analysis and every re-analysis after a
+	 * customer reply — see {@see \InboxAI\AI\AnalysisQueue}), not a separate
+	 * API call.
+	 *
+	 * @var string[]
+	 */
+	public const MOODS = array( 'positive', 'neutral', 'frustrated', 'angry' );
+
+	/**
+	 * Fallback mood used when the AI's response is missing or invalid.
+	 *
+	 * @var string
+	 */
+	public const DEFAULT_MOOD = 'neutral';
+
+	/**
 	 * Parses a provider's raw text response into an associative array.
 	 *
 	 * Strips a leading/trailing markdown code fence if the model wrapped its
@@ -116,6 +135,19 @@ final class ResponseValidator {
 		$key = strtolower( trim( $value ) );
 
 		return in_array( $key, self::PRIORITIES, true ) ? $key : self::DEFAULT_PRIORITY;
+	}
+
+	/**
+	 * Normalizes a raw mood value to one of {@see self::MOODS}.
+	 *
+	 * @param string $value Raw value from the AI response.
+	 *
+	 * @return string
+	 */
+	public static function normalize_mood( string $value ): string {
+		$key = strtolower( trim( $value ) );
+
+		return in_array( $key, self::MOODS, true ) ? $key : self::DEFAULT_MOOD;
 	}
 
 	/**

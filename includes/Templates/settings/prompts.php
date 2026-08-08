@@ -73,6 +73,7 @@ $inboxai_tone_labels = array(
 						<label><?php esc_html_e( 'Available variables', 'inbox-ai' ); ?></label>
 						<div style="display:flex;gap:6px;flex-wrap:wrap;">
 							<span class="inboxai-prompt-var">{message}</span>
+							<span class="inboxai-prompt-var">{customer_name}</span>
 							<span class="inboxai-prompt-var">{summary}</span>
 							<span class="inboxai-prompt-var">{tone}</span>
 							<span class="inboxai-prompt-var">{signature}</span>

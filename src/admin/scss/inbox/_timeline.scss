@@ -48,12 +48,29 @@
 		&--neutral {
 			border-color: var(--low);
 		}
+
+		// Customer Mood history's "frustrated" tier — sits between
+		// `--neutral` and `--fail` on the same severity scale, for a mood
+		// that isn't a failure state but is more concerning than neutral.
+		&--warn {
+			border-color: var(--high);
+		}
 	}
 
 	&__text {
 		font-size: 12.5px;
 		font-weight: 500;
 		line-height: 1.4;
+	}
+
+	// A short, optional description line under `&__text` — currently only
+	// used by the Customer Mood history (the AI's one-line reason for that
+	// mood), but generic enough for any future timeline item that wants one.
+	&__desc {
+		font-size: 11.5px;
+		color: var(--text-secondary);
+		line-height: 1.4;
+		margin-top: 2px;
 	}
 
 	&__meta {

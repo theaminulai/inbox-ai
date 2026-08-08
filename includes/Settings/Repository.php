@@ -30,6 +30,37 @@ final class Repository {
 	private const GENERAL_OPTION       = 'inboxai_settings_general';
 	private const PROMPTS_OPTION       = 'inboxai_settings_prompts';
 	private const NOTIFICATIONS_OPTION = 'inboxai_settings_notifications';
+	private const INBOUND_OPTION       = 'inboxai_settings_inbound';
+	private const INBOUND_PASS_OPTION  = 'inboxai_inbound_password';
+
+	/**
+	 * Allowed IMAP connection-security modes for the Inbound Email settings.
+	 */
+	private const INBOUND_ENCRYPTIONS = array( 'ssl', 'tls', 'none' );
+
+	/**
+	 * Allowed values (in minutes) for how often {@see \InboxAI\Mail\InboundMailChecker}
+	 * polls the mailbox. Whatever's picked here is fed straight into that
+	 * class's `cron_schedules` registration — see its docblock for why no
+	 * unschedule/reschedule step is needed when this changes. 1 minute is the
+	 * practical floor: WP-Cron itself has no sub-minute concept, and how
+	 * often it actually fires still depends on real site traffic or a real
+	 * system cron hitting wp-cron.php, whichever this site uses — see the
+	 * Inbound Email Replies card's own field hint for that caveat.
+	 */
+	private const INBOUND_CHECK_INTERVALS = array( 1, 2, 5, 10, 15, 30, 60 );
+
+	/**
+	 * The allowed check-interval values, for the Settings page's dropdown to
+	 * loop over — kept as a method rather than making the constant itself
+	 * public so every other whitelist in this class stays consistently
+	 * private/read-only from the outside.
+	 *
+	 * @return int[]
+	 */
+	public static function get_inbound_check_interval_options(): array {
+		return self::INBOUND_CHECK_INTERVALS;
+	}
 
 	/**
 	 * Allowed provider ids, retention periods, and reply tones — kept here
@@ -235,7 +266,9 @@ final class Repository {
 				. "Submitted fields: {submitted_fields}\n\n"
 				. 'Respond in the required structured format only.',
 			'reply_prompt'    => 'Draft a helpful, {tone} reply to this customer based on the summary below. '
-				. "Keep it concise, address every question they asked, and end with the signature.\n\n"
+				. "You are writing on behalf of {signature} (the site owner) to {customer_name} (the customer) — "
+				. "greet {customer_name} by name, keep it concise, address every question they asked, and sign off as {signature}.\n\n"
+				. "Customer: {customer_name}\n"
 				. "Summary: {summary}\n"
 				. "Original message: {message}\n"
 				. 'Signature: {signature}',
@@ -339,5 +372,144 @@ final class Repository {
 			),
 			false
 		);
+	}
+
+	/**
+	 * Inbound Email tab settings (excluding the password itself — see
+	 * {@see self::get_inbound_password()}/{@see self::save_inbound_password()}).
+	 *
+	 * A customer's reply is matched back to the right submission via a
+	 * `+m{id}` marker on the outbound reply's `Reply-To` address (see
+	 * {@see \InboxAI\Services\ReplyService::send()}), so `username` here
+	 * doubles as the base address that marker gets appended to — it should
+	 * be the real mailbox {@see \InboxAI\Mail\InboundMailChecker} polls via
+	 * IMAP, not just a display value.
+	 *
+	 * @return array{enabled:bool,host:string,port:int,encryption:string,username:string,mailbox:string,check_interval_minutes:int,last_checked_at:string,last_check_message:string}
+	 */
+	public static function get_inbound(): array {
+		$defaults = array(
+			'enabled'                 => false,
+			'host'                    => '',
+			'port'                    => 993,
+			'encryption'              => 'ssl',
+			'username'                => '',
+			'mailbox'                 => 'INBOX',
+			'check_interval_minutes'  => 10,
+			'last_checked_at'         => '',
+			'last_check_message'      => '',
+		);
+
+		$stored = get_option( self::INBOUND_OPTION, array() );
+
+		return wp_parse_args( is_array( $stored ) ? $stored : array(), $defaults );
+	}
+
+	/**
+	 * Saves the Inbound Email tab (excluding the password).
+	 *
+	 * @param array<string, mixed> $data Raw, unsanitized input.
+	 *
+	 * @return void
+	 */
+	public static function save_inbound( array $data ): void {
+		$current = self::get_inbound();
+
+		update_option(
+			self::INBOUND_OPTION,
+			array(
+				'enabled'                => ! empty( $data['inbound_enabled'] ),
+				'host'                   => sanitize_text_field( (string) ( $data['inbound_host'] ?? $current['host'] ) ),
+				'port'                   => ( absint( $data['inbound_port'] ?? 0 ) ) ?: $current['port'],
+				'encryption'             => in_array( $data['inbound_encryption'] ?? '', self::INBOUND_ENCRYPTIONS, true ) ? $data['inbound_encryption'] : $current['encryption'],
+				'username'               => sanitize_text_field( (string) ( $data['inbound_username'] ?? $current['username'] ) ),
+				'mailbox'                => sanitize_text_field( (string) ( $data['inbound_mailbox'] ?? $current['mailbox'] ) ) ?: 'INBOX',
+				'check_interval_minutes' => in_array( (int) ( $data['inbound_check_interval'] ?? 0 ), self::INBOUND_CHECK_INTERVALS, true ) ? (int) $data['inbound_check_interval'] : $current['check_interval_minutes'],
+				// Read-only, written only by InboundMailChecker itself — never
+				// accepted from a settings-save request.
+				'last_checked_at'        => $current['last_checked_at'],
+				'last_check_message'     => $current['last_check_message'],
+			),
+			false
+		);
+
+		if ( isset( $data['inbound_password'] ) ) {
+			self::save_inbound_password( (string) $data['inbound_password'] );
+		}
+	}
+
+	/**
+	 * Records the result of the most recent inbound-mail check — surfaced on
+	 * the Notifications tab so an admin can tell the background check is
+	 * actually running, without needing server log access.
+	 *
+	 * @param string $message Human-readable outcome, e.g. "Checked just now — 2 replies found."
+	 *
+	 * @return void
+	 */
+	public static function record_inbound_check( string $message ): void {
+		$current = self::get_inbound();
+
+		$current['last_checked_at']    = current_time( 'mysql' );
+		$current['last_check_message'] = $message;
+
+		update_option( self::INBOUND_OPTION, $current, false );
+	}
+
+	/**
+	 * Whether an inbound-mailbox password is currently stored.
+	 *
+	 * @return bool
+	 */
+	public static function has_inbound_password(): bool {
+		return '' !== (string) get_option( self::INBOUND_PASS_OPTION, '' );
+	}
+
+	/**
+	 * Decrypts and returns the stored inbound-mailbox password.
+	 *
+	 * @return string|null Null if none is stored or it fails to decrypt.
+	 */
+	public static function get_inbound_password(): ?string {
+		$stored = (string) get_option( self::INBOUND_PASS_OPTION, '' );
+
+		if ( '' === $stored ) {
+			return null;
+		}
+
+		return Encryption::decrypt( $stored );
+	}
+
+	/**
+	 * A masked representation safe to send back to the browser — same shape
+	 * as {@see self::get_masked_api_key()}.
+	 *
+	 * @return string Empty string if no password is stored.
+	 */
+	public static function get_masked_inbound_password(): string {
+		$password = self::get_inbound_password();
+
+		if ( null === $password || '' === $password ) {
+			return '';
+		}
+
+		return str_repeat( '•', 16 );
+	}
+
+	/**
+	 * Encrypts and stores a new inbound-mailbox password. Same masked-value
+	 * guard as {@see self::save_api_key()} — resaving the masked display
+	 * value must never overwrite the real stored password.
+	 *
+	 * @param string $plain New plaintext password.
+	 *
+	 * @return void
+	 */
+	public static function save_inbound_password( string $plain ): void {
+		if ( '' === $plain || false !== strpos( $plain, "\u{2022}" ) ) {
+			return;
+		}
+
+		update_option( self::INBOUND_PASS_OPTION, Encryption::encrypt( $plain ), false );
 	}
 }

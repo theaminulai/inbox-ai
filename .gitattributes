@@ -76,6 +76,7 @@ phpcs.xml export-ignore
 README.md export-ignore
 CHANGELOG.md export-ignore
 CONTRIBUTING.md export-ignore
+CLAUDE.md export-ignore
 AGENTS.md export-ignore
 ARCHITECTURE.md export-ignore
 SECURITY.md export-ignore
