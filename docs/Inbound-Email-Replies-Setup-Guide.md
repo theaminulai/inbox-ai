@@ -95,5 +95,17 @@ WordPress doesn't run background tasks on its own — checks only actually happe
 
 - **"PHP's imap extension is not available on this server"** — contact your hosting provider and ask them to enable the `imap` PHP extension. Nothing else will work until this is on.
 - **"Could not connect: ..."** — double-check host, port, and encryption. A mismatched port/encryption pair (e.g. port 993 with encryption set to "None") is the most common cause.
+
+- **"Could not connect: Certificate failure for mail.yourdomain.com: hostname mismatch: /CN=some-other-name.yourhost.com"** — a common shared-hosting quirk, not a mistake in your settings.
+
+  **What's happening:** Many hosts (cPanel, Hostinger, and similar) put your mailbox on a shared mail server. That server's SSL certificate is issued for its own auto-generated hostname (the part after `/CN=` in the error — something like `204-197-172-218.cprapid.com`), not for `mail.yourdomain.com`. IMAP checks that the hostname you connected to matches the certificate's name, and here they don't match, so the connection is refused.
+
+  **How to fix it:**
+  1. Copy the hostname shown after `/CN=` in the error message — that's the real, certificate-matching hostname for your mail server.
+  2. Go to **Inbox AI → Settings → Notifications → Inbound Email Replies**, and replace the **IMAP host** field with that hostname instead of `mail.yourdomain.com`.
+  3. Save, then click **Save settings above, then test connection** again.
+
+  If the error message doesn't show a `/CN=` hostname, check your hosting control panel's email setup page (often under "Email Accounts → Connect Devices" or "SSL/TLS Status") for the correct secure IMAP hostname, or ask your host's support directly — this is a common question they'll recognize right away.
+
 - **Connects fine, but a customer's reply never shows up** — confirm the customer replied to the actual email (not a forward, and not a new message to your address), and that their reply landed in the folder set in "Mailbox folder" (usually INBOX, not Spam/Junk).
 - **Test says "0 matched to a submission" even after a real reply arrived** — the message may have been marked as read by another mail client (e.g. checked in a webmail tab) before Inbox AI's check ran; only unread messages are scanned, and each one is marked read as it's processed either way. Confirm the reply is still unread in webmail before the next check runs.
