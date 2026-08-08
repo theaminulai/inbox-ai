@@ -12,33 +12,33 @@ Turn Contact Form 7 submissions into an AI-powered inbox: AI drafts the summary,
 
 == Description ==
 
-**The Best AI Inbox for Contact Form 7 Submissions**
+**AI-Powered Inbox for [Every Contact Form 7](https://wordpress.org/plugins/contact-form-7/) Submission**
 
-**Inbox AI** adds a unified, searchable **Contact Form 7 (CF7)** inbox on top of your existing forms — without modifying Contact Form 7 itself. Every submission is stored, analyzed by your chosen AI provider, and turned into something your team can actually work from: a plain-language AI email summary, a suggested category and priority, a confidence score, and a ready-to-edit draft reply.
+**Inbox AI** uses AI to turn your Contact Form 7 submissions into something your team can actually work from — without modifying Contact Form 7 itself. Every submission is analyzed by your chosen AI provider and returned with a plain-language AI summary, an AI-suggested category and priority, a confidence score, and a ready-to-edit AI draft reply.
 
-If you've ever dug through email notifications trying to figure out which contact form submissions actually need a reply, Inbox AI is built for exactly that problem. Think of it as a Contact Form 7 AI layer: a lightweight support inbox, contact form management tool, and lead management layer that turns what your forms already collect into a focused, triage-ready queue.
+If you've ever dug through email notifications trying to figure out which submissions actually need a reply, Inbox AI's AI layer solves exactly that problem — reading, categorizing, and prioritizing every message automatically, then handing you a focused, triage-ready queue instead of a plain list of messages.
 
 = Manage Contact Form 7 Submissions with AI: =
 
-**Unified AI Inbox:** Every Contact Form 7 submission lands in one searchable inbox, instead of getting buried across scattered email notifications.
+* **Unified AI Inbox:** Every Contact Form 7 submission lands in one searchable inbox, instead of getting buried across scattered email notifications.
 
-**AI-Generated Summaries:** Each submission is read and summarized by your chosen AI provider, so you know what it's about without opening the full message.
+* **AI-Generated Summaries:** Each submission is read and summarized by your chosen AI provider, so you know what it's about without opening the full message.
 
-**Smart Category & Priority Suggestions:** The AI suggests a category and a priority level (Urgent, High, Normal, Low) for every submission, along with a confidence score for each suggestion.
+* **Smart Category & Priority Suggestions:** The AI suggests a category and a priority level (Urgent, High, Normal, Low) for every submission, along with a confidence score for each suggestion.
 
-**Ready-to-Edit Draft Replies:** Inbox AI drafts a reply for you to review and edit — never sent automatically, always in your control.
+* **Ready-to-Edit Draft Replies:** Inbox AI drafts a reply for you to review and edit — never sent automatically, always in your control.
 
-**Inbound Email Replies:** When a customer replies to your emailed response, Inbox AI picks it up automatically — no matter what email platform they use — and threads it straight into the original submission's conversation. The AI re-analyzes the full conversation and drafts a follow-up reply for you to review.
+* **Inbound Email Replies:** When a customer replies to your emailed response, Inbox AI picks it up automatically — no matter what email platform they use — and threads it straight into the original submission's conversation. The AI re-analyzes the full conversation and drafts a follow-up reply for you to review.
 
-**Customer Mood Tracking:** Every message in a conversation, from the original submission through each reply, is read for tone — positive, neutral, frustrated, or angry — with a short AI explanation, so an unhappy customer never slips by unnoticed.
+* **Customer Mood Tracking:** Every message in a conversation, from the original submission through each reply, is read for tone — positive, neutral, frustrated, or angry — with a short AI explanation, so an unhappy customer never slips by unnoticed.
 
-**Powerful Search & Filtering:** Search, filter, sort, and tag submissions by form, status, priority, category, or date, so nothing important gets lost.
+* **Powerful Search & Filtering:** Search, filter, sort, and tag submissions by form, status, priority, category, or date, so nothing important gets lost.
 
-**One-Click CSV Export:** Export the current filtered view to CSV for reporting, backup, or import into another database or CRM.
+* **One-Click CSV Export:** Export the current filtered view to CSV for reporting, backup, or import into another database or CRM.
 
-**Bring Your Own AI Provider:** Connect OpenAI, Anthropic (Claude), or Google Gemini with your own API key — you choose the provider and control the cost.
+* **Bring Your Own AI Provider:** Connect OpenAI, Anthropic (Claude), or Google Gemini with your own API key — you choose the provider and control the cost.
 
-**Zero Core Modification:** Inbox AI reads from Contact Form 7's public hooks only. It never edits Contact Form 7 core files or its mail handling.
+* **Zero Core Modification:** Inbox AI reads from Contact Form 7's public hooks only. It never edits Contact Form 7 core files or its mail handling.
 
 = Why Inbox AI? =
 
