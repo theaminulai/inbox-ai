@@ -4,7 +4,7 @@ Tags: contact form 7, AI, inbox, database, submissions
 Requires at least: 6.7
 Tested up to: 7.0.3
 Requires PHP: 8.1
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -209,6 +209,14 @@ The uncompiled source is public at https://github.com/theaminulai/inbox-ai — t
 5. Settings — Notifications tab, where you can configure email notifications.
 
 == Changelog ==
+
+= 1.0.1 =
+* Merge pull request #33 from theaminulai/Add-generated-inbox-ai-translation-template
+* Fix
+* Merge pull request #32 from theaminulai/development
+* Merge pull request #31 from theaminulai/Add-generated-inbox-ai-translation-template
+* Merge branch 'development' into Add-generated-inbox-ai-translation-template
+* Refresh readme product copy
 = Inbox AI for Contact Form 7/v1.0.0 - 2026-08-08 =
 **Improved**
 
