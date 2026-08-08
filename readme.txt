@@ -2,9 +2,9 @@
 Contributors: theaminuldev
 Tags: contact form 7, AI, inbox, database, submissions
 Requires at least: 6.7
-Tested up to: 7.2
+Tested up to: 7.0.3
 Requires PHP: 8.1
-Stable tag: 0.10.2
+Stable tag: 1.0.0
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -210,7 +210,7 @@ The uncompiled source is public at https://github.com/theaminulai/inbox-ai — t
 
 == Changelog ==
 
-= Inbox AI for Contact Form 7/v0.11.0 - 2026-08-08 =
+= Inbox AI for Contact Form 7/v1.0.0 - 2026-08-08 =
 **Added**
 
 * Added Inbound Email Replies: an optional IMAP mailbox check that captures a customer's reply to your emailed response, from any email platform, and threads it into the original conversation.
