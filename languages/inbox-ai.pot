@@ -2,21 +2,21 @@
 # This file is distributed under the GPL-3.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Inbox AI 0.10.0\n"
+"Project-Id-Version: Inbox AI – Contact Form 7 0.10.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/inbox-ai\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-02T17:16:14+00:00\n"
+"POT-Creation-Date: 2026-08-08T05:13:20+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: inbox-ai\n"
 
 #. Plugin Name of the plugin
 #: inbox-ai.php:3
-msgid "Inbox AI"
+msgid "Inbox AI – Contact Form 7"
 msgstr ""
 
 #. Description of the plugin
@@ -43,73 +43,73 @@ msgid "No valid contacts were selected."
 msgstr ""
 
 #: includes/Admin/Ajax/InboxAjaxController.php:109
-#: includes/Admin/Ajax/InboxAjaxController.php:243
-#: includes/Services/ReplyService.php:45
+#: includes/Admin/Ajax/InboxAjaxController.php:256
+#: includes/Services/ReplyService.php:57
 msgid "This submission could not be found."
 msgstr ""
 
-#: includes/Admin/Ajax/InboxAjaxController.php:141
+#: includes/Admin/Ajax/InboxAjaxController.php:142
 msgid "The draft could not be saved."
 msgstr ""
 
-#: includes/Admin/Ajax/InboxAjaxController.php:183
+#: includes/Admin/Ajax/InboxAjaxController.php:184
 msgid "This submission could not be updated."
 msgstr ""
 
-#: includes/Admin/Ajax/InboxAjaxController.php:203
+#: includes/Admin/Ajax/InboxAjaxController.php:204
 msgid "This submission could not be archived."
 msgstr ""
 
-#: includes/Admin/Ajax/InboxAjaxController.php:223
+#: includes/Admin/Ajax/InboxAjaxController.php:224
 msgid "This submission could not be deleted."
 msgstr ""
 
-#: includes/Admin/Ajax/InboxAjaxController.php:269
+#: includes/Admin/Ajax/InboxAjaxController.php:297
 msgid "No valid submissions were selected."
 msgstr ""
 
-#: includes/Admin/Ajax/InboxAjaxController.php:275
+#: includes/Admin/Ajax/InboxAjaxController.php:303
 msgid "You do not have permission to delete submissions."
 msgstr ""
 
-#: includes/Admin/Ajax/SettingsAjaxController.php:178
+#: includes/Admin/Ajax/SettingsAjaxController.php:181
 msgid "Unknown settings tab."
 msgstr ""
 
-#: includes/Admin/Ajax/SettingsAjaxController.php:194
-#: includes/Admin/Ajax/SettingsAjaxController.php:218
+#: includes/Admin/Ajax/SettingsAjaxController.php:197
+#: includes/Admin/Ajax/SettingsAjaxController.php:248
 msgid "Unknown provider."
 msgstr ""
 
-#: includes/Admin/Ajax/SettingsAjaxController.php:269
-#: includes/Admin/Ajax/SettingsAjaxController.php:339
+#: includes/Admin/Ajax/SettingsAjaxController.php:299
+#: includes/Admin/Ajax/SettingsAjaxController.php:369
 msgid "No file was uploaded."
 msgstr ""
 
-#: includes/Admin/Ajax/SettingsAjaxController.php:284
-#: includes/Admin/Ajax/SettingsAjaxController.php:354
+#: includes/Admin/Ajax/SettingsAjaxController.php:314
+#: includes/Admin/Ajax/SettingsAjaxController.php:384
 msgid "The file could not be uploaded."
 msgstr ""
 
-#: includes/Admin/Ajax/SettingsAjaxController.php:318
-#: includes/Admin/Ajax/SettingsAjaxController.php:389
+#: includes/Admin/Ajax/SettingsAjaxController.php:348
+#: includes/Admin/Ajax/SettingsAjaxController.php:419
 msgid "This import session has expired. Please upload the file again."
 msgstr ""
 
-#: includes/Admin/Ajax/SettingsAjaxController.php:413
-#: includes/Admin/Ajax/SettingsAjaxController.php:453
+#: includes/Admin/Ajax/SettingsAjaxController.php:443
+#: includes/Admin/Ajax/SettingsAjaxController.php:483
 msgid "A category name is required."
 msgstr ""
 
-#: includes/Admin/Ajax/SettingsAjaxController.php:420
+#: includes/Admin/Ajax/SettingsAjaxController.php:450
 msgid "This category already exists."
 msgstr ""
 
-#: includes/Admin/Ajax/SettingsAjaxController.php:483
+#: includes/Admin/Ajax/SettingsAjaxController.php:513
 msgid "This category could not be found."
 msgstr ""
 
-#: includes/Admin/Ajax/SettingsAjaxController.php:489
+#: includes/Admin/Ajax/SettingsAjaxController.php:519
 msgid "This category could not be deleted."
 msgstr ""
 
@@ -119,15 +119,15 @@ msgstr ""
 msgid "You do not have permission to access this page."
 msgstr ""
 
-#: includes/AI/AnalysisQueue.php:124
+#: includes/AI/AnalysisQueue.php:163
 msgid "No API key has been configured. Add one on the Settings page, then retry."
 msgstr ""
 
-#: includes/AI/AnalysisQueue.php:131
+#: includes/AI/AnalysisQueue.php:170
 msgid "The configured AI provider is not recognized."
 msgstr ""
 
-#: includes/AI/AnalysisQueue.php:160
+#: includes/AI/AnalysisQueue.php:199
 msgid "The AI response could not be parsed as JSON."
 msgstr ""
 
@@ -252,6 +252,45 @@ msgstr ""
 msgid "New submission via %s"
 msgstr ""
 
+#. translators: %d: number of minutes between inbound mail checks
+#: includes/Mail/InboundMailChecker.php:146
+msgid "Every minute (Inbox AI inbound mail check)"
+msgid_plural "Every %d minutes (Inbox AI inbound mail check)"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/Mail/InboundMailChecker.php:171
+msgid "PHP's imap extension is not available on this server — ask your host to enable it."
+msgstr ""
+
+#: includes/Mail/InboundMailChecker.php:177
+msgid "Inbound mailbox host/username is not configured."
+msgstr ""
+
+#: includes/Mail/InboundMailChecker.php:184
+msgid "No inbound mailbox password has been configured."
+msgstr ""
+
+#. translators: %s: the underlying IMAP error
+#: includes/Mail/InboundMailChecker.php:200
+#, php-format
+msgid "Could not connect: %s"
+msgstr ""
+
+#: includes/Mail/InboundMailChecker.php:201
+msgid "unknown error"
+msgstr ""
+
+#: includes/Mail/InboundMailChecker.php:211
+msgid "Checked just now — no new replies."
+msgstr ""
+
+#. translators: 1: number of unread messages seen, 2: number matched to a submission
+#: includes/Mail/InboundMailChecker.php:231
+#, php-format
+msgid "Checked just now — %1$d new message(s), %2$d matched to a submission."
+msgstr ""
+
 #: includes/Migration/FlamingoCsvImporter.php:75
 #: includes/Migration/InboxCsvImporter.php:116
 msgid "The uploaded file could not be read."
@@ -285,15 +324,15 @@ msgstr ""
 msgid "Category/priority provided directly by the imported CSV row, not computed by an AI call."
 msgstr ""
 
-#: includes/Plugin.php:184
+#: includes/Plugin.php:191
 msgid "Activate Contact Form 7"
 msgstr ""
 
-#: includes/Plugin.php:196
+#: includes/Plugin.php:203
 msgid "Install Contact Form 7"
 msgstr ""
 
-#: includes/Plugin.php:201
+#: includes/Plugin.php:208
 msgid "Inbox AI needs Contact Form 7 to do anything — it will stay installed and switch its features on automatically as soon as Contact Form 7 is active."
 msgstr ""
 
@@ -313,75 +352,79 @@ msgstr ""
 msgid "Inbox AI requires Contact Form 7 to be installed and active."
 msgstr ""
 
-#: includes/Services/ReplyService.php:51
+#: includes/Services/ReplyService.php:63
 msgid "This submission has no valid sender email to reply to."
 msgstr ""
 
-#: includes/Services/ReplyService.php:58
+#: includes/Services/ReplyService.php:70
 msgid "The reply body is empty."
 msgstr ""
 
-#: includes/Services/ReplyService.php:70
+#: includes/Services/ReplyService.php:88
 msgid "The reply could not be sent. Check your site's outgoing mail configuration."
 msgstr ""
 
-#: includes/Support/Format.php:142
+#: includes/Support/Format.php:186
 msgid "Submission received"
 msgstr ""
 
-#: includes/Support/Format.php:144
+#: includes/Support/Format.php:188
 msgid "AI analysis completed"
 msgstr ""
 
-#: includes/Support/Format.php:146
+#: includes/Support/Format.php:190
 msgid "AI analysis failed"
 msgstr ""
 
-#: includes/Support/Format.php:148
+#: includes/Support/Format.php:192
 msgid "Reply draft saved"
 msgstr ""
 
-#: includes/Support/Format.php:150
+#: includes/Support/Format.php:194
 msgid "Reply sent"
 msgstr ""
 
-#: includes/Support/Format.php:152
+#: includes/Support/Format.php:196
 msgid "Marked as reviewed"
 msgstr ""
 
-#: includes/Support/Format.php:154
+#: includes/Support/Format.php:198
 #: includes/Templates/inbox/list.php:148
 msgid "Archived"
 msgstr ""
 
-#: includes/Support/Format.php:156
+#: includes/Support/Format.php:200
 msgid "Analysis retry requested"
 msgstr ""
 
-#: includes/Support/Format.php:267
+#: includes/Support/Format.php:202
+msgid "Customer replied"
+msgstr ""
+
+#: includes/Support/Format.php:313
 msgid "just now"
 msgstr ""
 
 #. translators: %d: minutes
-#: includes/Support/Format.php:274
+#: includes/Support/Format.php:320
 #, php-format
 msgid "%dm ago"
 msgstr ""
 
 #. translators: %d: hours
-#: includes/Support/Format.php:281
+#: includes/Support/Format.php:327
 #, php-format
 msgid "%dh ago"
 msgstr ""
 
 #. translators: %d: days
-#: includes/Support/Format.php:287
+#: includes/Support/Format.php:333
 #, php-format
 msgid "%dd ago"
 msgstr ""
 
 #. translators: 1: current page, 2: total pages
-#: includes/Support/Format.php:357
+#: includes/Support/Format.php:403
 #, php-format
 msgid "%1$d of %2$d"
 msgstr ""
@@ -423,7 +466,7 @@ msgid "Bulk actions"
 msgstr ""
 
 #: includes/Templates/contacts/list.php:89
-#: includes/Templates/inbox/detail.php:308
+#: includes/Templates/inbox/detail.php:344
 #: includes/Templates/inbox/list.php:123
 #: includes/Templates/settings/general.php:108
 msgid "Delete"
@@ -524,7 +567,7 @@ msgid "Last Contact"
 msgstr ""
 
 #: includes/Templates/contacts/list.php:149
-#: includes/Templates/inbox/detail.php:38
+#: includes/Templates/inbox/detail.php:59
 #: includes/Templates/inbox/list.php:205
 msgid "(no name)"
 msgstr ""
@@ -584,189 +627,213 @@ msgstr ""
 msgid "Regenerate analysis"
 msgstr ""
 
+#: includes/Templates/inbox/detail-mood-panel.php:70
+msgid "Current mood"
+msgstr ""
+
+#: includes/Templates/inbox/detail-mood-panel.php:76
+msgid "History"
+msgstr ""
+
+#: includes/Templates/inbox/detail-mood-panel.php:95
+msgid "No mood history yet — this appears once AI analysis has run at least once."
+msgstr ""
+
 #: includes/Templates/inbox/detail-timeline.php:24
 msgid "No activity recorded yet."
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:42
+#: includes/Templates/inbox/detail.php:63
 msgid "Pending"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:43
+#: includes/Templates/inbox/detail.php:64
 msgid "Sent successfully"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:44
+#: includes/Templates/inbox/detail.php:65
 msgid "Delivery failed"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:56
+#: includes/Templates/inbox/detail.php:77
 msgid "You"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:65
+#: includes/Templates/inbox/detail.php:86
 #: includes/Templates/inbox/list.php:80
 msgid "AI Inbox"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:70
+#: includes/Templates/inbox/detail.php:91
 msgid "(no subject)"
 msgstr ""
 
 #. translators: 1: sender name, 2: sender email, 3: form title
-#: includes/Templates/inbox/detail.php:75
+#: includes/Templates/inbox/detail.php:96
 #, php-format
 msgid "From %1$s · %2$s · %3$s"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:93
+#: includes/Templates/inbox/detail.php:114
 msgid "Conversation"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:106
-#: includes/Templates/inbox/detail.php:245
+#: includes/Templates/inbox/detail.php:127
+#: includes/Templates/inbox/detail.php:293
 #: includes/Templates/inbox/list.php:192
 msgid "Customer"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:115
+#: includes/Templates/inbox/detail.php:136
 msgid "(no message)"
 msgstr ""
 
 #. translators: 1: form title, 2: source page URL, 3: submission id
-#: includes/Templates/inbox/detail.php:127
+#: includes/Templates/inbox/detail.php:148
 #, php-format
 msgid "Submitted via %1$s · %2$s · Submission #%3$d"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:146
-msgid "AI Analysis"
-msgstr ""
-
-#: includes/Templates/inbox/detail.php:147
-msgid "Automated · internal"
-msgstr ""
-
-#: includes/Templates/inbox/detail.php:170
+#: includes/Templates/inbox/detail.php:169
 msgid "You · Sent"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:187
+#: includes/Templates/inbox/detail.php:193
+msgid "Customer · Replied by email"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:203
+msgid "Received by Inbox AI's inbound mail check — see Settings → Notifications."
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:218
+msgid "AI Analysis"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:219
+msgid "Automated · internal"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:235
 #: includes/Templates/inbox/list.php:230
 msgid "Reply"
 msgstr ""
 
 #. translators: %s: sender name
-#: includes/Templates/inbox/detail.php:197
+#: includes/Templates/inbox/detail.php:245
 #, php-format
 msgid "Reply to %s…"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:204
+#: includes/Templates/inbox/detail.php:252
 msgid "Recipient"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:205
+#: includes/Templates/inbox/detail.php:253
 msgid "Drafted By"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:205
+#: includes/Templates/inbox/detail.php:253
 msgid "Not yet drafted"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:207
+#: includes/Templates/inbox/detail.php:255
 msgid "Subject"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:209
+#: includes/Templates/inbox/detail.php:257
 #: includes/Templates/inbox/list.php:193
 msgid "Message"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:212
+#: includes/Templates/inbox/detail.php:260
 msgid "Bold"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:213
+#: includes/Templates/inbox/detail.php:261
 msgid "Italic"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:214
+#: includes/Templates/inbox/detail.php:262
 msgid "Underline"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:215
+#: includes/Templates/inbox/detail.php:263
 msgid "Bulleted list"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:217
+#: includes/Templates/inbox/detail.php:265
 msgid "Regenerate reply with AI"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:227
+#: includes/Templates/inbox/detail.php:275
 msgid "Send reply"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:230
+#: includes/Templates/inbox/detail.php:278
 msgid "Save draft"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:257
+#: includes/Templates/inbox/detail.php:305
 msgid "Company"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:258
+#: includes/Templates/inbox/detail.php:306
 msgid "Phone"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:265
+#: includes/Templates/inbox/detail.php:313
 msgid "Submission details"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:270
+#: includes/Templates/inbox/detail.php:318
 msgid "Submission ID"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:271
+#: includes/Templates/inbox/detail.php:319
 #: includes/Templates/inbox/list.php:194
 msgid "Form"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:272
+#: includes/Templates/inbox/detail.php:320
 msgid "Source category"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:273
+#: includes/Templates/inbox/detail.php:321
 msgid "Source page"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:274
+#: includes/Templates/inbox/detail.php:322
 msgid "IP address"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:275
+#: includes/Templates/inbox/detail.php:323
 msgid "Submitted"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:276
+#: includes/Templates/inbox/detail.php:324
 msgid "Mail status"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:283
-msgid "Activity"
-msgstr ""
-
-#: includes/Templates/inbox/detail.php:296
+#: includes/Templates/inbox/detail.php:332
 msgid "Quick actions"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:302
+#: includes/Templates/inbox/detail.php:338
 msgid "Mark as reviewed"
 msgstr ""
 
-#: includes/Templates/inbox/detail.php:305
+#: includes/Templates/inbox/detail.php:341
 #: includes/Templates/inbox/list.php:121
 msgid "Archive"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:353
+msgid "Customer Mood"
+msgstr ""
+
+#: includes/Templates/inbox/detail.php:363
+msgid "Activity"
 msgstr ""
 
 #: includes/Templates/inbox/inbox.php:58
@@ -793,7 +860,7 @@ msgstr ""
 
 #: includes/Templates/inbox/inbox.php:107
 #: includes/Templates/settings/general.php:107
-#: includes/Templates/settings/settings.php:86
+#: includes/Templates/settings/settings.php:87
 msgid "Cancel"
 msgstr ""
 
@@ -942,7 +1009,7 @@ msgstr ""
 #: includes/Templates/settings/ai-provider.php:65
 #: includes/Templates/settings/flamingo.php:45
 #: includes/Templates/settings/general.php:35
-#: includes/Templates/settings/notifications.php:26
+#: includes/Templates/settings/notifications.php:29
 #: includes/Templates/settings/prompts.php:33
 #: includes/Templates/settings/usage.php:57
 msgid "AI Provider"
@@ -951,7 +1018,7 @@ msgstr ""
 #: includes/Templates/settings/ai-provider.php:66
 #: includes/Templates/settings/flamingo.php:46
 #: includes/Templates/settings/general.php:36
-#: includes/Templates/settings/notifications.php:27
+#: includes/Templates/settings/notifications.php:30
 #: includes/Templates/settings/prompts.php:34
 #: includes/Templates/settings/usage.php:58
 msgid "General"
@@ -960,7 +1027,7 @@ msgstr ""
 #: includes/Templates/settings/ai-provider.php:67
 #: includes/Templates/settings/flamingo.php:47
 #: includes/Templates/settings/general.php:37
-#: includes/Templates/settings/notifications.php:28
+#: includes/Templates/settings/notifications.php:31
 #: includes/Templates/settings/prompts.php:35
 #: includes/Templates/settings/usage.php:59
 msgid "Prompts"
@@ -969,7 +1036,7 @@ msgstr ""
 #: includes/Templates/settings/ai-provider.php:68
 #: includes/Templates/settings/flamingo.php:48
 #: includes/Templates/settings/general.php:38
-#: includes/Templates/settings/notifications.php:29
+#: includes/Templates/settings/notifications.php:32
 #: includes/Templates/settings/prompts.php:36
 #: includes/Templates/settings/usage.php:60
 msgid "Usage & Billing"
@@ -978,8 +1045,8 @@ msgstr ""
 #: includes/Templates/settings/ai-provider.php:69
 #: includes/Templates/settings/flamingo.php:49
 #: includes/Templates/settings/general.php:39
-#: includes/Templates/settings/notifications.php:20
-#: includes/Templates/settings/notifications.php:30
+#: includes/Templates/settings/notifications.php:23
+#: includes/Templates/settings/notifications.php:33
 #: includes/Templates/settings/prompts.php:37
 #: includes/Templates/settings/usage.php:61
 msgid "Notifications"
@@ -989,7 +1056,7 @@ msgstr ""
 #: includes/Templates/settings/flamingo.php:39
 #: includes/Templates/settings/flamingo.php:50
 #: includes/Templates/settings/general.php:40
-#: includes/Templates/settings/notifications.php:31
+#: includes/Templates/settings/notifications.php:34
 #: includes/Templates/settings/prompts.php:38
 #: includes/Templates/settings/usage.php:62
 msgid "Import & Migration"
@@ -1364,63 +1431,160 @@ msgstr ""
 msgid "Reduces storage use; text content is kept"
 msgstr ""
 
-#: includes/Templates/settings/notifications.php:21
+#: includes/Templates/settings/notifications.php:24
 msgid "Choose how you and your team hear about inbox activity."
 msgstr ""
 
-#: includes/Templates/settings/notifications.php:36
+#: includes/Templates/settings/notifications.php:39
 msgid "Email Notifications"
 msgstr ""
 
-#: includes/Templates/settings/notifications.php:40
+#: includes/Templates/settings/notifications.php:43
 msgid "Notify me on urgent messages"
 msgstr ""
 
-#: includes/Templates/settings/notifications.php:41
+#: includes/Templates/settings/notifications.php:44
 msgid "Sent immediately when priority is Urgent"
 msgstr ""
 
-#: includes/Templates/settings/notifications.php:47
+#: includes/Templates/settings/notifications.php:50
 msgid "Daily summary digest"
 msgstr ""
 
-#: includes/Templates/settings/notifications.php:48
+#: includes/Templates/settings/notifications.php:51
 msgid "Sent every morning at 9:00 AM"
 msgstr ""
 
-#: includes/Templates/settings/notifications.php:54
+#: includes/Templates/settings/notifications.php:57
 msgid "Notify on AI analysis failure"
 msgstr ""
 
-#: includes/Templates/settings/notifications.php:55
+#: includes/Templates/settings/notifications.php:58
 msgid "Sent when a submission fails processing"
 msgstr ""
 
-#: includes/Templates/settings/notifications.php:61
+#: includes/Templates/settings/notifications.php:64
 msgid "Notify when a reply draft is ready"
 msgstr ""
 
-#: includes/Templates/settings/notifications.php:62
+#: includes/Templates/settings/notifications.php:65
 msgid "For messages awaiting approval"
 msgstr ""
 
-#: includes/Templates/settings/notifications.php:70
+#: includes/Templates/settings/notifications.php:73
 msgid "Slack Integration"
 msgstr ""
 
-#: includes/Templates/settings/notifications.php:74
+#: includes/Templates/settings/notifications.php:77
 msgid "Send a Slack message for urgent submissions"
 msgstr ""
 
-#: includes/Templates/settings/notifications.php:75
+#: includes/Templates/settings/notifications.php:78
 msgid "Requires a valid HTTPS webhook URL below"
 msgstr ""
 
-#: includes/Templates/settings/notifications.php:80
+#: includes/Templates/settings/notifications.php:83
 msgid "Slack channel webhook URL"
 msgstr ""
 
-#: includes/Templates/settings/notifications.php:87
+#: includes/Templates/settings/notifications.php:91
+msgid "Inbound Email Replies"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:92
+msgid "When a customer replies to one of your sent emails, check this mailbox and bring their reply back into the submission thread."
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:97
+msgid "PHP's imap extension is not available on this server. Inbound checking cannot run until your host enables it, even if you save settings below."
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:103
+msgid "Check for replies"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:104
+msgid "Polls the mailbox below at the interval set here"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:111
+msgid "Check every"
+msgstr ""
+
+#. translators: %d: number of minutes between inbound mail checks
+#: includes/Templates/settings/notifications.php:117
+msgid "1 minute"
+msgstr ""
+
+#. translators: %d: number of minutes between inbound mail checks
+#: includes/Templates/settings/notifications.php:117
+#, php-format
+msgid "%d minutes"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:122
+msgid "How often WordPress actually reaches this depends on your site's own cron setup — a low-traffic site with no real system cron job may check less often than this on quiet days."
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:125
+msgid "Mailbox address"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:127
+msgid "The real mailbox your outbound replies are sent from. Outbound replies get a Reply-To on this same address (with a tracking marker added) so a customer's reply lands here."
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:133
+msgid "IMAP host"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:137
+msgid "Port"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:144
+msgid "Encryption"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:146
+msgid "SSL"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:147
+msgid "TLS"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:148
+msgid "None"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:152
+msgid "Mailbox folder"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:158
+msgid "Mailbox password"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:159
+msgid "App password or mailbox password"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:160
+msgid "Encrypted at rest and never shown in full."
+msgstr ""
+
+#. translators: 1: human-readable outcome of the last check, 2: relative time since it ran
+#: includes/Templates/settings/notifications.php:168
+#, php-format
+msgid "%1$s (%2$s)"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:177
+msgid "Save settings above, then test connection"
+msgstr ""
+
+#: includes/Templates/settings/notifications.php:183
 msgid "Save Notification Settings"
 msgstr ""
 
@@ -1462,7 +1626,7 @@ msgid "Available variables"
 msgstr ""
 
 #: includes/Templates/settings/prompts.php:59
-#: includes/Templates/settings/prompts.php:82
+#: includes/Templates/settings/prompts.php:83
 msgid "Prompt template"
 msgstr ""
 
@@ -1478,31 +1642,31 @@ msgstr ""
 msgid "Used to generate suggested replies"
 msgstr ""
 
-#: includes/Templates/settings/prompts.php:89
+#: includes/Templates/settings/prompts.php:90
 msgid "Reply Tone"
 msgstr ""
 
-#: includes/Templates/settings/prompts.php:92
+#: includes/Templates/settings/prompts.php:93
 msgid "Default tone"
 msgstr ""
 
-#: includes/Templates/settings/prompts.php:103
+#: includes/Templates/settings/prompts.php:104
 msgid "Reset to defaults"
 msgstr ""
 
-#: includes/Templates/settings/prompts.php:104
+#: includes/Templates/settings/prompts.php:105
 msgid "Save Prompts"
 msgstr ""
 
-#: includes/Templates/settings/settings.php:68
+#: includes/Templates/settings/settings.php:69
 msgid "Start import?"
 msgstr ""
 
-#: includes/Templates/settings/settings.php:82
+#: includes/Templates/settings/settings.php:83
 msgid "This will import the selected data into AI Inbox, and optionally run AI analysis on each row."
 msgstr ""
 
-#: includes/Templates/settings/settings.php:89
+#: includes/Templates/settings/settings.php:90
 msgid "Confirm & Import"
 msgstr ""
 

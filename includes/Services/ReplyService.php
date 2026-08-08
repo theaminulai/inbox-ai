@@ -14,6 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use InboxAI\Database\ActivityRepository;
 use InboxAI\Database\MessageRepository;
+use InboxAI\Settings\Repository as SettingsRepository;
 use WP_Error;
 
 /**
@@ -23,6 +24,17 @@ use WP_Error;
  * setting exists on the Settings page (see `Settings\Repository`), so this
  * relies on `wp_mail()`'s own defaults (the site admin address and blog
  * name), exactly as Contact Form 7's own notification emails do.
+ *
+ * When Settings → Notifications → Inbound Email is configured, every
+ * outbound reply also gets a `Reply-To` using plus-addressing — e.g.
+ * `hello+m123@yourdomain.com` for message id 123 — so a customer hitting
+ * "Reply" in their own mail client sends back to a literal address
+ * {@see \InboxAI\Mail\InboundMailChecker} can recognize on the very same
+ * mailbox it polls via IMAP. Plus-addressing (`user+anything@domain`)
+ * delivers to `user@domain` on virtually every real mail server without any
+ * extra mailbox/alias setup, which is why this needs no DNS or hosting
+ * changes to work. If inbound checking isn't configured, this is skipped
+ * entirely and a reply behaves exactly as it always has.
  */
 final class ReplyService {
 
@@ -64,6 +76,12 @@ final class ReplyService {
 
 		$headers = array( 'Content-Type: text/html; charset=UTF-8' );
 
+		$reply_to = self::build_reply_to( $message_id );
+
+		if ( null !== $reply_to ) {
+			$headers[] = 'Reply-To: ' . $reply_to;
+		}
+
 		$sent = wp_mail( $to, $subject, wpautop( $body ), $headers );
 
 		if ( ! $sent ) {
@@ -72,8 +90,33 @@ final class ReplyService {
 
 		MessageRepository::set_reply_sent( $message_id, $subject, $body );
 
-		ActivityRepository::log( $message_id, 'reply_sent', array( 'subject' => $subject ), $user_id );
+		// 'body' is included (not just 'subject') so a later customer reply's
+		// AI re-analysis can reconstruct the full back-and-forth — see
+		// AnalysisQueue::build_conversation_transcript().
+		ActivityRepository::log( $message_id, 'reply_sent', array( 'subject' => $subject, 'body' => $body ), $user_id );
 
 		return true;
+	}
+
+	/**
+	 * Builds a `local+m{id}@domain` Reply-To address from the Inbound Email
+	 * mailbox configured on the Notifications tab, or `null` if inbound
+	 * checking isn't enabled/configured (in which case a reply's headers
+	 * stay exactly as they were before this feature existed).
+	 *
+	 * @param int $message_id Message row id.
+	 *
+	 * @return string|null
+	 */
+	private static function build_reply_to( int $message_id ): ?string {
+		$inbound = SettingsRepository::get_inbound();
+
+		if ( ! $inbound['enabled'] || '' === $inbound['username'] || ! is_email( $inbound['username'] ) ) {
+			return null;
+		}
+
+		[ $local, $domain ] = explode( '@', $inbound['username'], 2 );
+
+		return $local . '+m' . $message_id . '@' . $domain;
 	}
 }

@@ -41,6 +41,7 @@ $inboxai_settings_vars = array(
 	'categories'      => $categories,
 	'prompts'         => $prompts,
 	'notifications'   => $notifications,
+	'inbound'         => $inbound,
 	'usage_totals'    => $usage_totals,
 	'usage_breakdown' => $usage_breakdown,
 	'flamingo_active' => $flamingo_active,

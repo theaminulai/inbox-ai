@@ -15,6 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 use InboxAI\AI\ProviderFactory;
 use InboxAI\CF7\CategoryTaxonomy;
 use InboxAI\Database\UsageRepository;
+use InboxAI\Mail\InboundMailChecker;
 use InboxAI\Migration\FlamingoCsvImporter;
 use InboxAI\Migration\FlamingoImporter;
 use InboxAI\Migration\InboxCsvImporter;
@@ -71,6 +72,7 @@ final class SettingsAjaxController extends BaseAjaxController {
 		add_action( 'wp_ajax_inboxai_get_settings', array( $this, 'get_settings' ) );
 		add_action( 'wp_ajax_inboxai_save_settings', array( $this, 'save_settings' ) );
 		add_action( 'wp_ajax_inboxai_test_connection', array( $this, 'test_connection' ) );
+		add_action( 'wp_ajax_inboxai_test_inbound_connection', array( $this, 'test_inbound_connection' ) );
 		add_action( 'wp_ajax_inboxai_list_models', array( $this, 'list_models' ) );
 		add_action( 'wp_ajax_inboxai_flamingo_detect', array( $this, 'flamingo_detect' ) );
 		add_action( 'wp_ajax_inboxai_flamingo_import_batch', array( $this, 'flamingo_import_batch' ) );
@@ -171,6 +173,7 @@ final class SettingsAjaxController extends BaseAjaxController {
 
 			case 'notifications':
 				SettingsRepository::save_notifications( $values );
+				SettingsRepository::save_inbound( $values );
 				wp_send_json_success( array( 'saved' => true ) );
 				break;
 
@@ -201,6 +204,33 @@ final class SettingsAjaxController extends BaseAjaxController {
 		}
 
 		wp_send_json_success( array( 'connected' => true ) );
+	}
+
+	/**
+	 * `inboxai_test_inbound_connection` — runs one real inbound-mail check
+	 * immediately, synchronously, against the currently *saved* Inbound
+	 * Email settings (unlike {@see self::test_connection()}, this doesn't
+	 * accept not-yet-saved field values — save the Notifications tab first,
+	 * then test, since {@see InboundMailChecker::check()} always reads from
+	 * {@see SettingsRepository::get_inbound()} the same way the real WP-Cron
+	 * tick does; duplicating its IMAP connection logic here just to support
+	 * testing unsaved credentials wasn't worth the extra surface for a
+	 * once-in-a-while settings check).
+	 *
+	 * @return void
+	 */
+	public function test_inbound_connection(): void {
+		$this->check( Capabilities::MANAGE_SETTINGS, self::SETTINGS_NONCE_ACTION );
+
+		( new InboundMailChecker() )->check();
+
+		$inbound = SettingsRepository::get_inbound();
+
+		wp_send_json_success(
+			array(
+				'message' => $inbound['last_check_message'],
+			)
+		);
 	}
 
 	/**

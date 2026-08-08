@@ -1,0 +1,17 @@
+// Settings → Notifications → "Inbound Email Replies" card
+// (includes/Templates/settings/notifications.php). Just the one small
+// inline warning banner this card needs for the "PHP's imap extension isn't
+// available" case — everything else in the card reuses existing
+// `.inboxai-field`/`.inboxai-switch-row`/`.inboxai-field__hint` classes.
+.inboxai-notice {
+	border-radius: var(--radius-md);
+	padding: 12px 16px;
+	font-size: 13px;
+	line-height: 1.5;
+
+	&--warning {
+		background: var(--urgent-soft);
+		border: 1px solid #F3C6C6;
+		color: #7A1F1F;
+	}
+}

@@ -116,6 +116,14 @@ final class SettingsPage {
 			'categories'      => $this->get_categories(),
 			'prompts'         => SettingsRepository::get_prompts(),
 			'notifications'   => SettingsRepository::get_notifications(),
+			'inbound'         => array_merge(
+				SettingsRepository::get_inbound(),
+				array(
+					'password_masked' => SettingsRepository::get_masked_inbound_password(),
+					'has_password'    => SettingsRepository::has_inbound_password(),
+					'imap_available'  => function_exists( 'imap_open' ),
+				)
+			),
 			'usage_totals'    => UsageRepository::get_period_totals( '30_days' ),
 			'usage_breakdown' => UsageRepository::get_cost_breakdown( '30_days' ),
 			'flamingo_active' => FlamingoImporter::is_available(),
