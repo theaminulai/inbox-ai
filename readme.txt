@@ -210,16 +210,7 @@ The uncompiled source is public at https://github.com/theaminulai/inbox-ai — t
 
 == Changelog ==
 
-= 1.0.0 =
-* Merge pull request #29 from theaminulai/development
-* Merge pull request #28 from theaminulai/Add-generated-inbox-ai-translation-template
-* Move inbound email guide to wiki
-* Add shared-hosting IMAP SSL troubleshooting guide
-* Update POT for inbound replies and new UI
-* Add inbound reply threading and mood tracking
-* Refresh branding and WordPress readme copy
-
-= Inbox AI for Contact Form 7/v0.11.0 - 2026-08-08 =
+= Inbox AI for Contact Form 7/v1.0.0 - 2026-08-08 =
 **Added**
 
 * Added Inbound Email Replies: an optional IMAP mailbox check that captures a customer's reply to your emailed response, from any email platform, and threads it into the original conversation.
