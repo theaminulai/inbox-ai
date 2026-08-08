@@ -255,9 +255,10 @@ final class PromptBuilder {
 			: '"category" (a short, 1-3 word category label you judge best fits this submission), ';
 
 		$prompt .= "\n\n" . sprintf(
-			'Respond with ONLY a single valid JSON object (no markdown code fences, no commentary before or after) with exactly these keys: "summary" (a short 1-2 sentence string), %1$s"priority" (exactly one of: %2$s), "confidence" (an integer from 0 to 100), "reasoning" (a short 1-2 sentence string).',
+			'Respond with ONLY a single valid JSON object (no markdown code fences, no commentary before or after) with exactly these keys: "summary" (a short 1-2 sentence string), %1$s"priority" (exactly one of: %2$s), "mood" (the customer\'s emotional tone in this message, exactly one of: %3$s), "mood_reason" (a short phrase, under 12 words, describing why you picked that mood), "confidence" (an integer from 0 to 100), "reasoning" (a short 1-2 sentence string).',
 			$category_key,
-			implode( ', ', ResponseValidator::PRIORITIES )
+			implode( ', ', ResponseValidator::PRIORITIES ),
+			implode( ', ', ResponseValidator::MOODS )
 		);
 
 		return $prompt;
@@ -271,7 +272,12 @@ final class PromptBuilder {
 	 * @param string                $template Raw `reply_prompt` template text,
 	 *                                        from `Settings\Repository::get_prompts()`.
 	 * @param array<string, string> $vars     Placeholder => value map. Expected keys:
-	 *                                        `{tone}`, `{summary}`, `{message}`, `{signature}`.
+	 *                                        `{tone}`, `{customer_name}`, `{summary}`, `{message}`,
+	 *                                        `{signature}` — `{customer_name}` and `{signature}` are
+	 *                                        deliberately both always supplied, even though the
+	 *                                        template can omit either, so the model has an explicit
+	 *                                        anchor for which name belongs to the customer it's
+	 *                                        writing *to* versus the site owner it's writing *as*.
 	 *
 	 * @return string
 	 */

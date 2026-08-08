@@ -148,6 +148,41 @@ final class MessageRepository {
 	}
 
 	/**
+	 * Finds the most recent non-deleted row a reply was actually sent for,
+	 * from a given sender email — the fallback match {@see
+	 * \InboxAI\Mail\InboundMailChecker} uses when an inbound reply's `To`
+	 * address is missing the `+m{id}` marker {@see
+	 * \InboxAI\Services\ReplyService::send()} sets (some mail clients/relays
+	 * strip plus-addressing). Restricted to rows with `reply_sent_at` set,
+	 * since a customer replying makes sense only against a thread they were
+	 * actually sent something on.
+	 *
+	 * @param string $email Sender email address.
+	 *
+	 * @return array<string, mixed>|null
+	 */
+	public static function find_latest_by_sender_email( string $email ): ?array {
+		global $wpdb;
+
+		if ( '' === $email ) {
+			return null;
+		}
+
+		$table = self::table();
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $table is $wpdb->prefix + a hardcoded class constant, never user input; identifiers can't be passed through prepare() placeholders anyway.
+		$row = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT * FROM {$table} WHERE sender_email = %s AND deleted_at IS NULL AND reply_sent_at IS NOT NULL ORDER BY reply_sent_at DESC LIMIT 1", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$email
+			),
+			ARRAY_A
+		);
+
+		return self::decode_row( $row );
+	}
+
+	/**
 	 * Submission counts for the current calendar month, grouped by form —
 	 * powers the Settings page's Monitored Forms list (see
 	 * `includes/Templates/settings/general.php`). One grouped query rather
@@ -541,7 +576,7 @@ final class MessageRepository {
 	public static function update_analysis( int $id, array $fields ): bool {
 		$allowed = array_intersect_key(
 			$fields,
-			array_flip( array( 'ai_summary', 'ai_reasoning', 'category', 'priority', 'confidence', 'ai_provider', 'ai_model', 'reply_subject', 'reply_draft', 'workflow_status', 'ai_error' ) )
+			array_flip( array( 'ai_summary', 'ai_reasoning', 'category', 'priority', 'mood', 'confidence', 'ai_provider', 'ai_model', 'reply_subject', 'reply_draft', 'workflow_status', 'ai_error' ) )
 		);
 
 		return self::update( $id, $allowed );

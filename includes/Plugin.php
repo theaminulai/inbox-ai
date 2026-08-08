@@ -22,6 +22,7 @@ use InboxAI\AI\AnalysisQueue;
 use InboxAI\CF7\CategoryTaxonomy;
 use InboxAI\CF7\SubmissionHandler;
 use InboxAI\Database\Migrator;
+use InboxAI\Mail\InboundMailChecker;
 
 /**
  * Class Plugin
@@ -103,6 +104,12 @@ final class Plugin {
 		// scheduled analysis would never run.
 		( new SubmissionHandler() )->init();
 		( new AnalysisQueue() )->init();
+
+		// Also unconditional — the same WP-Cron reasoning as AnalysisQueue
+		// above. Whether it actually does anything each tick is gated by the
+		// Settings → Notifications → Inbound Email "enabled" toggle, checked
+		// inside InboundMailChecker::check() itself.
+		( new InboundMailChecker() )->init();
 
 		// Registers the per-form AI category taxonomy and its edit-screen
 		// sidebar box. Also unconditional: a WP-Cron analysis run needs to

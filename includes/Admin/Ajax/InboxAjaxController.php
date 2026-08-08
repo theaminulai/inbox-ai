@@ -114,13 +114,14 @@ final class InboxAjaxController extends BaseAjaxController {
 
 		wp_send_json_success(
 			array(
-				'message'        => $message,
-				'activities'     => $activities,
-				'ai_card_html'   => \InboxAI\Support\Template::render_to_string( 'inbox/detail-ai-body', array( 'message' => $message, 'can_edit' => $can_edit ) ),
-				'timeline_html'  => \InboxAI\Support\Template::render_to_string( 'inbox/detail-timeline', array( 'activities' => $activities ) ),
-				'priority_badge' => \InboxAI\Support\Format::priority_badge_html( (string) $message['priority'] ),
-				'status_badge'   => \InboxAI\Support\Format::status_badge_html( (string) $message['workflow_status'] ),
-				'ai_time_ago'    => \InboxAI\Support\Format::time_ago( (string) $message['updated_at'] ),
+				'message'         => $message,
+				'activities'      => $activities,
+				'ai_card_html'    => \InboxAI\Support\Template::render_to_string( 'inbox/detail-ai-body', array( 'message' => $message, 'can_edit' => $can_edit ) ),
+				'timeline_html'   => \InboxAI\Support\Template::render_to_string( 'inbox/detail-timeline', array( 'activities' => $activities ) ),
+				'mood_panel_html' => \InboxAI\Support\Template::render_to_string( 'inbox/detail-mood-panel', array( 'message' => $message, 'activities' => $activities ) ),
+				'priority_badge'  => \InboxAI\Support\Format::priority_badge_html( (string) $message['priority'] ),
+				'status_badge'    => \InboxAI\Support\Format::status_badge_html( (string) $message['workflow_status'] ),
+				'ai_time_ago'     => \InboxAI\Support\Format::time_ago( (string) $message['updated_at'] ),
 			)
 		);
 	}
@@ -227,9 +228,21 @@ final class InboxAjaxController extends BaseAjaxController {
 	}
 
 	/**
-	 * `inboxai_retry_analysis` — the Submission Failure screen's "Retry"
-	 * action: re-enqueues the message for analysis exactly as its original
-	 * capture did, without re-inserting a row.
+	 * `inboxai_retry_analysis` — the Submission Failure screen's "Retry" and
+	 * the Submission Detail screen's "Regenerate" actions.
+	 *
+	 * Runs the AI call synchronously, in this same request, rather than
+	 * scheduling a WP-Cron event and returning immediately. Unlike a fresh
+	 * submission's first analysis — which deliberately stays off the
+	 * visitor-facing request (see {@see AnalysisQueue}'s own docblock) — an
+	 * admin explicitly clicking Retry/Regenerate is already sitting on this
+	 * screen waiting for a result, the same as clicking Settings → AI
+	 * Provider's "Test Connection" button. Queuing it instead only added a
+	 * multi-second-to-multi-minute wait (real AI provider latency plus
+	 * however long until WP-Cron next actually runs) for no benefit here.
+	 *
+	 * Returns the same shape as {@see self::get_message()} so `detail.js`
+	 * can apply the finished result directly, without polling for it.
 	 *
 	 * @return void
 	 */
@@ -246,9 +259,24 @@ final class InboxAjaxController extends BaseAjaxController {
 		MessageRepository::update_status( $id, 'new' );
 		ActivityRepository::log( $id, 'retry_requested', array(), get_current_user_id() );
 
-		AnalysisQueue::enqueue( $id );
+		( new AnalysisQueue() )->process( $id );
 
-		wp_send_json_success( array( 'queued' => true ) );
+		$message    = MessageRepository::find( $id );
+		$activities = ActivityRepository::get_for_message( $id );
+		$can_edit   = current_user_can( Capabilities::EDIT_MESSAGES );
+
+		wp_send_json_success(
+			array(
+				'message'         => $message,
+				'activities'      => $activities,
+				'ai_card_html'    => \InboxAI\Support\Template::render_to_string( 'inbox/detail-ai-body', array( 'message' => $message, 'can_edit' => $can_edit ) ),
+				'timeline_html'   => \InboxAI\Support\Template::render_to_string( 'inbox/detail-timeline', array( 'activities' => $activities ) ),
+				'mood_panel_html' => \InboxAI\Support\Template::render_to_string( 'inbox/detail-mood-panel', array( 'message' => $message, 'activities' => $activities ) ),
+				'priority_badge'  => \InboxAI\Support\Format::priority_badge_html( (string) $message['priority'] ),
+				'status_badge'    => \InboxAI\Support\Format::status_badge_html( (string) $message['workflow_status'] ),
+				'ai_time_ago'     => \InboxAI\Support\Format::time_ago( (string) $message['updated_at'] ),
+			)
+		);
 	}
 
 	/**

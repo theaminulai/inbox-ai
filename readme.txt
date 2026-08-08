@@ -1,6 +1,6 @@
 === Inbox AI ===
 Contributors: theaminuldev
-Tags: contact form 7, ai, inbox, openai, flamingo
+Tags: contact form 7, AI, inbox, database, submissions
 Requires at least: 6.7
 Tested up to: 7.2
 Requires PHP: 8.1
@@ -11,18 +11,46 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Turn Contact Form 7 submissions into an AI-powered inbox: AI drafts the summary, database, category, priority, and reply — you review and send.
 
 == Description ==
-= AI-Powered Contact Form 7 Inbox, Submission Database & Reply Manager =
+
 **The Best AI Inbox for Contact Form 7 Submissions**
-**Inbox AI** adds a unified, searchable **Contact Form 7** **(CF7)** inbox on top of your existing forms — without modifying Contact Form 7 itself. Every submission is stored, analyzed by your chosen AI provider, and turned into something your team can actually work from: a plain-language AI email summary, a suggested category and priority, a confidence score, and a ready-to-edit draft reply.
+
+**Inbox AI** adds a unified, searchable **Contact Form 7 (CF7)** inbox on top of your existing forms — without modifying Contact Form 7 itself. Every submission is stored, analyzed by your chosen AI provider, and turned into something your team can actually work from: a plain-language AI email summary, a suggested category and priority, a confidence score, and a ready-to-edit draft reply.
 
 If you've ever dug through email notifications trying to figure out which contact form submissions actually need a reply, Inbox AI is built for exactly that problem. Think of it as a Contact Form 7 AI layer: a lightweight support inbox, contact form management tool, and lead management layer that turns what your forms already collect into a focused, triage-ready queue.
+
+= Manage Contact Form 7 Submissions with AI: =
+
+**Unified AI Inbox:** Every Contact Form 7 submission lands in one searchable inbox, instead of getting buried across scattered email notifications.
+
+**AI-Generated Summaries:** Each submission is read and summarized by your chosen AI provider, so you know what it's about without opening the full message.
+
+**Smart Category & Priority Suggestions:** The AI suggests a category and a priority level (Urgent, High, Normal, Low) for every submission, along with a confidence score for each suggestion.
+
+**Ready-to-Edit Draft Replies:** Inbox AI drafts a reply for you to review and edit — never sent automatically, always in your control.
+
+**Inbound Email Replies:** When a customer replies to your emailed response, Inbox AI picks it up automatically — no matter what email platform they use — and threads it straight into the original submission's conversation. The AI re-analyzes the full conversation and drafts a follow-up reply for you to review.
+
+**Customer Mood Tracking:** Every message in a conversation, from the original submission through each reply, is read for tone — positive, neutral, frustrated, or angry — with a short AI explanation, so an unhappy customer never slips by unnoticed.
+
+**Powerful Search & Filtering:** Search, filter, sort, and tag submissions by form, status, priority, category, or date, so nothing important gets lost.
+
+**One-Click CSV Export:** Export the current filtered view to CSV for reporting, backup, or import into another database or CRM.
+
+**Bring Your Own AI Provider:** Connect OpenAI, Anthropic (Claude), or Google Gemini with your own API key — you choose the provider and control the cost.
+
+**Zero Core Modification:** Inbox AI reads from Contact Form 7's public hooks only. It never edits Contact Form 7 core files or its mail handling.
+
+= Why Inbox AI? =
+
+Contact Form 7 is great at collecting submissions — but it doesn't help you manage them. Inbox AI closes that gap: instead of a plain list of messages, every submission arrives already summarized, categorized, and prioritized, with a draft reply waiting for your review.
 
 = How Contact Form 7 (CF7) Inbox AI Works =
 
 1. A visitor submits one of your monitored **Contact Form 7** forms.
 2. Inbox AI stores the submission locally in your WordPress database.
-3. Your connected AI provider (OpenAI, Anthropic, or Google Gemini) analyzes it in the background and returns a summary, category, priority, confidence score, and a suggested reply.
+3. Your connected AI provider (OpenAI, Anthropic, or Google Gemini) analyzes it in the background and returns a summary, category, priority, confidence score, suggested mood, and a suggested reply.
 4. You review everything in the AI Inbox screen and, when you're happy with it, send the reply yourself. Nothing is ever sent to a visitor automatically.
+5. If the customer replies to that email, Inbox AI's optional inbound mail check picks it up automatically, threads it into the same conversation, and re-analyzes it so you always have a fresh summary and a new draft reply.
 
 = Who It's For =
 
@@ -32,23 +60,20 @@ If you've ever dug through email notifications trying to figure out which contac
 
 = AI Features (OpenAI, Claude, or Google Gemini) =
 
-* AI-generated summary for every submission, so you don't have to read the full message to know what it's about.
-* AI prioritization and category suggestions (Urgent, High, Normal, Low), with a confidence score for each AI analysis.
-* AI-drafted reply you can edit before sending — an AI email assistant for drafting replies, not an autoresponder.
-* Bring your own API key: OpenAI, Anthropic (Claude), or Google Gemini. You choose the provider and control the cost.
-* Automatic retry for any submission whose AI analysis failed, with a clear failure state instead of a silent gap.
+* Every AI-drafted reply is exactly that — a draft. It's an AI email assistant for drafting replies, not an autoresponder; nothing sends without your review.
+* If AI analysis fails for a submission, Inbox AI shows a clear failure state and lets you retry with one click instead of leaving a silent gap.
+* A customer's reply — from any email platform, not just ones with special integrations — is picked up automatically, re-analyzed with the full conversation in view, and gets its own suggested follow-up reply.
+* Each message in a conversation gets a suggested mood (positive, neutral, frustrated, angry) with a short one-line reason, shown in a Customer Mood panel on the Submission Detail screen.
 
 = Contact Form 7 (CF7) Inbox & Submission Management =
 
-* A searchable, filterable AI inbox: filter by form, status, priority, category, AI confidence, and date range.
-* Full-text search across sender name, email, subject, and message.
-* A per-submission detail screen with the full AI analysis and an activity timeline (who did what, and when) — closer to a support ticket assistant than a plain message list.
-* CSV export of the current filtered view, for reporting or import into another contact form database or CRM.
+* Filter by form, status, priority, category, AI confidence, and date range, with full-text search across sender name, email, subject, and message.
+* A per-submission detail screen shows the full AI analysis alongside an activity timeline — who did what, and when — closer to a support ticket than a plain message list.
 * Manual "Mark reviewed," "Archive," and "Delete" actions, each gated behind its own WordPress capability.
 
 = Not Just a Contact Form 7 (CF7) Database Plugin =
 
-Inbox AI stores every submission to a monitored Contact Form 7 form directly in your own WordPress database, the same way a dedicated **Contact Form 7 database** plugin would — and lets you search, filter, and export those contact form entries to CSV without running anything else alongside it. Where it goes further is the AI layer on top of that stored data: a plain-language summary, a suggested category and priority, and a draft reply for every submission, so you're not just archiving messages, you're actually working through them.
+Inbox AI stores every submission to a monitored Contact Form 7 form directly in your own WordPress database, the same way a dedicated Contact Form 7 database plugin would — so you don't need to run one just to keep a local copy of your entries.
 
 It isn't a full replacement for a dedicated database add-on, though. Inbox AI doesn't currently offer multisite-wide storage, capture or store form attachments, support generic CSV import with custom field mapping, or let you rename field labels — if your site depends on any of those specific features, a dedicated Contact Form 7 database plugin running alongside Inbox AI still makes sense.
 
@@ -62,6 +87,7 @@ It isn't a full replacement for a dedicated database add-on, though. Inbox AI do
 = Notifications =
 
 * Email and Slack notifications so your team knows when a new submission — or one flagged urgent by the AI — needs attention, keeping AI customer service response times fast.
+* Optional Inbound Email Replies: point Inbox AI at a mailbox (IMAP) and it checks for customer replies on a schedule you choose — every 1, 2, 5, 10, 15, 30, or 60 minutes.
 
 = Import & Migration =
 
@@ -77,6 +103,19 @@ It isn't a full replacement for a dedicated database add-on, though. Inbox AI do
 = Performance =
 
 * AI analysis runs as a background AI workflow via WP-Cron — a visitor's form submission is never delayed waiting on an AI response.
+
+= My Contributions =
+
+I actively contribute to the following WordPress plugins:
+
+* [Gutenberg](https://wordpress.org/plugins/gutenberg/) – The WordPress block editor, developed by the WordPress team.
+* [AI](https://wordpress.org/plugins/ai/) – Brings AI-powered features like content summarization, alt text generation, and title suggestions directly into the WordPress Block Editor.
+* [ElementsKit](https://wordpress.org/plugins/elementskit-lite/) – Advanced widgets, header/footer builder, and mega menu builder for Elementor.
+* [MetForm](https://wordpress.org/plugins/metform/) – Super flexible and easy-to-use form builder.
+* [ShopEngine](https://wordpress.org/plugins/shopengine/) – Your complete WooCommerce solution, built for Elementor.
+* [GutenKit](https://wordpress.org/plugins/gutenkit-blocks-addon/) – Build websites 10x Faster with ZERO coding in the Gutenberg Block Editor.
+* [PopupKit](https://wordpress.org/plugins/popup-builder-block/) – Build exceptional popup for diverse needs within the WordPress block editor.
+* [TableKit](https://wordpress.org/plugins/table-builder-block/) – Make fully-customizable multipurpose table & generate data table within Gutenberg block editor.
 
 == Installation ==
 
@@ -129,6 +168,14 @@ Yes. Inbox AI defines its own capabilities (view, edit, delete, reply, export, m
 
 Yes. AI analysis only runs for forms listed under Settings → General → Monitored Forms. Remove a form from that list (or leave it out to begin with) and Inbox AI stops sending its submissions to any AI provider — the submission is still stored locally, just without AI analysis.
 
+= Does Inbox AI capture a customer's reply to my email? =
+
+Yes, if you turn on Inbound Email Replies under Settings → Notifications and point it at a mailbox over IMAP. It works with any email platform the customer replies from — there's no special integration needed on their end. Inbox AI checks that mailbox on a schedule you choose (every 1, 2, 5, 10, 15, 30, or 60 minutes), threads a matching reply into the original submission's conversation, and triggers a fresh AI re-analysis with a new suggested reply.
+
+= Does Inbox AI track a customer's mood? =
+
+Yes. Every message in a conversation — the original submission and each new reply — is read by the AI for tone (positive, neutral, frustrated, or angry) with a short one-line reason, shown in the Customer Mood panel on the Submission Detail screen. Regenerating or retrying analysis on a message that already has a mood never changes it — each mood is a one-time read of that specific message.
+
 = How much does OpenAI, Anthropic, or Gemini cost? =
 
 That's set entirely by the provider, not by Inbox AI — see each provider's own published pricing (for example OpenAI's or Anthropic's API pricing pages) since rates vary by model and change over time. Inbox AI itself doesn't charge anything or mark up provider costs; you pay the provider directly for what your usage consumes, and the Usage & Billing tab tracks your estimated spend inside WordPress so there are no surprises.
@@ -141,7 +188,7 @@ Yes. AI Inbox, Contacts, and Settings (AI Provider, General, Prompts, Usage & Bi
 
 This plugin sends submission data to a third-party AI provider — OpenAI, Anthropic, or Google Gemini — chosen and connected with the administrator's own API key in Settings → AI Provider, to generate a summary, category, priority, and suggested reply.
 
-What's sent, and when: on each monitored submission (or a "Retry"/"Regenerate" click), the message, subject, and sender name (as referenced by the prompt template) are sent to the selected provider's API along with the configured prompt and the administrator's own API key. Nothing is sent until a provider is connected and at least one form is monitored. Only one provider is contacted per request — never a shared or proxy key; the site owner pays the provider directly.
+What's sent, and when: on each monitored submission (or a "Retry"/"Regenerate" click), the message, subject, and sender name (as referenced by the prompt template) are sent to the selected provider's API along with the configured prompt and the administrator's own API key. If Inbound Email Replies is turned on, a genuine new customer reply is also sent for re-analysis — including the conversation so far (the original message plus any prior replies) — so the AI can draft an in-context follow-up. Nothing is sent until a provider is connected and at least one form is monitored. Only one provider is contacted per request — never a shared or proxy key; the site owner pays the provider directly.
 
 * **OpenAI** — [Terms of Use](https://openai.com/policies/terms-of-use/), [Privacy Policy](https://openai.com/policies/privacy-policy/).
 * **Anthropic** — [Commercial Terms of Service](https://www.anthropic.com/legal/commercial-terms), [Privacy Policy](https://www.anthropic.com/legal/privacy).
@@ -162,6 +209,27 @@ The uncompiled source is public at https://github.com/theaminulai/inbox-ai — t
 5. Settings — Notifications tab, where you can configure email notifications.
 
 == Changelog ==
+
+= Inbox AI for Contact Form 7/v0.11.0 - 2026-08-08 =
+**Added**
+
+* Added Inbound Email Replies: an optional IMAP mailbox check that captures a customer's reply to your emailed response, from any email platform, and threads it into the original conversation.
+* Added a configurable check interval for Inbound Email Replies (1, 2, 5, 10, 15, 30, or 60 minutes), replacing the old fixed 10-minute interval.
+* Added automatic AI re-analysis and a new suggested follow-up reply whenever a customer reply comes in, using the full conversation for context.
+* Added Customer Mood tracking: a suggested mood (positive, neutral, frustrated, or angry) with a short AI reason for the original submission and every reply, shown in a new Customer Mood panel.
+* Added a step-by-step Inbound Email Replies setup guide.
+
+**Improved**
+
+* The AI Analysis card now always appears last in the conversation thread, no matter how many replies follow it.
+* Submission Detail sidebar reordered to Customer, Submission details, Quick actions, Customer Mood, Activity.
+* Customer Mood history now uses the same timeline design as the Activity panel, with a short description under each entry.
+* Regenerating or retrying analysis no longer changes an already-recorded mood or adds a duplicate history entry.
+* "Check every" and "Mailbox address" fields now sit side by side in Settings.
+
+**Fixed**
+
+* The AI-drafted reply no longer greets the site owner's own name instead of the customer's.
 
 = Inbox AI for Contact Form 7/v0.10.2 - 2026-08-02 =
 *Fixed*

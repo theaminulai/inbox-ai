@@ -5,11 +5,15 @@
  * Fully server-rendered from `$message`/`$activities` (see
  * {@see \InboxAI\Admin\Pages\InboxListPage::render_detail()}) — this is its
  * own real page load (`?page=inboxai-inbox&id=123`), not a client-side
- * screen swap over an AJAX call. The original submission, the AI analysis
- * (or, when `$message['workflow_status']` is `failed`, an inline error
- * item), and any already-sent reply all render as collapsible items in one
- * Gmail-style conversation thread, with a sidebar for customer info,
- * submission metadata, the activity timeline, and quick actions.
+ * screen swap over an AJAX call. Thread order is: original submission, any
+ * already-sent staff reply, any customer reply received by email, then the
+ * AI Analysis card **always last**, regardless of how many messages exist —
+ * it's a living annotation re-run on every new customer reply (see
+ * {@see \InboxAI\AI\AnalysisQueue::process_reply()}), not a fixed point in
+ * the conversation, so it's deliberately not interleaved chronologically.
+ * All render as collapsible items in one Gmail-style conversation thread,
+ * with a sidebar for customer info, submission metadata, customer mood,
+ * the activity timeline, and quick actions.
  * `src/admin/componets/inbox/detail.js` wires up the thread/panel
  * collapse toggles, the retry/regenerate buttons' AJAX calls, and the quick
  * actions; `src/admin/componets/inbox/replyComposer.js` wires the composer
@@ -34,6 +38,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 $inboxai_is_failed   = 'failed' === $message['workflow_status'];
 $inboxai_has_replied = ! empty( $message['reply_sent_at'] );
 $inboxai_list_url    = \InboxAI\Admin\Menu::url( 'inboxai-inbox' );
+
+// `$activities` is already ordered most-recent-first (see
+// `ActivityRepository::get_for_message()`), so the first `customer_replied`
+// entry found is the latest one — the one shown as its own thread item
+// below. Older replies on the same submission still show in the Activity
+// timeline sidebar, just not repeated as separate thread items (matches how
+// this screen already treats "one sent reply" as the single staff item,
+// rather than a full multi-turn thread — see InboundMailChecker's docblock
+// for the reasoning).
+$inboxai_latest_customer_reply = null;
+
+foreach ( $activities as $inboxai_activity ) {
+	if ( 'customer_replied' === $inboxai_activity['event_type'] ) {
+		$inboxai_latest_customer_reply = $inboxai_activity;
+		break;
+	}
+}
 
 $inboxai_sender_name  = $message['sender_name'] ?: __( '(no name)', 'inbox-ai' );
 $inboxai_sender_email = $message['sender_email'] ?: '—';
@@ -135,28 +156,6 @@ $inboxai_chevron_icon = '<svg class="inboxai-thread-item__chevron" viewBox="0 0 
 					</div>
 				</div>
 
-				<div class="inboxai-thread-item inboxai-thread-item--ai" data-role="ai">
-					<div class="inboxai-thread-item__rail">
-						<div class="inboxai-avatar inboxai-avatar--lg inboxai-avatar--ai"><?php echo $inboxai_sparkle_icon; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static, trusted markup defined above. ?></div>
-						<div class="inboxai-thread-item__spine"></div>
-					</div>
-					<div class="inboxai-card">
-						<div class="inboxai-thread-item__head" data-toggle-thread-item>
-							<div class="inboxai-thread-item__head-left">
-								<span class="inboxai-thread-item__sender"><?php esc_html_e( 'AI Analysis', 'inbox-ai' ); ?></span>
-								<span class="inboxai-role-tag inboxai-role-tag--ai"><?php esc_html_e( 'Automated · internal', 'inbox-ai' ); ?></span>
-							</div>
-							<div class="inboxai-thread-item__head-right">
-								<span class="inboxai-thread-item__time" id="detail-ai-timestamp"><?php echo esc_html( \InboxAI\Support\Format::time_ago( (string) $message['updated_at'] ) ); ?></span>
-								<?php echo $inboxai_chevron_icon; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static, trusted markup defined above. ?>
-							</div>
-						</div>
-						<div class="inboxai-thread-item__body" id="detail-ai-body">
-							<?php \InboxAI\Support\Template::render( 'inbox/detail-ai-body', array( 'message' => $message, 'can_edit' => $can_edit ) ); ?>
-						</div>
-					</div>
-				</div>
-
 				<?php if ( $inboxai_has_replied ) : ?>
 				<div class="inboxai-thread-item inboxai-thread-item--staff" data-role="staff">
 					<div class="inboxai-thread-item__rail">
@@ -180,6 +179,55 @@ $inboxai_chevron_icon = '<svg class="inboxai-thread-item__chevron" viewBox="0 0 
 					</div>
 				</div>
 				<?php endif; ?>
+
+				<?php if ( null !== $inboxai_latest_customer_reply ) : ?>
+				<div class="inboxai-thread-item inboxai-thread-item--customer" data-role="customer">
+					<div class="inboxai-thread-item__rail">
+						<div class="inboxai-avatar inboxai-avatar--lg" style="background:<?php echo esc_attr( \InboxAI\Support\Format::avatar_color( (string) $message['sender_email'] ) ); ?>;"><?php echo esc_html( \InboxAI\Support\Format::avatar_initials( (string) $message['sender_name'] ) ); ?></div>
+						<div class="inboxai-thread-item__spine"></div>
+					</div>
+					<div class="inboxai-card">
+						<div class="inboxai-thread-item__head" data-toggle-thread-item>
+							<div class="inboxai-thread-item__head-left">
+								<span class="inboxai-thread-item__sender"><?php echo esc_html( $inboxai_sender_name ); ?></span>
+								<span class="inboxai-role-tag inboxai-role-tag--customer"><?php esc_html_e( 'Customer · Replied by email', 'inbox-ai' ); ?></span>
+							</div>
+							<div class="inboxai-thread-item__head-right">
+								<span class="inboxai-thread-item__time"><?php echo esc_html( \InboxAI\Support\Format::time_ago( (string) $inboxai_latest_customer_reply['created_at'] ) ); ?></span>
+								<?php echo $inboxai_chevron_icon; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static, trusted markup defined above. ?>
+							</div>
+						</div>
+						<div class="inboxai-thread-item__body">
+							<p class="inboxai-thread-item__text"><?php echo esc_html( $inboxai_latest_customer_reply['event_data']['body'] ?? '' ); ?></p>
+							<div class="inboxai-thread-item__meta-row">
+								<?php esc_html_e( 'Received by Inbox AI\'s inbound mail check — see Settings → Notifications.', 'inbox-ai' ); ?>
+							</div>
+						</div>
+					</div>
+				</div>
+				<?php endif; ?>
+
+				<div class="inboxai-thread-item inboxai-thread-item--ai" data-role="ai">
+					<div class="inboxai-thread-item__rail">
+						<div class="inboxai-avatar inboxai-avatar--lg inboxai-avatar--ai"><?php echo $inboxai_sparkle_icon; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static, trusted markup defined above. ?></div>
+						<div class="inboxai-thread-item__spine"></div>
+					</div>
+					<div class="inboxai-card">
+						<div class="inboxai-thread-item__head" data-toggle-thread-item>
+							<div class="inboxai-thread-item__head-left">
+								<span class="inboxai-thread-item__sender"><?php esc_html_e( 'AI Analysis', 'inbox-ai' ); ?></span>
+								<span class="inboxai-role-tag inboxai-role-tag--ai"><?php esc_html_e( 'Automated · internal', 'inbox-ai' ); ?></span>
+							</div>
+							<div class="inboxai-thread-item__head-right">
+								<span class="inboxai-thread-item__time" id="detail-ai-timestamp"><?php echo esc_html( \InboxAI\Support\Format::time_ago( (string) $message['updated_at'] ) ); ?></span>
+								<?php echo $inboxai_chevron_icon; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static, trusted markup defined above. ?>
+							</div>
+						</div>
+						<div class="inboxai-thread-item__body" id="detail-ai-body">
+							<?php \InboxAI\Support\Template::render( 'inbox/detail-ai-body', array( 'message' => $message, 'can_edit' => $can_edit ) ); ?>
+						</div>
+					</div>
+				</div>
 
 			</div>
 
@@ -278,18 +326,6 @@ $inboxai_chevron_icon = '<svg class="inboxai-thread-item__chevron" viewBox="0 0 
 				</div>
 			</div>
 
-			<div class="inboxai-card inboxai-detail-panel">
-				<div class="inboxai-detail-panel__head" data-toggle-panel>
-					<h3><?php esc_html_e( 'Activity', 'inbox-ai' ); ?></h3>
-					<svg class="inboxai-detail-panel__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
-				</div>
-				<div class="inboxai-detail-panel__body">
-					<div class="inboxai-timeline" id="detail-timeline">
-						<?php \InboxAI\Support\Template::render( 'inbox/detail-timeline', array( 'activities' => $activities ) ); ?>
-					</div>
-				</div>
-			</div>
-
 			<?php if ( $can_edit ) : ?>
 			<div class="inboxai-card inboxai-detail-panel">
 				<div class="inboxai-detail-panel__head" data-toggle-panel>
@@ -311,6 +347,28 @@ $inboxai_chevron_icon = '<svg class="inboxai-thread-item__chevron" viewBox="0 0 
 				</div>
 			</div>
 			<?php endif; ?>
+
+			<div class="inboxai-card inboxai-detail-panel">
+				<div class="inboxai-detail-panel__head" data-toggle-panel>
+					<h3><?php esc_html_e( 'Customer Mood', 'inbox-ai' ); ?></h3>
+					<svg class="inboxai-detail-panel__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+				</div>
+				<div class="inboxai-detail-panel__body" id="detail-mood-body">
+					<?php \InboxAI\Support\Template::render( 'inbox/detail-mood-panel', array( 'message' => $message, 'activities' => $activities ) ); ?>
+				</div>
+			</div>
+
+			<div class="inboxai-card inboxai-detail-panel">
+				<div class="inboxai-detail-panel__head" data-toggle-panel>
+					<h3><?php esc_html_e( 'Activity', 'inbox-ai' ); ?></h3>
+					<svg class="inboxai-detail-panel__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+				</div>
+				<div class="inboxai-detail-panel__body">
+					<div class="inboxai-timeline" id="detail-timeline">
+						<?php \InboxAI\Support\Template::render( 'inbox/detail-timeline', array( 'activities' => $activities ) ); ?>
+					</div>
+				</div>
+			</div>
 
 		</div>
 

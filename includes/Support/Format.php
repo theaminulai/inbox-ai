@@ -52,6 +52,24 @@ final class Format {
 	);
 
 	/**
+	 * Same shape as {@see self::PRIORITY_MAP}, for {@see \InboxAI\AI\ResponseValidator::MOODS}.
+	 * Reuses the same four severity colors as priority (green/grey/orange/
+	 * red) since both are a 4-tier "how much attention does this need"
+	 * signal, just about different things — deliberately not the same CSS
+	 * class names (`inboxai-badge--mood-*`, not `inboxai-badge--urgent`
+	 * etc.), so a mood badge is never visually confusable with a priority
+	 * badge on screens that show both.
+	 *
+	 * @var array<string, array{0:string,1:string,2:string}>
+	 */
+	private const MOOD_MAP = array(
+		'positive'   => array( 'Positive', 'var(--conf-good)', 'inboxai-badge--mood-positive' ),
+		'neutral'    => array( 'Neutral', 'var(--low)', 'inboxai-badge--mood-neutral' ),
+		'frustrated' => array( 'Frustrated', 'var(--high)', 'inboxai-badge--mood-frustrated' ),
+		'angry'      => array( 'Angry', 'var(--urgent)', 'inboxai-badge--mood-angry' ),
+	);
+
+	/**
 	 * Human-readable labels for `ActivityRepository`'s `event_type` values —
 	 * shared by the Submission Detail screen's Activity timeline
 	 * (`inbox/detail-timeline.php`) and the AJAX poll that re-renders it
@@ -69,6 +87,7 @@ final class Format {
 		'reviewed'              => 'Marked as reviewed',
 		'archived'              => 'Archived',
 		'retry_requested'       => 'Analysis retry requested',
+		'customer_replied'      => 'Customer replied',
 	);
 
 	/**
@@ -105,6 +124,31 @@ final class Format {
 		// from before a priority label changed — still falls back to
 		// "Normal" defensively, rather than showing nothing at all.
 		[ $label, $color, $css_class ] = self::PRIORITY_MAP[ $priority ] ?? self::PRIORITY_MAP['normal'];
+
+		return sprintf(
+			'<span class="inboxai-badge %1$s"><span class="inboxai-badge__dot" style="background:%2$s;"></span>%3$s</span>',
+			esc_attr( $css_class ),
+			esc_attr( $color ),
+			esc_html( $label )
+		);
+	}
+
+	/**
+	 * @param string $mood One of {@see \InboxAI\AI\ResponseValidator::MOODS},
+	 *                     or `''` for a message no mood analysis has run for
+	 *                     yet — same "plain dash, not a fallback guess"
+	 *                     treatment as {@see self::priority_badge_html()}'s
+	 *                     empty case.
+	 *
+	 * @return string HTML for a `<span class="inboxai-badge">`, or a bare
+	 *                "—" for the not-yet-analyzed case.
+	 */
+	public static function mood_badge_html( string $mood ): string {
+		if ( '' === $mood ) {
+			return '<span style="color:var(--text-tertiary);">—</span>';
+		}
+
+		[ $label, $color, $css_class ] = self::MOOD_MAP[ $mood ] ?? self::MOOD_MAP['neutral'];
 
 		return sprintf(
 			'<span class="inboxai-badge %1$s"><span class="inboxai-badge__dot" style="background:%2$s;"></span>%3$s</span>',
@@ -154,6 +198,8 @@ final class Format {
 				return __( 'Archived', 'inbox-ai' );
 			case 'retry_requested':
 				return __( 'Analysis retry requested', 'inbox-ai' );
+			case 'customer_replied':
+				return __( 'Customer replied', 'inbox-ai' );
 			default:
 				// Unreachable given the isset() guard above (every key in
 				// EVENT_LABELS is handled by a case), but kept as a safe
