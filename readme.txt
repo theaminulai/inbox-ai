@@ -104,19 +104,6 @@ It isn't a full replacement for a dedicated database add-on, though. Inbox AI do
 
 * AI analysis runs as a background AI workflow via WP-Cron — a visitor's form submission is never delayed waiting on an AI response.
 
-= My Contributions =
-
-I actively contribute to the following WordPress plugins:
-
-* [Gutenberg](https://wordpress.org/plugins/gutenberg/) – The WordPress block editor, developed by the WordPress team.
-* [AI](https://wordpress.org/plugins/ai/) – Brings AI-powered features like content summarization, alt text generation, and title suggestions directly into the WordPress Block Editor.
-* [ElementsKit](https://wordpress.org/plugins/elementskit-lite/) – Advanced widgets, header/footer builder, and mega menu builder for Elementor.
-* [MetForm](https://wordpress.org/plugins/metform/) – Super flexible and easy-to-use form builder.
-* [ShopEngine](https://wordpress.org/plugins/shopengine/) – Your complete WooCommerce solution, built for Elementor.
-* [GutenKit](https://wordpress.org/plugins/gutenkit-blocks-addon/) – Build websites 10x Faster with ZERO coding in the Gutenberg Block Editor.
-* [PopupKit](https://wordpress.org/plugins/popup-builder-block/) – Build exceptional popup for diverse needs within the WordPress block editor.
-* [TableKit](https://wordpress.org/plugins/table-builder-block/) – Make fully-customizable multipurpose table & generate data table within Gutenberg block editor.
-
 == Installation ==
 
 1. Install and activate Contact Form 7 (required — Inbox AI is a Contact Form 7 add-on, not a standalone form builder).
@@ -194,6 +181,19 @@ What's sent, and when: on each monitored submission (or a "Retry"/"Regenerate" c
 * **Anthropic** — [Commercial Terms of Service](https://www.anthropic.com/legal/commercial-terms), [Privacy Policy](https://www.anthropic.com/legal/privacy).
 * **Google Gemini** — [Additional Terms of Service](https://ai.google.dev/gemini-api/terms), [Privacy Policy](https://policies.google.com/privacy).
 
+= My Contributions =
+
+I actively contribute to the following WordPress plugins:
+
+* [Gutenberg](https://wordpress.org/plugins/gutenberg/) – The WordPress block editor, developed by the WordPress team.
+* [AI](https://wordpress.org/plugins/ai/) – Brings AI-powered features like content summarization, alt text generation, and title suggestions directly into the WordPress Block Editor.
+* [ElementsKit](https://wordpress.org/plugins/elementskit-lite/) – Advanced widgets, header/footer builder, and mega menu builder for Elementor.
+* [MetForm](https://wordpress.org/plugins/metform/) – Super flexible and easy-to-use form builder.
+* [ShopEngine](https://wordpress.org/plugins/shopengine/) – Your complete WooCommerce solution, built for Elementor.
+* [GutenKit](https://wordpress.org/plugins/gutenkit-blocks-addon/) – Build websites 10x Faster with ZERO coding in the Gutenberg Block Editor.
+* [PopupKit](https://wordpress.org/plugins/popup-builder-block/) – Build exceptional popup for diverse needs within the WordPress block editor.
+* [TableKit](https://wordpress.org/plugins/table-builder-block/) – Make fully-customizable multipurpose table & generate data table within Gutenberg block editor.
+
 == Source Code ==
 
 Compiled assets (`build/admin/admin.js`, `build/admin/admin.css`, `build/cf7/category.js`, etc.) are built from human-readable source via `npm run build` (webpack, through `@wordpress/scripts`).
@@ -210,14 +210,7 @@ The uncompiled source is public at https://github.com/theaminulai/inbox-ai — t
 
 == Changelog ==
 
-= 1.0.1 =
-* Merge pull request #33 from theaminulai/Add-generated-inbox-ai-translation-template
-* Fix
-* Merge pull request #32 from theaminulai/development
-* Merge pull request #31 from theaminulai/Add-generated-inbox-ai-translation-template
-* Merge branch 'development' into Add-generated-inbox-ai-translation-template
-* Refresh readme product copy
-= Inbox AI for Contact Form 7/v1.0.0 - 2026-08-08 =
+= Inbox AI for Contact Form 7/v1.0.1 - 2026-08-08 =
 **Improved**
 
 * Linked "Contact Form 7" in the Description to the official Contact Form 7 plugin page for easier navigation.
