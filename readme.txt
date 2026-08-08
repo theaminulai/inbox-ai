@@ -2,7 +2,7 @@
 Contributors: theaminuldev
 Tags: contact form 7, AI, inbox, database, submissions
 Requires at least: 6.7
-Tested up to: 7.2
+Tested up to: 7.0.3
 Requires PHP: 8.1
 Stable tag: 1.0.0
 License: GPL-3.0-or-later
