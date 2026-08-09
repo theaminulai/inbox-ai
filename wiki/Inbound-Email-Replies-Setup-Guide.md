@@ -6,6 +6,12 @@ This feature lets Inbox AI capture a customer's reply when they hit "Reply" in t
 
 Every reply Inbox AI sends already goes out with a special `Reply-To` address (a tracking marker added to your real mailbox address). When a customer replies, their message lands in that same real mailbox. Inbox AI checks that mailbox on a schedule you control, using the standard IMAP protocol, and matches each new message back to the right submission. Nothing about this requires DNS changes, a new email account, or a third-party service — it uses the mailbox you already have.
 
+## It never touches your mailbox's read/unread status
+
+Because the mailbox Inbox AI checks is very often the same one you actually read as your real inbox — not a dedicated, plugin-only address — checking never marks anything as read (or unread) and never relies on a message already being unread to notice it. Inbox AI keeps track of what it's already looked at internally, by each message's permanent IMAP ID, completely separate from your mailbox's own read/unread flags. Whatever your email client shows as read or unread stays exactly as you left it.
+
+The first time a check successfully connects to a mailbox, it starts watching from that point forward rather than scanning your existing mail — so anything already sitting in the mailbox before you connected it won't be picked up. If you need to test with a reply that's already there, send a fresh test reply after connecting (see "Testing it for real" below).
+
 ## Requirements
 
 - A real mailbox you can log into via IMAP (any host that gives you IMAP access works: cPanel/hosting email, Google Workspace, Microsoft 365, Zoho, etc.)
@@ -27,7 +33,7 @@ Every reply Inbox AI sends already goes out with a special `Reply-To` address (a
    - **Mailbox password** — the mailbox's real password, or an app-specific password if your provider requires one (Gmail and Microsoft 365 usually do). This is encrypted before it's stored and is never shown back to you in full.
 5. Turn on the **Check for replies** switch.
 6. Click **Save Notification Settings**.
-7. Click **Save settings above, then test connection**. You should see a message like "Checked just now — 0 new message(s), 0 matched to a submission." That confirms the connection itself works, even with an empty inbox.
+7. Click **Save settings above, then test connection**. The first successful test after connecting a mailbox shows "Connected — now watching this mailbox for new replies from this point forward." — that confirms the connection itself works. From then on, a test with nothing new to find shows "Checked just now — 0 new message(s), 0 matched to a submission."
 
 ## Common provider settings
 
@@ -107,5 +113,5 @@ WordPress doesn't run background tasks on its own — checks only actually happe
 
   If the error message doesn't show a `/CN=` hostname, check your hosting control panel's email setup page (often under "Email Accounts → Connect Devices" or "SSL/TLS Status") for the correct secure IMAP hostname, or ask your host's support directly — this is a common question they'll recognize right away.
 
-- **Connects fine, but a customer's reply never shows up** — confirm the customer replied to the actual email (not a forward, and not a new message to your address), and that their reply landed in the folder set in "Mailbox folder" (usually INBOX, not Spam/Junk).
-- **Test says "0 matched to a submission" even after a real reply arrived** — the message may have been marked as read by another mail client (e.g. checked in a webmail tab) before Inbox AI's check ran; only unread messages are scanned, and each one is marked read as it's processed either way. Confirm the reply is still unread in webmail before the next check runs.
+- **Connects fine, but a customer's reply never shows up** — confirm the customer replied to the actual email (not a forward, and not a new message to your address), and that their reply landed in the folder set in "Mailbox folder" (usually INBOX, not Spam/Junk). Also check whether the reply arrived *before* the first successful connection — see "It never touches your mailbox's read/unread status" above, since anything already in the mailbox before that point isn't picked up.
+- **Changed the mailbox address, host, or folder and now replies aren't matching** — this is expected right after a change: Inbox AI treats a different mailbox/folder as a new starting point and begins watching from "now" again, the same as connecting one for the first time. Send a fresh test reply after saving the change rather than relying on one sent beforehand.

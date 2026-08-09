@@ -17,6 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 use InboxAI\AI\AnalysisQueue;
 use InboxAI\Database\ActivityRepository;
 use InboxAI\Database\MessageRepository;
+use InboxAI\Services\NotificationService;
 use InboxAI\Settings\Repository as SettingsRepository;
 
 /**
@@ -50,6 +51,19 @@ use InboxAI\Settings\Repository as SettingsRepository;
  * {@see \InboxAI\Settings\Repository::record_inbound_check()} rather than
  * failing silently, since there's nowhere else an admin would see this
  * (WP-Cron failures don't otherwise surface anywhere in the UI).
+ *
+ * Tracking what's already been checked: this class never marks a message
+ * `\Seen` and never searches by `UNSEEN`. The mailbox being polled is very
+ * often the site owner's actual inbox (the same address CF7 replies go out
+ * from), not a dedicated plugin-only address — so touching the `\Seen` flag
+ * here would silently mark the owner's own unread mail as read, with no way
+ * for them to tell "have I actually looked at this?" from their own mail
+ * client anymore. Instead, {@see self::check()} tracks how far it's gotten
+ * using each message's IMAP UID (a permanent, per-message id distinct from
+ * `\Seen`/`\Unseen`), stored via {@see \InboxAI\Settings\Repository::get_inbound_cursor()}/
+ * {@see \InboxAI\Settings\Repository::save_inbound_cursor()}. The very first
+ * check after connecting a mailbox starts the cursor at "now" rather than
+ * backfilling whatever history already exists there.
  */
 final class InboundMailChecker {
 
@@ -83,7 +97,7 @@ final class InboundMailChecker {
 	private const DEFAULT_INTERVAL_MINUTES = 10;
 
 	/**
-	 * Upper bound on how many unread messages one run processes — a runaway
+	 * Upper bound on how many new messages one run processes — a runaway
 	 * mailbox (e.g. inbound checking pointed at a busy general inbox by
 	 * mistake) should never turn a single WP-Cron request into a
 	 * long-running one.
@@ -204,30 +218,96 @@ final class InboundMailChecker {
 			return;
 		}
 
-		$unread = imap_search( $connection, 'UNSEEN' );
+		// UIDVALIDITY + UIDNEXT drive the UID-cursor tracking below, in place
+		// of searching for `UNSEEN` messages — see self::process_one()'s
+		// docblock for why checking must never rely on (or touch) the
+		// `\Seen` flag.
+		$status = imap_status( $connection, $mailbox_string, SA_UIDVALIDITY | SA_UIDNEXT );
 
-		if ( ! is_array( $unread ) || array() === $unread ) {
+		if ( false === $status ) {
+			imap_close( $connection );
+			SettingsRepository::record_inbound_check(
+				sprintf(
+					/* translators: %s: the underlying IMAP error */
+					__( 'Could not read mailbox status: %s', 'inbox-ai' ),
+					imap_last_error() ?: __( 'unknown error', 'inbox-ai' )
+				)
+			);
+			return;
+		}
+
+		$cursor      = SettingsRepository::get_inbound_cursor();
+		$uidvalidity = (int) $status->uidvalidity;
+		$uidnext     = (int) $status->uidnext;
+
+		// A UIDVALIDITY that no longer matches what's stored means every
+		// previously-recorded UID is meaningless against this mailbox (it
+		// was recreated, migrated, or — since a never-configured cursor
+		// stores 0 — this is the very first check ever run). Rather than
+		// guess how far back to backfill, start watching from whatever's
+		// currently newest: nothing existing in the mailbox gets scanned or
+		// touched, only mail that arrives from this point forward.
+		if ( $uidvalidity !== $cursor['uidvalidity'] ) {
+			imap_close( $connection );
+			SettingsRepository::save_inbound_cursor( $uidvalidity, max( 0, $uidnext - 1 ) );
+			SettingsRepository::record_inbound_check( __( 'Connected — now watching this mailbox for new replies from this point forward.', 'inbox-ai' ) );
+			return;
+		}
+
+		if ( $uidnext - 1 <= $cursor['last_uid'] ) {
 			imap_close( $connection );
 			SettingsRepository::record_inbound_check( __( 'Checked just now — no new replies.', 'inbox-ai' ) );
 			return;
 		}
 
-		$processed = 0;
-		$matched   = 0;
+		$overview = imap_fetch_overview( $connection, ( $cursor['last_uid'] + 1 ) . ':*', FT_UID );
 
-		foreach ( array_slice( $unread, 0, self::MAX_MESSAGES_PER_RUN ) as $message_number ) {
+		if ( ! is_array( $overview ) ) {
+			$overview = array();
+		}
+
+		// Defensive: some IMAP servers return the nearest existing message
+		// instead of an empty result when the low end of a UID range no
+		// longer exists (e.g. everything before it was deleted) — anything
+		// at or below the cursor has already been handled, not new.
+		$overview = array_values(
+			array_filter( $overview, static fn( $item ) => (int) $item->uid > $cursor['last_uid'] )
+		);
+
+		usort( $overview, static fn( $a, $b ) => $a->uid <=> $b->uid );
+
+		$batch       = array_slice( $overview, 0, self::MAX_MESSAGES_PER_RUN );
+		$processed   = 0;
+		$matched     = 0;
+		$highest_uid = $cursor['last_uid'];
+
+		foreach ( $batch as $item ) {
 			++$processed;
+			$highest_uid = max( $highest_uid, (int) $item->uid );
 
-			if ( self::process_one( $connection, $message_number ) ) {
+			if ( self::process_one( $connection, (int) $item->msgno ) ) {
 				++$matched;
 			}
 		}
 
 		imap_close( $connection );
 
+		// If everything currently new fit inside this one run, jump the
+		// cursor all the way to UIDNEXT - 1 rather than just the highest UID
+		// actually seen — covers the mailbox having a message the overview
+		// call happened to skip. If MAX_MESSAGES_PER_RUN capped the batch,
+		// only advance past what was actually processed, so the remaining
+		// backlog is picked up on the next check instead of silently
+		// skipped.
+		$new_last_uid = count( $overview ) <= self::MAX_MESSAGES_PER_RUN
+			? max( $highest_uid, $uidnext - 1 )
+			: $highest_uid;
+
+		SettingsRepository::save_inbound_cursor( $uidvalidity, $new_last_uid );
+
 		SettingsRepository::record_inbound_check(
 			sprintf(
-				/* translators: 1: number of unread messages seen, 2: number matched to a submission */
+				/* translators: 1: number of new messages seen, 2: number matched to a submission */
 				__( 'Checked just now — %1$d new message(s), %2$d matched to a submission.', 'inbox-ai' ),
 				$processed,
 				$matched
@@ -257,20 +337,25 @@ final class InboundMailChecker {
 	}
 
 	/**
-	 * Handles one unread IMAP message: matches it to a submission, logs it,
-	 * and flags the mailbox message as seen either way (so a genuinely
-	 * unmatched message — e.g. spam, or a reply to something outside this
-	 * plugin entirely — is never retried forever).
+	 * Handles one new IMAP message: matches it to a submission and, if
+	 * matched, logs it and triggers AI re-analysis. "Already handled" is
+	 * tracked purely by the UID cursor in {@see self::check()} — this
+	 * deliberately never touches the message's `\Seen` flag, since this
+	 * mailbox is very often the same one the site owner reads as their real
+	 * inbox (see this class's own docblock), not a dedicated plugin-only
+	 * address. Marking messages read here would silently corrupt the
+	 * owner's own "have I seen this yet" state for mail that has nothing to
+	 * do with Inbox AI — a message the cron check merely looked at (to see
+	 * whether it matched a submission) and didn't match is left exactly as
+	 * the owner's mail client already had it.
 	 *
-	 * @param resource|\IMAP\Connection $connection PHP-IMAP connection.
-	 * @param int                       $message_number
+	 * @param resource|\IMAP\Connection $connection     PHP-IMAP connection.
+	 * @param int                       $message_number Current-session sequence number (not UID) — see {@see self::check()}, which resolves this from the UID overview it fetched.
 	 *
 	 * @return bool True if matched to a submission and recorded.
 	 */
 	private static function process_one( $connection, int $message_number ): bool {
 		$header = imap_headerinfo( $connection, $message_number );
-
-		imap_setflag_full( $connection, (string) $message_number, '\\Seen' );
 
 		if ( false === $header ) {
 			return false;
@@ -310,6 +395,16 @@ final class InboundMailChecker {
 		// doesn't run or fails for any reason (no API key, provider error) —
 		// see AnalysisQueue::process_reply()'s own docblock.
 		MessageRepository::update_status( (int) $matched_message['id'], 'review' );
+
+		// A reply is new activity the admin hasn't seen yet, even for a
+		// submission that was already read once before — see
+		// MessageRepository::mark_unread()'s own docblock.
+		MessageRepository::mark_unread( (int) $matched_message['id'] );
+
+		// Emails the admin right away, independent of the unread badge —
+		// see NotificationService::notify_customer_reply()'s own docblock.
+		// No-op if the notify_customer_reply setting is off.
+		NotificationService::notify_customer_reply( $matched_message, $body );
 
 		// Re-runs AI analysis against the full conversation so far (not just
 		// the original submission) and, if drafting is enabled, prepares a

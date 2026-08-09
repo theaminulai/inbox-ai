@@ -144,6 +144,17 @@ final class InboxListPage {
 			return;
 		}
 
+		// This is the one place "the admin actually looked at this
+		// submission" is decided — a real page load of its own detail
+		// screen, not the list view or an AJAX poll (see
+		// MessageRepository::mark_read()'s own docblock). Clears the flag
+		// on `$message` too (not just the DB row) so the detail screen this
+		// same request renders doesn't show itself as still unread.
+		if ( ! empty( $message['is_unread'] ) ) {
+			MessageRepository::mark_read( $id );
+			$message['is_unread'] = 0;
+		}
+
 		Template::render(
 			'inbox/inbox',
 			array(

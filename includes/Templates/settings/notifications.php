@@ -66,6 +66,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</div>
 						<div class="inboxai-switch<?php echo $notifications['notify_draft_ready'] ? ' inboxai-is-on' : ''; ?>" data-field="notify_draft_ready"></div>
 					</div>
+					<div class="inboxai-switch-row">
+						<div>
+							<div class="inboxai-switch-row__text"><?php esc_html_e( 'Notify me when a customer replies', 'inbox-ai' ); ?></div>
+							<div class="inboxai-switch-row__sub"><?php esc_html_e( 'Sent as soon as a reply is pulled in from Inbound Email Replies', 'inbox-ai' ); ?></div>
+						</div>
+						<div class="inboxai-switch<?php echo $notifications['notify_customer_reply'] ? ' inboxai-is-on' : ''; ?>" data-field="notify_customer_reply"></div>
+					</div>
 				</div>
 			</div>
 

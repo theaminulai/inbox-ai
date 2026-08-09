@@ -70,6 +70,7 @@ Contact Form 7 is great at collecting submissions — but it doesn't help you ma
 * Filter by form, status, priority, category, AI confidence, and date range, with full-text search across sender name, email, subject, and message.
 * A per-submission detail screen shows the full AI analysis alongside an activity timeline — who did what, and when — closer to a support ticket than a plain message list.
 * Manual "Mark reviewed," "Archive," and "Delete" actions, each gated behind its own WordPress capability.
+* Unread submissions and fresh customer replies are visually flagged in the list (tinted row background, bold name, and a dot — blue for a new submission, amber for a reply, so you can tell them apart without opening either one), with a count badge on the "AI Inbox" menu item — cleared automatically as soon as you open that submission.
 
 = Not Just a Contact Form 7 (CF7) Database Plugin =
 
@@ -88,6 +89,7 @@ It isn't a full replacement for a dedicated database add-on, though. Inbox AI do
 
 * Email and Slack notifications so your team knows when a new submission — or one flagged urgent by the AI — needs attention, keeping AI customer service response times fast.
 * Optional Inbound Email Replies: point Inbox AI at a mailbox (IMAP) and it checks for customer replies on a schedule you choose — every 1, 2, 5, 10, 15, 30, or 60 minutes.
+* An email alert as soon as a customer reply comes in (on by default), with a preview of the reply and a direct link to the submission — so you always know a reply has arrived without keeping the AI Inbox tab open.
 
 = Import & Migration =
 
@@ -157,7 +159,7 @@ Yes. AI analysis only runs for forms listed under Settings → General → Monit
 
 = Does Inbox AI capture a customer's reply to my email? =
 
-Yes, if you turn on Inbound Email Replies under Settings → Notifications and point it at a mailbox over IMAP. It works with any email platform the customer replies from — there's no special integration needed on their end. Inbox AI checks that mailbox on a schedule you choose (every 1, 2, 5, 10, 15, 30, or 60 minutes), threads a matching reply into the original submission's conversation, and triggers a fresh AI re-analysis with a new suggested reply.
+Yes, if you turn on Inbound Email Replies under Settings → Notifications and point it at a mailbox over IMAP. It works with any email platform the customer replies from — there's no special integration needed on their end. Inbox AI checks that mailbox on a schedule you choose (every 1, 2, 5, 10, 15, 30, or 60 minutes), threads a matching reply into the original submission's conversation, and triggers a fresh AI re-analysis with a new suggested reply. Checking never marks anything in the mailbox as read, so it's safe to point at a mailbox you also use as your real inbox.
 
 = Does Inbox AI track a customer's mood? =
 
@@ -210,197 +212,165 @@ The uncompiled source is public at https://github.com/theaminulai/inbox-ai — t
 
 == Changelog ==
 
-= Inbox AI for Contact Form 7/v1.0.1 - 2026-08-08 =
-**Improved**
+= Inbox AI for Contact Form 7/v1.0.2 - 2026-08-09 =
+* ***Added***
+    * Added customer reply email notifications, sent to the site admin with a preview of the reply and a link to the submission. On by default in Settings → Notifications.
+    * Added an unread count badge to the AI Inbox menu.
+    * Added unread indicators to AI Inbox submissions — a tinted row, bold name, and a dot, colored blue for a new submission and amber for a customer reply.
+* ***Improved***
+	* Improved unread status tracking and indicators for new submissions and customer replies.
+* ***Fixed***
+    * Fixed inbound email replies incorrectly marking unrelated mailbox messages as read.
+    * Fixed mailbox monitoring to only process new replies from the connection point onward.
 
-* Linked "Contact Form 7" in the Description to the official Contact Form 7 plugin page for easier navigation.
-* Rewrote the Description section to lead with the AI-powered analysis, rather than the inbox and search functionality.
-* Reordered and reformatted the Key Features list for better scannability.
+= Inbox AI for Contact Form 7/v1.0.1 - 2026-08-08 =
+* ***Improved***
+    * Linked "Contact Form 7" in the Description to the official Contact Form 7 plugin page for easier navigation.
+    * Rewrote the Description section to lead with the AI-powered analysis, rather than the inbox and search functionality.
+    * Reordered and reformatted the Key Features list for better scannability.
 
 = Inbox AI for Contact Form 7/v1.0.0 - 2026-08-08 =
-**Added**
-
-* Added Inbound Email Replies: an optional IMAP mailbox check that captures a customer's reply to your emailed response, from any email platform, and threads it into the original conversation.
-* Added a configurable check interval for Inbound Email Replies (1, 2, 5, 10, 15, 30, or 60 minutes), replacing the old fixed 10-minute interval.
-* Added automatic AI re-analysis and a new suggested follow-up reply whenever a customer reply comes in, using the full conversation for context.
-* Added Customer Mood tracking: a suggested mood (positive, neutral, frustrated, or angry) with a short AI reason for the original submission and every reply, shown in a new Customer Mood panel.
-* Added a step-by-step Inbound Email Replies setup guide.
-
-**Improved**
-
-* The AI Analysis card now always appears last in the conversation thread, no matter how many replies follow it.
-* Submission Detail sidebar reordered to Customer, Submission details, Quick actions, Customer Mood, Activity.
-* Customer Mood history now uses the same timeline design as the Activity panel, with a short description under each entry.
-* Regenerating or retrying analysis no longer changes an already-recorded mood or adds a duplicate history entry.
-* "Check every" and "Mailbox address" fields now sit side by side in Settings.
-
-**Fixed**
-
-* The AI-drafted reply no longer greets the site owner's own name instead of the customer's.
+* ***Added***
+    * Added Inbound Email Replies: an optional IMAP mailbox check that captures a customer's reply to your emailed response, from any email platform, and threads it into the original conversation.
+    * Added a configurable check interval for Inbound Email Replies (1, 2, 5, 10, 15, 30, or 60 minutes), replacing the old fixed 10-minute interval.
+    * Added automatic AI re-analysis and a new suggested follow-up reply whenever a customer reply comes in, using the full conversation for context.
+    * Added Customer Mood tracking: a suggested mood (positive, neutral, frustrated, or angry) with a short AI reason for the original submission and every reply, shown in a new Customer Mood panel.
+    * Added a step-by-step Inbound Email Replies setup guide.
+* ***Improved***
+    * The AI Analysis card now always appears last in the conversation thread, no matter how many replies follow it.
+    * Submission Detail sidebar reordered to Customer, Submission details, Quick actions, Customer Mood, Activity.
+    * Customer Mood history now uses the same timeline design as the Activity panel, with a short description under each entry.
+    * Regenerating or retrying analysis no longer changes an already-recorded mood or adds a duplicate history entry.
+    * "Check every" and "Mailbox address" fields now sit side by side in Settings.
+* ***Fixed***
+    * The AI-drafted reply no longer greets the site owner's own name instead of the customer's.
 
 = Inbox AI for Contact Form 7/v0.10.2 - 2026-08-02 =
-*Fixed*
-
-* Fixed PHPCS ignore placement in category save
-* Fixed generated inbox-ai translation template POT
+* ***Fixed***
+    * Fixed PHPCS ignore placement in category save.
+    * Fixed generated inbox-ai translation template POT.
 
 = Inbox AI for Contact Form 7/v0.10.1 - 2026-08-02 =
-**Fixed**
-
-* Fixed a guideline violation flagged by the WordPress.org Plugins Team: no publicly documented, human-readable source was linked for the plugin's compiled JavaScript. Added a "Source Code" section to this readme linking to the public GitHub repository the compiled files are built from.
-* Fixed a translation string in the activity log that passed a variable to `__()` instead of a literal string, which prevented translators from picking it up.
+* ***Fixed***
+    * Fixed a guideline violation flagged by the WordPress.org Plugins Team: no publicly documented, human-readable source was linked for the plugin's compiled JavaScript. Added a "Source Code" section to this readme linking to the public GitHub repository the compiled files are built from.
+    * Fixed a translation string in the activity log that passed a variable to `__()` instead of a literal string, which prevented translators from picking it up.
 
 = Inbox AI for Contact Form 7/v0.10.0 - 2026-08-2 =
-**Added**
-
-* Added a source category, captured once from the form's own category assignment at submission time, that stays fixed even when the AI's own category is regenerated.
-* Added a "Source category" field to the Submission Detail page.
-* Added a native CSV import format, built for this plugin's own data, as an alternative to importing a Flamingo CSV export.
-* Added a Manage Categories card to Settings → General for adding, renaming, and deleting AI categories.
-* Added a separate "AI Categories" box on the Contact Form 7 editor screen (previously nested inside the Status box).
-
-**Fixed**
-
-* Fixed the AI-generated category being cleared whenever analysis was regenerated.
-* Fixed misaligned spacing in the Manage Categories edit row.
-
-**Improved**
-
-* Improved the AI Inbox detail page to show the source category, AI category, and AI confidence in a single row for easier scanning.
-* The category column and filter on the AI Inbox and Contacts pages now use the source category instead of the AI-generated category.
-* The AI now always suggests a category for a submission, even for forms with no categories configured.
-* Merged the Flamingo and native CSV import flows into a single guided wizard, with a first step to choose which one to use.
+* ***Added***
+    * Added a source category, captured once from the form's own category assignment at submission time, that stays fixed even when the AI's own category is regenerated.
+    * Added a "Source category" field to the Submission Detail page.
+    * Added a native CSV import format, built for this plugin's own data, as an alternative to importing a Flamingo CSV export.
+    * Added a Manage Categories card to Settings → General for adding, renaming, and deleting AI categories.
+    * Added a separate "AI Categories" box on the Contact Form 7 editor screen (previously nested inside the Status box).
+* ***Improved***
+    * Improved the AI Inbox detail page to show the source category, AI category, and AI confidence in a single row for easier scanning.
+    * The category column and filter on the AI Inbox and Contacts pages now use the source category instead of the AI-generated category.
+    * The AI now always suggests a category for a submission, even for forms with no categories configured.
+    * Merged the Flamingo and native CSV import flows into a single guided wizard, with a first step to choose which one to use.
+* ***Fixed***
+    * Fixed the AI-generated category being cleared whenever analysis was regenerated.
+    * Fixed misaligned spacing in the Manage Categories edit row.
 
 = Inbox AI for Contact Form 7/v0.9.0 - 2026-07-31 =
-**Fixed**
-
-* Fixed CSS design issues on the Settings page for small screens.
-* Fixed CSS design issues with select fields on the AI Inbox page for small screens.
-* Fixed CSS design issues with filters on the AI Inbox page for small screens.
-* Fixed CSS design issues with filters on the Contacts page for small screens.
-
-**Improved**
-
-* Bulk actions on the AI Inbox page now support "Mark Reviewed" and "Archive" in addition to "Delete."
-* Bulk actions on the Contacts page now support "Mark Reviewed" and "Archive" in addition to "Delete."
-* Pagination on the AI Inbox/Contacts page now shows the total number of submissions and the current page number.
+* ***Improved***
+    * Bulk actions on the AI Inbox page now support "Mark Reviewed" and "Archive" in addition to "Delete."
+    * Bulk actions on the Contacts page now support "Mark Reviewed" and "Archive" in addition to "Delete."
+    * Pagination on the AI Inbox/Contacts page now shows the total number of submissions and the current page number.
+* ***Fixed***
+    * Fixed CSS design issues on the Settings page for small screens.
+    * Fixed CSS design issues with select fields on the AI Inbox page for small screens.
+    * Fixed CSS design issues with filters on the AI Inbox page for small screens.
+    * Fixed CSS design issues with filters on the Contacts page for small screens.
 
 = Inbox AI for Contact Form 7/v0.8.0 - 2026-07-30 =
-**Fixed**
-
-* Fixed Tested up to and Stable tag drifting out of sync with the plugin version.
-* Fixed Tags Issues: the readme.txt tags were not updated to match the plugin header tags.
-
-**Improved**
-
-* Split the shared AJAX handler into one controller per page.
+* ***Improved***
+    * Split the shared AJAX handler into one controller per page.
+* ***Fixed***
+    * Fixed Tested up to and Stable tag drifting out of sync with the plugin version.
+    * Fixed Tags Issues: the readme.txt tags were not updated to match the plugin header tags.
 
 = Inbox AI for Contact Form 7/v0.7.0 - 2026-07-28 =
-**Added**
-
-* Added the Contacts List page, grouped by sender.
-* Added search, category, and priority filters, plus CSV export.
-* Added a "Delete contact" action that archives that sender's messages.
-
-**Improved**
-
-* Split the shared AJAX handler into one controller per page.
-* Consolidated repeated field-reading code into shared helpers.
-* Reorganized Contacts templates into their own folder.
-
-**Fixed**
-
-* Fixed the version-bump script crashing on a first release.
+* ***Added***
+    * Added the Contacts List page, grouped by sender.
+    * Added search, category, and priority filters, plus CSV export.
+    * Added a "Delete contact" action that archives that sender's messages.
+* ***Improved***
+    * Split the shared AJAX handler into one controller per page.
+    * Consolidated repeated field-reading code into shared helpers.
+    * Reorganized Contacts templates into their own folder.
+* ***Fixed***
+    * Fixed the version-bump script crashing on a first release.
 
 = Inbox AI for Contact Form 7/v0.6.0 - 2026-07-28 =
-**Changed**
-
-* Shortened the plugin name to "Inbox AI" (was "InboxAI for Contact Form 7").
-* Finalized the slug/text domain as `inbox-ai` (was `inboxai-for-contact-form-7`).
-* Confirmed with WordPress.org that the slug could still change before the first SVN push.
-* Kept the internal PHP namespace (`InboxAI\`) unchanged.
-* Kept the code-level hook/option/capability prefix (`inboxai_`) unchanged.
-
-**Added**
-
-* Added the plugin icon (`icon-128x128.png`) to `.wordpress-org/`.
-* Added the plugin banner (`banner-772x250.png`) to `.wordpress-org/`.
+* ***Added***
+    * Added the plugin icon (`icon-128x128.png`) to `.wordpress-org/`.
+    * Added the plugin banner (`banner-772x250.png`) to `.wordpress-org/`.
+* ***Changed***
+    * Shortened the plugin name to "Inbox AI" (was "InboxAI for Contact Form 7").
+    * Finalized the slug/text domain as `inbox-ai` (was `inboxai-for-contact-form-7`).
+    * Confirmed with WordPress.org that the slug could still change before the first SVN push.
+    * Kept the internal PHP namespace (`InboxAI\`) unchanged.
+    * Kept the code-level hook/option/capability prefix (`inboxai_`) unchanged.
 
 = Inbox AI for Contact Form 7/v0.5.0 - 2026-07-27 =
-**Changed**
-
-* Renamed the plugin from "CF7 AI Inbox" to "InboxAI for Contact Form 7".
-* Set the new slug/text domain to `inboxai-for-contact-form-7`.
-* Made the rename to avoid implying affiliation with the Contact Form 7 project.
-* Corrected the OpenAI Terms of Service link to the Business Terms (the terms that actually govern API use).
-* Corrected the Anthropic Terms of Service link to the Commercial Terms of Service.
-* Corrected the Google Gemini Terms of Service link to the Gemini API Additional Terms.
-* Rewrote the "Current status" section, which had been left describing an early pre-release state.
-* Rewrote the "Screenshots" section to match the AI Inbox and Settings screens that were actually built.
-
-**Added**
-
-* Added a "Source Code" section to the readme.
-* Documented where the human-readable source for the compiled admin assets is maintained.
+* ***Added***
+    * Added a "Source Code" section to the readme.
+    * Documented where the human-readable source for the compiled admin assets is maintained.
+* ***Changed***
+    * Renamed the plugin from "CF7 AI Inbox" to "InboxAI for Contact Form 7".
+    * Set the new slug/text domain to `inboxai-for-contact-form-7`.
+    * Made the rename to avoid implying affiliation with the Contact Form 7 project.
+    * Corrected the OpenAI Terms of Service link to the Business Terms (the terms that actually govern API use).
+    * Corrected the Anthropic Terms of Service link to the Commercial Terms of Service.
+    * Corrected the Google Gemini Terms of Service link to the Gemini API Additional Terms.
+    * Rewrote the "Current status" section, which had been left describing an early pre-release state.
+    * Rewrote the "Screenshots" section to match the AI Inbox and Settings screens that were actually built.
 
 = Inbox AI for Contact Form 7/v0.4.0 - 2026-07-25 =
-**Added**
-
-* Added a real "Received" date-range filter to the AI Inbox List.
-* Filter options cover 7/30/90 days, this month, and 1/2/3/5 years.
-* Added the same period filter to the Usage & Billing tab.
-* Replaced the previously decorative "Last 30 days" control on Usage & Billing with the working filter.
-* Added a live "N submissions this month" count under each form in Monitored Forms.
-* Added a full step-by-step user guide (`docs-platform/`).
-* The guide covers setup, every Settings tab, the AI Inbox list, submission replies, and troubleshooting.
-
-**Improved**
-
-* Reorganized admin template files into per-page subfolders (`inbox/`, `settings/`) for maintainability.
-* Removed duplicate CSS rules from the settings stylesheet.
-* Removed conflicting CSS rules from the shared admin stylesheet.
-
-**Fixed**
-
-* Fixed the AI Provider Settings Model dropdown not updating when switching between OpenAI, Anthropic, and Google.
+* ***Added***
+    * Added a real "Received" date-range filter to the AI Inbox List.
+    * Filter options cover 7/30/90 days, this month, and 1/2/3/5 years.
+    * Added the same period filter to the Usage & Billing tab.
+    * Replaced the previously decorative "Last 30 days" control on Usage & Billing with the working filter.
+    * Added a live "N submissions this month" count under each form in Monitored Forms.
+    * Added a full step-by-step user guide (`docs-platform/`), covering setup, every Settings tab, the AI Inbox list, submission replies, and troubleshooting.
+* ***Improved***
+    * Reorganized admin template files into per-page subfolders (`inbox/`, `settings/`) for maintainability.
+    * Removed duplicate CSS rules from the settings stylesheet.
+    * Removed conflicting CSS rules from the shared admin stylesheet.
+* ***Fixed***
+    * Fixed the AI Provider Settings Model dropdown not updating when switching between OpenAI, Anthropic, and Google.
 
 = Inbox AI for Contact Form 7/v0.3.0 - 2026-07-15 =
-**Added**
-
-* Added AI Inbox with filters, search, sorting, pagination, and submission details.
-* Added AI reply composer with draft, regenerate, retry analysis, and send workflow.
-* Added background AI analysis queue with OpenAI, Anthropic, and Gemini support.
-* Added per-form AI categories with real-time category management in the Contact Form 7 editor.
-* Added spam auto-archive, validation, and normalization for AI results.
-* Added failure screen with one-click retry for failed AI analysis.
-* Added CSV export of the current filtered list.
-
-**Improved**
-
-* Improved inbox actions, permissions, and overall admin experience.
-
-**Fixed**
-
-* Fixed AI Categories UI rendering on the Contact Form 7 editor.
-* Fixed admin stylesheet build issue.
+* ***Added***
+    * Added AI Inbox with filters, search, sorting, pagination, and submission details.
+    * Added AI reply composer with draft, regenerate, retry analysis, and send workflow.
+    * Added background AI analysis queue with OpenAI, Anthropic, and Gemini support.
+    * Added per-form AI categories with real-time category management in the Contact Form 7 editor.
+    * Added spam auto-archive, validation, and normalization for AI results.
+    * Added failure screen with one-click retry for failed AI analysis.
+    * Added CSV export of the current filtered list.
+* ***Improved***
+    * Improved inbox actions, permissions, and overall admin experience.
+* ***Fixed***
+    * Fixed AI Categories UI rendering on the Contact Form 7 editor.
+    * Fixed admin stylesheet build issue.
 
 = Inbox AI for Contact Form 7/v0.2.0 - 2026-07-10 =
-**Added**
-
-* Added a settings page to configure AI providers and plugin options.
-* Added monitored forms management to choose which Contact Form 7 forms are analyzed.
-* Added customizable AI analysis prompts for better response quality.
-* Added email notification settings for inbox activity.
-* Added usage tracking, spending limits, and secure API key management.
-* Added Flamingo import to migrate existing Contact Form 7 submissions.
+* ***Added***
+    * Added a settings page to configure AI providers and plugin options.
+    * Added monitored forms management to choose which Contact Form 7 forms are analyzed.
+    * Added customizable AI analysis prompts for better response quality.
+    * Added email notification settings for inbox activity.
+    * Added usage tracking, spending limits, and secure API key management.
+    * Added Flamingo import to migrate existing Contact Form 7 submissions.
 
 = Inbox AI for Contact Form 7/v0.1.0 - 2026-07-01 =
-**Added**
-
-* Initial release.
-* Added plugin setup, requirements checks, and Contact Form 7 dependency.
-* Added database schema and upgrade routines.
-* Added user capabilities and uninstall cleanup.
+* ***Added***
+    * Initial release.
+    * Added plugin setup, requirements checks, and Contact Form 7 dependency.
+    * Added database schema and upgrade routines.
+    * Added user capabilities and uninstall cleanup.
 
 == Upgrade Notice ==
 
