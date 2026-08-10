@@ -40,6 +40,32 @@
 		&.inboxai-is-archived > .inboxai-grid-table__cell {
 			opacity: .5;
 		}
+
+		// An unread row (a never-opened submission, or one with a customer
+		// reply that arrived since it was last opened) — a soft tinted
+		// background plus bold name and a small dot, the same "hasn't been
+		// read yet" language most email clients use. Cleared the moment the
+		// submission's own detail page is opened; see
+		// `MessageRepository::mark_read()`.
+		&.inboxai-is-unread {
+			> .inboxai-grid-table__cell {
+				background: var(--accent-soft);
+			}
+
+			// Without this, the generic `&:hover` rule above and this one
+			// have equal CSS specificity and source order alone would decide
+			// the winner — explicitly re-asserting the hover background here
+			// (one class more specific) guarantees hovering an unread row
+			// still gives the same hover feedback as every other row.
+			&:hover > .inboxai-grid-table__cell {
+				background: var(--surface-2);
+			}
+
+			.inboxai-customer__name {
+				font-weight: 800;
+				color: var(--text-primary);
+			}
+		}
 	}
 
 	&__body {
@@ -123,6 +149,25 @@
 			color: var(--accent-deep);
 			text-decoration: underline;
 		}
+	}
+}
+
+.inboxai-unread-dot {
+	display: inline-block;
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: var(--accent);
+	margin-right: 6px;
+	vertical-align: middle;
+
+	// A customer reply gets the same amber used for "High" priority
+	// elsewhere on this page, instead of the default blue — so a reply
+	// waiting on you is visually distinct from a submission that's simply
+	// never been opened yet, without needing to open either one to tell
+	// them apart. See `MessageRepository::mark_unread()`'s own docblock.
+	&--reply {
+		background: var(--high);
 	}
 }
 

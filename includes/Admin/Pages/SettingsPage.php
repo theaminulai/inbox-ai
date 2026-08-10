@@ -122,6 +122,14 @@ final class SettingsPage {
 					'password_masked' => SettingsRepository::get_masked_inbound_password(),
 					'has_password'    => SettingsRepository::has_inbound_password(),
 					'imap_available'  => function_exists( 'imap_open' ),
+					// A stored UID cursor only ever gets written inside
+					// InboundMailChecker::check() right after a real, successful
+					// IMAP connection — see Settings\Repository::get_inbound_cursor()'s
+					// own docblock — so its presence is a reliable "has this
+					// mailbox actually been reached before" signal for the
+					// Connected pill, the same role `has_api_key` plays for the
+					// AI Provider card's own pill just above.
+					'connected'       => SettingsRepository::get_inbound_cursor()['uidvalidity'] > 0,
 				)
 			),
 			'usage_totals'    => UsageRepository::get_period_totals( '30_days' ),

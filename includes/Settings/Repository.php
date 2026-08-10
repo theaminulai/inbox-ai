@@ -25,13 +25,14 @@ use InboxAI\Security\Encryption;
  */
 final class Repository {
 
-	private const PROVIDER_OPTION      = 'inboxai_settings_provider';
-	private const API_KEY_OPTION       = 'inboxai_api_key';
-	private const GENERAL_OPTION       = 'inboxai_settings_general';
-	private const PROMPTS_OPTION       = 'inboxai_settings_prompts';
-	private const NOTIFICATIONS_OPTION = 'inboxai_settings_notifications';
-	private const INBOUND_OPTION       = 'inboxai_settings_inbound';
-	private const INBOUND_PASS_OPTION  = 'inboxai_inbound_password';
+	private const PROVIDER_OPTION       = 'inboxai_settings_provider';
+	private const API_KEY_OPTION        = 'inboxai_api_key';
+	private const GENERAL_OPTION        = 'inboxai_settings_general';
+	private const PROMPTS_OPTION        = 'inboxai_settings_prompts';
+	private const NOTIFICATIONS_OPTION  = 'inboxai_settings_notifications';
+	private const INBOUND_OPTION        = 'inboxai_settings_inbound';
+	private const INBOUND_PASS_OPTION   = 'inboxai_inbound_password';
+	private const INBOUND_CURSOR_OPTION = 'inboxai_inbound_cursor';
 
 	/**
 	 * Allowed IMAP connection-security modes for the Inbound Email settings.
@@ -324,7 +325,7 @@ final class Repository {
 	/**
 	 * Notifications tab settings.
 	 *
-	 * @return array{notify_urgent:bool,daily_digest:bool,notify_analysis_failure:bool,notify_draft_ready:bool,slack_enabled:bool,slack_webhook_url:string}
+	 * @return array{notify_urgent:bool,daily_digest:bool,notify_analysis_failure:bool,notify_draft_ready:bool,notify_customer_reply:bool,slack_enabled:bool,slack_webhook_url:string}
 	 */
 	public static function get_notifications(): array {
 		$defaults = array(
@@ -332,6 +333,11 @@ final class Repository {
 			'daily_digest'            => true,
 			'notify_analysis_failure' => true,
 			'notify_draft_ready'      => false,
+			// Defaults on, unlike the other toggles here that ship off — a
+			// customer reply is exactly the "did I miss something" moment
+			// this whole feature exists to answer; see
+			// {@see \InboxAI\Services\NotificationService::notify_customer_reply()}.
+			'notify_customer_reply'   => true,
 			'slack_enabled'           => false,
 			'slack_webhook_url'       => '',
 		);
@@ -367,6 +373,7 @@ final class Repository {
 				'daily_digest'            => ! empty( $data['daily_digest'] ),
 				'notify_analysis_failure' => ! empty( $data['notify_analysis_failure'] ),
 				'notify_draft_ready'      => ! empty( $data['notify_draft_ready'] ),
+				'notify_customer_reply'   => ! empty( $data['notify_customer_reply'] ),
 				'slack_enabled'           => ! empty( $data['slack_enabled'] ),
 				'slack_webhook_url'       => $webhook,
 			),
@@ -415,15 +422,19 @@ final class Repository {
 	public static function save_inbound( array $data ): void {
 		$current = self::get_inbound();
 
+		$host     = sanitize_text_field( (string) ( $data['inbound_host'] ?? $current['host'] ) );
+		$username = sanitize_text_field( (string) ( $data['inbound_username'] ?? $current['username'] ) );
+		$mailbox  = sanitize_text_field( (string) ( $data['inbound_mailbox'] ?? $current['mailbox'] ) ) ?: 'INBOX';
+
 		update_option(
 			self::INBOUND_OPTION,
 			array(
 				'enabled'                => ! empty( $data['inbound_enabled'] ),
-				'host'                   => sanitize_text_field( (string) ( $data['inbound_host'] ?? $current['host'] ) ),
+				'host'                   => $host,
 				'port'                   => ( absint( $data['inbound_port'] ?? 0 ) ) ?: $current['port'],
 				'encryption'             => in_array( $data['inbound_encryption'] ?? '', self::INBOUND_ENCRYPTIONS, true ) ? $data['inbound_encryption'] : $current['encryption'],
-				'username'               => sanitize_text_field( (string) ( $data['inbound_username'] ?? $current['username'] ) ),
-				'mailbox'                => sanitize_text_field( (string) ( $data['inbound_mailbox'] ?? $current['mailbox'] ) ) ?: 'INBOX',
+				'username'               => $username,
+				'mailbox'                => $mailbox,
 				'check_interval_minutes' => in_array( (int) ( $data['inbound_check_interval'] ?? 0 ), self::INBOUND_CHECK_INTERVALS, true ) ? (int) $data['inbound_check_interval'] : $current['check_interval_minutes'],
 				// Read-only, written only by InboundMailChecker itself — never
 				// accepted from a settings-save request.
@@ -432,6 +443,20 @@ final class Repository {
 			),
 			false
 		);
+
+		// A different host, username, or mailbox folder means this could now
+		// point at a genuinely different mailbox — the stored UID cursor was
+		// only ever meaningful against whatever mailbox was previously
+		// configured. IMAP's UIDVALIDITY check in {@see \InboxAI\Mail\InboundMailChecker::check()}
+		// catches a mailbox being recreated at the *same* address, but two
+		// different servers/mailboxes can coincidentally share a UIDVALIDITY
+		// number, so this is reset explicitly here rather than left to
+		// chance. Resetting just means the next check starts watching this
+		// (new) mailbox from "now," the same as connecting one for the first
+		// time — see get_inbound_cursor()'s docblock.
+		if ( $host !== $current['host'] || $username !== $current['username'] || $mailbox !== $current['mailbox'] ) {
+			delete_option( self::INBOUND_CURSOR_OPTION );
+		}
 
 		if ( isset( $data['inbound_password'] ) ) {
 			self::save_inbound_password( (string) $data['inbound_password'] );
@@ -455,6 +480,52 @@ final class Repository {
 
 		update_option( self::INBOUND_OPTION, $current, false );
 	}
+
+	/**
+	 * Where {@see \InboxAI\Mail\InboundMailChecker} left off in the mailbox,
+	 * tracked by IMAP UID rather than the `\Seen` flag — see that class's own
+	 * docblock for why: the inbound mailbox is very often the same address
+	 * the site owner reads as their real inbox, not a dedicated plugin-only
+	 * one, so using `\Seen` to track "has Inbox AI looked at this" would
+	 * silently mark the owner's own unread mail as read.
+	 *
+	 * `uidvalidity` is IMAP's own way of saying "this mailbox was recreated
+	 * since last time" (a fresh mailbox, a host migration, etc.) — when it no
+	 * longer matches what's stored, every previously-recorded UID is
+	 * meaningless, and {@see \InboxAI\Mail\InboundMailChecker::check()}
+	 * resets the cursor instead of trying to reconcile it.
+	 *
+	 * @return array{uidvalidity:int,last_uid:int}
+	 */
+	public static function get_inbound_cursor(): array {
+		$stored = get_option( self::INBOUND_CURSOR_OPTION, array() );
+
+		return wp_parse_args(
+			is_array( $stored ) ? $stored : array(),
+			array(
+				'uidvalidity' => 0,
+				'last_uid'    => 0,
+			)
+		);
+	}
+
+	/**
+	 * @param int $uidvalidity The mailbox's current UIDVALIDITY, from `imap_status()`.
+	 * @param int $last_uid    Highest UID Inbox AI has now checked.
+	 *
+	 * @return void
+	 */
+	public static function save_inbound_cursor( int $uidvalidity, int $last_uid ): void {
+		update_option(
+			self::INBOUND_CURSOR_OPTION,
+			array(
+				'uidvalidity' => $uidvalidity,
+				'last_uid'    => $last_uid,
+			),
+			false
+		);
+	}
+
 
 	/**
 	 * Whether an inbound-mailbox password is currently stored.
