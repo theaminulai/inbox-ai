@@ -211,14 +211,7 @@ The uncompiled source is public at https://github.com/theaminulai/inbox-ai — t
 5. Settings — Notifications tab, where you can configure email notifications.
 
 == Changelog ==
-
-= 1.1.0 =
-* Merge pull request #36 from theaminulai/development
-* Merge pull request #35 from theaminulai/Add-unread-inbox-state-and-reply-alerts
-* Fix inbound test status and thread reply ordering
-* Add unread inbox state and reply alerts
-
-= Inbox AI for Contact Form 7/v1.0.2 - 2026-08-09 =
+= Inbox AI for Contact Form 7/v1.1.0 - 2026-08-10 =
 * ***Added***
     * Added customer reply email notifications, sent to the site admin with a preview of the reply and a link to the submission. On by default in Settings → Notifications.
     * Added an unread count badge to the AI Inbox menu.
