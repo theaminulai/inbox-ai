@@ -15,6 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 use InboxAI\Admin\Pages\ContactsListPage;
 use InboxAI\Admin\Pages\InboxListPage;
 use InboxAI\Admin\Pages\SettingsPage;
+use InboxAI\Database\MessageRepository;
 use InboxAI\Security\Capabilities;
 
 /**
@@ -107,6 +108,10 @@ final class Menu {
 		foreach ( self::PAGES as $slug => $page ) {
 			[ $menu_title, $page_title, $capability, $page_class ] = $page;
 
+			if ( 'inboxai-inbox' === $slug ) {
+				$menu_title = self::append_unread_badge( $menu_title );
+			}
+
 			$hook_suffix = add_submenu_page(
 				self::PARENT_SLUG,
 				$page_title,
@@ -120,6 +125,40 @@ final class Menu {
 				$this->hook_suffixes[ $slug ] = $hook_suffix;
 			}
 		}
+	}
+
+	/**
+	 * Appends a count bubble to the "AI Inbox" menu title — same visual
+	 * pattern (and the same `update-plugins`/`plugin-count` core CSS
+	 * classes, already styled by WP admin with no extra CSS needed here) as
+	 * the small red-circle badge core itself puts on the "Plugins" menu item
+	 * when updates are available. The count is
+	 * {@see \InboxAI\Database\MessageRepository::count_unread()} — every
+	 * submission that's either never been opened or has a customer reply
+	 * that arrived since it was last opened.
+	 *
+	 * `add_submenu_page()`'s `$menu_title` argument is rendered unescaped by
+	 * WordPress core (the badge markup itself needs real HTML), so this
+	 * only ever wraps a trusted, hardcoded label plus a plain integer — no
+	 * user-controllable value ever reaches this string.
+	 *
+	 * @param string $menu_title Plain label, e.g. `'AI Inbox'`.
+	 *
+	 * @return string
+	 */
+	private static function append_unread_badge( string $menu_title ): string {
+		$count = MessageRepository::count_unread();
+
+		if ( $count <= 0 ) {
+			return $menu_title;
+		}
+
+		return sprintf(
+			'%1$s <span class="update-plugins count-%2$d"><span class="plugin-count">%3$s</span></span>',
+			esc_html( $menu_title ),
+			$count,
+			esc_html( (string) number_format_i18n( $count ) )
+		);
 	}
 
 	/**

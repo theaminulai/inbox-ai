@@ -206,14 +206,27 @@ $inboxai_detail_url = static function ( int $id ) {
 								$inboxai_preview = mb_substr( (string) ( $inboxai_m['subject'] ?: $inboxai_m['message'] ), 0, 120 );
 								$inboxai_url     = $inboxai_detail_url( $inboxai_m['id'] );
 								?>
-								<div class="inboxai-grid-table__row<?php echo 'archived' === $inboxai_m['workflow_status'] ? ' inboxai-is-archived' : ''; ?>" role="row">
+								<?php
+								$inboxai_is_unread = ! empty( $inboxai_m['is_unread'] ) && 'archived' !== $inboxai_m['workflow_status'];
+								// Same unread state either way (tinted row, bold name); only the
+								// dot's color differs, so a reply stands out from a brand-new
+								// submission at a glance without opening it — see
+								// MessageRepository::mark_unread()'s own docblock.
+								$inboxai_is_reply = $inboxai_is_unread && ! empty( $inboxai_m['is_unread_reply'] );
+								?>
+								<div class="inboxai-grid-table__row<?php echo 'archived' === $inboxai_m['workflow_status'] ? ' inboxai-is-archived' : ''; ?><?php echo $inboxai_is_unread ? ' inboxai-is-unread' : ''; ?>" role="row">
 									<div class="inboxai-grid-table__cell inboxai-grid-table__cell--checkbox" role="cell">
 										<input type="checkbox" class="inboxai-bulk-checkbox" data-id="<?php echo (int) $inboxai_m['id']; ?>" aria-label="<?php esc_attr_e( 'Select this submission', 'inbox-ai' ); ?>">
 									</div>
 									<div class="inboxai-grid-table__cell inboxai-customer__cell" role="cell">
 										<div class="inboxai-avatar" style="background:<?php echo esc_attr( \InboxAI\Support\Format::avatar_color( $inboxai_m['sender_email'] ) ); ?>;"><?php echo esc_html( \InboxAI\Support\Format::avatar_initials( $inboxai_name ) ); ?></div>
 										<div>
-											<a class="inboxai-customer__name inboxai-customer__link" href="<?php echo esc_url( $inboxai_url ); ?>" style="display:block;"><?php echo esc_html( $inboxai_name ); ?></a>
+											<a class="inboxai-customer__name inboxai-customer__link" href="<?php echo esc_url( $inboxai_url ); ?>" style="display:block;">
+												<?php if ( $inboxai_is_unread ) : ?>
+													<span class="inboxai-unread-dot<?php echo $inboxai_is_reply ? ' inboxai-unread-dot--reply' : ''; ?>" aria-hidden="true"></span><span class="screen-reader-text"><?php echo $inboxai_is_reply ? esc_html__( 'New reply:', 'inbox-ai' ) : esc_html__( 'Unread:', 'inbox-ai' ); ?> </span>
+												<?php endif; ?>
+												<?php echo esc_html( $inboxai_name ); ?>
+											</a>
 											<a class="inboxai-customer__email inboxai-customer__link" href="<?php echo esc_url( $inboxai_url ); ?>" style="display:block;"><?php echo esc_html( $inboxai_m['sender_email'] ); ?></a>
 										</div>
 									</div>

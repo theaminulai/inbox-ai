@@ -85,12 +85,21 @@ final class MessageRepository {
 				'channel'           => (string) ( $data['channel'] ?? 'contact-form-7' ),
 				'submission_status' => (string) ( $data['submission_status'] ?? '' ),
 				'workflow_status'   => (string) ( $data['workflow_status'] ?? 'new' ),
+				// A brand-new submission is, by definition, something the
+				// admin hasn't seen yet — see self::mark_read()/mark_unread()/
+				// count_unread() for the rest of this flag's lifecycle.
+				'is_unread'         => 1,
+				// Left at its default 0 here on purpose — this row's unread
+				// state came from being newly created, not from a reply, so
+				// the list shows the "new" dot color, not the "reply" one.
+				// See self::mark_unread()'s own docblock.
+				'is_unread_reply'   => 0,
 				'mail_status'       => (string) ( $data['mail_status'] ?? 'pending' ),
 				'spam_status'       => ! empty( $data['spam_status'] ) ? 1 : 0,
 				'source_category'   => (string) ( $data['source_category'] ?? '' ),
 				'created_at'        => $now,
 			),
-			array( '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s' )
+			array( '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%d', '%s', '%d', '%s', '%s' )
 		);
 
 		if ( false === $inserted ) {
@@ -534,6 +543,76 @@ final class MessageRepository {
 	 */
 	public static function update_status( int $id, string $status ): bool {
 		return self::update( $id, array( 'workflow_status' => $status ) );
+	}
+
+	/**
+	 * Clears the "unread" flag (and the "unread because of a reply" flag
+	 * along with it) — called only when a submission's own detail screen
+	 * actually renders (see {@see \InboxAI\Admin\Pages\InboxListPage::render_detail()}),
+	 * never from a list view or an AJAX poll, so opening a submission is what
+	 * "reading" it means here, the same as an email client.
+	 *
+	 * @param int $id Row id.
+	 *
+	 * @return bool
+	 */
+	public static function mark_read( int $id ): bool {
+		return self::update(
+			$id,
+			array(
+				'is_unread'       => 0,
+				'is_unread_reply' => 0,
+			)
+		);
+	}
+
+	/**
+	 * Sets the "unread" flag for a genuinely new customer reply (see
+	 * {@see \InboxAI\Mail\InboundMailChecker::process_one()}, this method's
+	 * only caller) — new activity the admin hasn't seen yet, even if this
+	 * same row was already read once before. Also sets `is_unread_reply`,
+	 * which only ever means "unread, and the reason is a reply" — a
+	 * brand-new submission's own `is_unread` is set directly by
+	 * {@see self::insert()} without going through here, so the list can
+	 * tell the two apart and color the row's dot differently (blue for a
+	 * new submission, amber for a reply — see `includes/Templates/inbox/list.php`).
+	 *
+	 * @param int $id Row id.
+	 *
+	 * @return bool
+	 */
+	public static function mark_unread( int $id ): bool {
+		return self::update(
+			$id,
+			array(
+				'is_unread'       => 1,
+				'is_unread_reply' => 1,
+			)
+		);
+	}
+
+	/**
+	 * How many messages are currently unread — feeds the count bubble
+	 * {@see \InboxAI\Admin\Menu} adds to the "AI Inbox" menu item, the same
+	 * kind of badge WordPress core itself uses for pending comments/plugin
+	 * updates.
+	 *
+	 * Archived rows are excluded: once a submission is archived (including
+	 * auto-archived spam that was never opened) it's explicitly out of the
+	 * active queue, so it shouldn't keep inflating a count that's meant to
+	 * mean "needs your attention."
+	 *
+	 * @return int
+	 */
+	public static function count_unread(): int {
+		global $wpdb;
+
+		$table = self::table();
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $table is $wpdb->prefix + a hardcoded class constant, never user input; custom table, count can change between requests so not cached here (mirrors how WP core's own admin-menu bubbles re-query on every admin_menu call).
+		return (int) $wpdb->get_var(
+			"SELECT COUNT(*) FROM {$table} WHERE deleted_at IS NULL AND is_unread = 1 AND workflow_status != 'archived'"
+		);
 	}
 
 	/**
