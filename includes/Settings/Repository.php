@@ -526,6 +526,7 @@ final class Repository {
 		);
 	}
 
+
 	/**
 	 * Whether an inbound-mailbox password is currently stored.
 	 *

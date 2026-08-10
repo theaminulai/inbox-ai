@@ -222,9 +222,25 @@ final class SettingsAjaxController extends BaseAjaxController {
 	public function test_inbound_connection(): void {
 		$this->check( Capabilities::MANAGE_SETTINGS, self::SETTINGS_NONCE_ACTION );
 
-		( new InboundMailChecker() )->check();
+		$connected = ( new InboundMailChecker() )->check();
 
 		$inbound = SettingsRepository::get_inbound();
+
+		// Mirrors how Settings → AI Provider's own "Test Connection" reports
+		// success/failure (see `inboxai_test_connection`) — the JS side reads
+		// this the same way, so a real IMAP failure (bad certificate, wrong
+		// password, host unreachable, etc.) shows the same red error toast
+		// instead of the green success one {@see InboundMailChecker::check()}'s
+		// own docblock explains what `$connected` actually means here.
+		if ( ! $connected ) {
+			wp_send_json_error(
+				array(
+					'message' => '' !== $inbound['last_check_message']
+						? $inbound['last_check_message']
+						: __( 'Inbound Email Replies is turned off — enable "Check for replies" above, then test again.', 'inbox-ai' ),
+				)
+			);
+		}
 
 		wp_send_json_success(
 			array(

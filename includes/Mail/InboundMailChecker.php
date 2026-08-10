@@ -171,32 +171,39 @@ final class InboundMailChecker {
 	 * tick would, so a Settings-page test behaves identically to the real
 	 * background check).
 	 *
-	 * @return void
+	 * @return bool True once a real IMAP connection to the mailbox succeeded
+	 *              (whether or not any new replies were found), false if it
+	 *              never got that far (disabled, misconfigured, or the
+	 *              connection itself failed) — {@see
+	 *              \InboxAI\Admin\Ajax\SettingsAjaxController::test_inbound_connection()}
+	 *              uses this to decide whether "Test Connection" reports
+	 *              success or an error, instead of always showing success
+	 *              the way it did before this return value existed.
 	 */
-	public function check(): void {
+	public function check(): bool {
 		$inbound = SettingsRepository::get_inbound();
 
 		if ( ! $inbound['enabled'] ) {
-			return;
+			return false;
 		}
 
 		if ( ! function_exists( 'imap_open' ) ) {
 			SettingsRepository::record_inbound_check(
 				__( 'PHP\'s imap extension is not available on this server — ask your host to enable it.', 'inbox-ai' )
 			);
-			return;
+			return false;
 		}
 
 		if ( '' === $inbound['host'] || '' === $inbound['username'] ) {
 			SettingsRepository::record_inbound_check( __( 'Inbound mailbox host/username is not configured.', 'inbox-ai' ) );
-			return;
+			return false;
 		}
 
 		$password = SettingsRepository::get_inbound_password();
 
 		if ( null === $password || '' === $password ) {
 			SettingsRepository::record_inbound_check( __( 'No inbound mailbox password has been configured.', 'inbox-ai' ) );
-			return;
+			return false;
 		}
 
 		$mailbox_string = self::build_mailbox_string( $inbound );
@@ -215,7 +222,7 @@ final class InboundMailChecker {
 					imap_last_error() ?: __( 'unknown error', 'inbox-ai' )
 				)
 			);
-			return;
+			return false;
 		}
 
 		// UIDVALIDITY + UIDNEXT drive the UID-cursor tracking below, in place
@@ -233,7 +240,7 @@ final class InboundMailChecker {
 					imap_last_error() ?: __( 'unknown error', 'inbox-ai' )
 				)
 			);
-			return;
+			return false;
 		}
 
 		$cursor      = SettingsRepository::get_inbound_cursor();
@@ -251,13 +258,13 @@ final class InboundMailChecker {
 			imap_close( $connection );
 			SettingsRepository::save_inbound_cursor( $uidvalidity, max( 0, $uidnext - 1 ) );
 			SettingsRepository::record_inbound_check( __( 'Connected — now watching this mailbox for new replies from this point forward.', 'inbox-ai' ) );
-			return;
+			return true;
 		}
 
 		if ( $uidnext - 1 <= $cursor['last_uid'] ) {
 			imap_close( $connection );
 			SettingsRepository::record_inbound_check( __( 'Checked just now — no new replies.', 'inbox-ai' ) );
-			return;
+			return true;
 		}
 
 		$overview = imap_fetch_overview( $connection, ( $cursor['last_uid'] + 1 ) . ':*', FT_UID );
@@ -313,6 +320,8 @@ final class InboundMailChecker {
 				$matched
 			)
 		);
+
+		return true;
 	}
 
 	/**

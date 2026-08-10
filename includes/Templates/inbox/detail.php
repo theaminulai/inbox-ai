@@ -5,12 +5,16 @@
  * Fully server-rendered from `$message`/`$activities` (see
  * {@see \InboxAI\Admin\Pages\InboxListPage::render_detail()}) — this is its
  * own real page load (`?page=inboxai-inbox&id=123`), not a client-side
- * screen swap over an AJAX call. Thread order is: original submission, any
- * already-sent staff reply, any customer reply received by email, then the
- * AI Analysis card **always last**, regardless of how many messages exist —
- * it's a living annotation re-run on every new customer reply (see
+ * screen swap over an AJAX call. Thread order is: the original submission
+ * first, then every staff reply and every customer reply either side has
+ * ever sent, oldest to newest — a real multi-round history, the same as any
+ * email client's own conversation view — then the AI Analysis card
+ * **always last**, regardless of how many messages exist above it: it's a
+ * living annotation re-run on every new customer reply (see
  * {@see \InboxAI\AI\AnalysisQueue::process_reply()}), not a fixed point in
- * the conversation, so it's deliberately not interleaved chronologically.
+ * the conversation, so it's deliberately kept out of the chronological
+ * ordering every other item gets (see where `$inboxai_reply_events` is
+ * built and sorted, below).
  * All render as collapsible items in one Gmail-style conversation thread,
  * with a sidebar for customer info, submission metadata, customer mood,
  * the activity timeline, and quick actions.
@@ -36,25 +40,42 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $inboxai_is_failed   = 'failed' === $message['workflow_status'];
-$inboxai_has_replied = ! empty( $message['reply_sent_at'] );
 $inboxai_list_url    = \InboxAI\Admin\Menu::url( 'inboxai-inbox' );
 
-// `$activities` is already ordered most-recent-first (see
-// `ActivityRepository::get_for_message()`), so the first `customer_replied`
-// entry found is the latest one — the one shown as its own thread item
-// below. Older replies on the same submission still show in the Activity
-// timeline sidebar, just not repeated as separate thread items (matches how
-// this screen already treats "one sent reply" as the single staff item,
-// rather than a full multi-turn thread — see InboundMailChecker's docblock
-// for the reasoning).
-$inboxai_latest_customer_reply = null;
+// Every reply either side has ever sent on this submission, oldest first —
+// a real multi-round history, like an actual email client, not just the
+// most recent staff reply and most recent customer reply. Every
+// {@see \InboxAI\Services\ReplyService::send()} call and every matched
+// {@see \InboxAI\Mail\InboundMailChecker::process_one()} reply logs its own
+// `reply_sent`/`customer_replied` activity row specifically so this full
+// history is always reconstructable here — `$message['reply_sent_body']`/
+// `reply_sent_at` only ever hold the single *most recent* staff reply (see
+// {@see \InboxAI\Database\MessageRepository::set_reply_sent()}, which
+// overwrites them on every send), so those columns alone can't drive this
+// thread once more than one reply has gone back and forth.
+$inboxai_reply_events = array_values(
+	array_filter(
+		$activities,
+		static function ( array $inboxai_activity ): bool {
+			return in_array( $inboxai_activity['event_type'], array( 'reply_sent', 'customer_replied' ), true );
+		}
+	)
+);
 
-foreach ( $activities as $inboxai_activity ) {
-	if ( 'customer_replied' === $inboxai_activity['event_type'] ) {
-		$inboxai_latest_customer_reply = $inboxai_activity;
-		break;
+// `$activities` comes back most-recent-first (see
+// `ActivityRepository::get_for_message()`); the thread itself reads
+// top-to-bottom oldest-first, the same direction a real email client shows
+// a conversation in. `id` breaks a same-second tie deterministically since
+// two events logged in the same request can share a `created_at` value down
+// to the second.
+usort(
+	$inboxai_reply_events,
+	static function ( array $a, array $b ): int {
+		$by_time = strtotime( (string) $a['created_at'] ) <=> strtotime( (string) $b['created_at'] );
+
+		return 0 !== $by_time ? $by_time : ( (int) $a['id'] <=> (int) $b['id'] );
 	}
-}
+);
 
 $inboxai_sender_name  = $message['sender_name'] ?: __( '(no name)', 'inbox-ai' );
 $inboxai_sender_email = $message['sender_email'] ?: '—';
@@ -156,93 +177,69 @@ $inboxai_chevron_icon = '<svg class="inboxai-thread-item__chevron" viewBox="0 0 
 					</div>
 				</div>
 
-				<?php
-				// Staff and customer replies don't happen in a fixed order — a
-				// customer can reply again after the staff already answered, or
-				// the staff can answer after the customer's latest reply, in
-				// either order. Both blocks are captured to buffers here so
-				// they can be printed in actual chronological order below,
-				// instead of the old hardcoded "staff always before customer"
-				// sequence (which showed a brand-new staff reply above an
-				// older, still-unanswered customer reply).
-				$inboxai_staff_block    = '';
-				$inboxai_customer_block = '';
-
-				if ( $inboxai_has_replied ) :
-					ob_start();
-					?>
-					<div class="inboxai-thread-item inboxai-thread-item--staff" data-role="staff">
-						<div class="inboxai-thread-item__rail">
-							<div class="inboxai-avatar inboxai-avatar--lg" style="background:<?php echo esc_attr( \InboxAI\Support\Format::avatar_color( $inboxai_staff_seed ) ); ?>;"><?php echo esc_html( \InboxAI\Support\Format::avatar_initials( $inboxai_staff_name ) ); ?></div>
-							<div class="inboxai-thread-item__spine"></div>
-						</div>
-						<div class="inboxai-card">
-							<div class="inboxai-thread-item__head" data-toggle-thread-item>
-								<div class="inboxai-thread-item__head-left">
-									<span class="inboxai-thread-item__sender"><?php echo esc_html( $inboxai_staff_name ); ?></span>
-									<span class="inboxai-role-tag inboxai-role-tag--staff"><?php esc_html_e( 'You · Sent', 'inbox-ai' ); ?></span>
-								</div>
-								<div class="inboxai-thread-item__head-right">
-									<span class="inboxai-thread-item__time"><?php echo esc_html( \InboxAI\Support\Format::time_ago( (string) $message['reply_sent_at'] ) ); ?></span>
-									<?php echo $inboxai_chevron_icon; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static, trusted markup defined above. ?>
-								</div>
+				<?php foreach ( $inboxai_reply_events as $inboxai_event ) : ?>
+					<?php if ( 'reply_sent' === $inboxai_event['event_type'] ) : ?>
+						<?php
+						// Attributed to whoever actually sent it, not whoever's
+						// currently viewing the page — on a multi-admin site an
+						// older reply may well have been sent by a different user
+						// than the one looking at this thread now. `user_id` is 0
+						// for a send with no logged-in acting user (shouldn't
+						// normally happen for `reply_sent`, but falls back to the
+						// current viewer the same way this thread item always did
+						// before per-event attribution existed).
+						$inboxai_reply_user = $inboxai_event['user_id'] > 0 ? get_userdata( $inboxai_event['user_id'] ) : false;
+						$inboxai_reply_name = $inboxai_reply_user ? ( $inboxai_reply_user->display_name ?: $inboxai_staff_name ) : $inboxai_staff_name;
+						$inboxai_reply_seed = $inboxai_reply_user ? ( $inboxai_reply_user->user_email ?: (string) $inboxai_reply_user->ID ) : $inboxai_staff_seed;
+						?>
+						<div class="inboxai-thread-item inboxai-thread-item--staff" data-role="staff">
+							<div class="inboxai-thread-item__rail">
+								<div class="inboxai-avatar inboxai-avatar--lg" style="background:<?php echo esc_attr( \InboxAI\Support\Format::avatar_color( $inboxai_reply_seed ) ); ?>;"><?php echo esc_html( \InboxAI\Support\Format::avatar_initials( $inboxai_reply_name ) ); ?></div>
+								<div class="inboxai-thread-item__spine"></div>
 							</div>
-							<div class="inboxai-thread-item__body">
-								<p class="inboxai-thread-item__text"><?php echo esc_html( $message['reply_sent_body'] ?: '—' ); ?></p>
-							</div>
-						</div>
-					</div>
-					<?php
-					$inboxai_staff_block = ob_get_clean();
-				endif;
-
-				if ( null !== $inboxai_latest_customer_reply ) :
-					ob_start();
-					?>
-					<div class="inboxai-thread-item inboxai-thread-item--customer" data-role="customer">
-						<div class="inboxai-thread-item__rail">
-							<div class="inboxai-avatar inboxai-avatar--lg" style="background:<?php echo esc_attr( \InboxAI\Support\Format::avatar_color( (string) $message['sender_email'] ) ); ?>;"><?php echo esc_html( \InboxAI\Support\Format::avatar_initials( (string) $message['sender_name'] ) ); ?></div>
-							<div class="inboxai-thread-item__spine"></div>
-						</div>
-						<div class="inboxai-card">
-							<div class="inboxai-thread-item__head" data-toggle-thread-item>
-								<div class="inboxai-thread-item__head-left">
-									<span class="inboxai-thread-item__sender"><?php echo esc_html( $inboxai_sender_name ); ?></span>
-									<span class="inboxai-role-tag inboxai-role-tag--customer"><?php esc_html_e( 'Customer · Replied by email', 'inbox-ai' ); ?></span>
+							<div class="inboxai-card">
+								<div class="inboxai-thread-item__head" data-toggle-thread-item>
+									<div class="inboxai-thread-item__head-left">
+										<span class="inboxai-thread-item__sender"><?php echo esc_html( $inboxai_reply_name ); ?></span>
+										<span class="inboxai-role-tag inboxai-role-tag--staff"><?php esc_html_e( 'Sent', 'inbox-ai' ); ?></span>
+									</div>
+									<div class="inboxai-thread-item__head-right">
+										<span class="inboxai-thread-item__time"><?php echo esc_html( \InboxAI\Support\Format::time_ago( (string) $inboxai_event['created_at'] ) ); ?></span>
+										<?php echo $inboxai_chevron_icon; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static, trusted markup defined above. ?>
+									</div>
 								</div>
-								<div class="inboxai-thread-item__head-right">
-									<span class="inboxai-thread-item__time"><?php echo esc_html( \InboxAI\Support\Format::time_ago( (string) $inboxai_latest_customer_reply['created_at'] ) ); ?></span>
-									<?php echo $inboxai_chevron_icon; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static, trusted markup defined above. ?>
-								</div>
-							</div>
-							<div class="inboxai-thread-item__body">
-								<p class="inboxai-thread-item__text"><?php echo esc_html( $inboxai_latest_customer_reply['event_data']['body'] ?? '' ); ?></p>
-								<div class="inboxai-thread-item__meta-row">
-									<?php esc_html_e( 'Received by Inbox AI\'s inbound mail check — see Settings → Notifications.', 'inbox-ai' ); ?>
+								<div class="inboxai-thread-item__body">
+									<p class="inboxai-thread-item__text"><?php echo esc_html( $inboxai_event['event_data']['body'] ?? '—' ); ?></p>
 								</div>
 							</div>
 						</div>
-					</div>
-					<?php
-					$inboxai_customer_block = ob_get_clean();
-				endif;
-
-				// Oldest first. Only swap the default staff-then-customer order
-				// when the customer's latest reply actually happened before the
-				// staff's reply — everything else (only one exists, staff
-				// happened first, or they're exactly equal) keeps that default.
-				if (
-					$inboxai_has_replied
-					&& null !== $inboxai_latest_customer_reply
-					&& strtotime( (string) $inboxai_latest_customer_reply['created_at'] ) < strtotime( (string) $message['reply_sent_at'] )
-				) {
-					echo $inboxai_customer_block; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- buffered markup built and escaped field-by-field above.
-					echo $inboxai_staff_block; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- buffered markup built and escaped field-by-field above.
-				} else {
-					echo $inboxai_staff_block; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- buffered markup built and escaped field-by-field above.
-					echo $inboxai_customer_block; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- buffered markup built and escaped field-by-field above.
-				}
-				?>
+					<?php else : ?>
+						<div class="inboxai-thread-item inboxai-thread-item--customer" data-role="customer">
+							<div class="inboxai-thread-item__rail">
+								<div class="inboxai-avatar inboxai-avatar--lg" style="background:<?php echo esc_attr( \InboxAI\Support\Format::avatar_color( (string) $message['sender_email'] ) ); ?>;"><?php echo esc_html( \InboxAI\Support\Format::avatar_initials( (string) $message['sender_name'] ) ); ?></div>
+								<div class="inboxai-thread-item__spine"></div>
+							</div>
+							<div class="inboxai-card">
+								<div class="inboxai-thread-item__head" data-toggle-thread-item>
+									<div class="inboxai-thread-item__head-left">
+										<span class="inboxai-thread-item__sender"><?php echo esc_html( $inboxai_sender_name ); ?></span>
+										<span class="inboxai-role-tag inboxai-role-tag--customer"><?php esc_html_e( 'Customer · Replied by email', 'inbox-ai' ); ?></span>
+									</div>
+									<div class="inboxai-thread-item__head-right">
+										<span class="inboxai-thread-item__time"><?php echo esc_html( \InboxAI\Support\Format::time_ago( (string) $inboxai_event['created_at'] ) ); ?></span>
+										<?php echo $inboxai_chevron_icon; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static, trusted markup defined above. ?>
+									</div>
+								</div>
+								<div class="inboxai-thread-item__body">
+									<p class="inboxai-thread-item__text"><?php echo esc_html( $inboxai_event['event_data']['body'] ?? '' ); ?></p>
+									<div class="inboxai-thread-item__meta-row">
+										<?php esc_html_e( 'Received by Inbox AI\'s inbound mail check — see Settings → Notifications.', 'inbox-ai' ); ?>
+									</div>
+								</div>
+							</div>
+						</div>
+					<?php endif; ?>
+				<?php endforeach; ?>
 
 				<div class="inboxai-thread-item inboxai-thread-item--ai" data-role="ai">
 					<div class="inboxai-thread-item__rail">

@@ -97,6 +97,21 @@ In every example above, once "Check every," "Mailbox address," "IMAP host," "Por
 
 WordPress doesn't run background tasks on its own — checks only actually happen when something triggers `wp-cron.php`, which is normally a site visit, or a real system cron job if you've set one up on your host. Setting "Check every" to 1 minute only means Inbox AI will consider a check due after 1 minute — it still won't run any sooner than your site's own cron actually fires. If you want checks to genuinely happen every 1–2 minutes, make sure you have a real system cron job hitting `wp-cron.php` at least that often (ask your host how to set this up, or see your control panel's cron job settings).
 
+**Setting up a real cron job on cPanel hosting**, so checks actually run on schedule instead of only when someone happens to visit your site:
+
+1. Log into cPanel.
+2. Find **Cron Jobs**, usually under the "Advanced" section.
+3. Add a new cron job:
+   - **Common Settings:** "Every 5 Minutes" (or however often you'd like — it doesn't need to match "Check every" exactly, just needs to run at least that often)
+   - **Command:**
+     ```
+     wget -q -O /dev/null 'https://yourdomain.com/wp-cron.php' >/dev/null 2>&1
+     ```
+     (use `curl -s 'https://yourdomain.com/wp-cron.php' >/dev/null 2>&1` instead if your host doesn't have `wget`)
+4. Save it.
+
+Just having cPanel login access isn't the same as having this configured — the cron job itself has to exist under Cron Jobs before it does anything. See the troubleshooting entry below for how to tell whether this is actually your problem.
+
 ## Troubleshooting
 
 - **"PHP's imap extension is not available on this server"** — contact your hosting provider and ask them to enable the `imap` PHP extension. Nothing else will work until this is on.
@@ -115,3 +130,11 @@ WordPress doesn't run background tasks on its own — checks only actually happe
 
 - **Connects fine, but a customer's reply never shows up** — confirm the customer replied to the actual email (not a forward, and not a new message to your address), and that their reply landed in the folder set in "Mailbox folder" (usually INBOX, not Spam/Junk). Also check whether the reply arrived *before* the first successful connection — see "It never touches your mailbox's read/unread status" above, since anything already in the mailbox before that point isn't picked up.
 - **Changed the mailbox address, host, or folder and now replies aren't matching** — this is expected right after a change: Inbox AI treats a different mailbox/folder as a new starting point and begins watching from "now" again, the same as connecting one for the first time. Send a fresh test reply after saving the change rather than relying on one sent beforehand.
+
+- **Clicking "Test Connection" manually finds replies just fine, but nothing ever shows up on its own over time.**
+
+  **What's happening:** This means the connection and mailbox settings are all correct — the piece that's missing is the actual background schedule. WordPress's "Check every" setting only decides how *often a check is due*; something still has to actually trigger `wp-cron.php` for that due check to run. Without a real, working cron job hitting it, the only thing that ever triggers a check is a visitor loading a page on your site — which is unpredictable and can go long stretches without happening at all on a low-traffic site, or a site you're only testing yourself in wp-admin.
+
+  A cPanel dashboard login, a webmail login, or the Inbox AI settings page itself are **not** the same thing as a cron job — none of those trigger `wp-cron.php` on a schedule. The cron job has to be explicitly created under cPanel's own **Cron Jobs** page.
+
+  **How to fix it:** Set up a real cron job — see "Setting up a real cron job on cPanel hosting" above for the exact steps and command. Once it's added and has run at least once, click **Save settings above, then test connection** to confirm the connection is still fine, then send a fresh test reply and wait for the interval you set (or trigger the cron job's command manually from cPanel to check right away) — it should now show up without you needing to click Test Connection at all.

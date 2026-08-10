@@ -95,8 +95,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="inboxai-card" id="inbound-email-card">
 				<div class="inboxai-card__header">
-					<h2><?php esc_html_e( 'Inbound Email Replies', 'inbox-ai' ); ?></h2>
-					<span class="inboxai-card__muted"><?php esc_html_e( 'When a customer replies to one of your sent emails, check this mailbox and bring their reply back into the submission thread.', 'inbox-ai' ); ?></span>
+					<div>
+						<h2><?php esc_html_e( 'Inbound Email Replies', 'inbox-ai' ); ?></h2>
+						<span class="inboxai-card__muted"><?php esc_html_e( 'When a customer replies to one of your sent emails, check this mailbox and bring their reply back into the submission thread.', 'inbox-ai' ); ?></span>
+					</div>
+					<span class="inboxai-connected-pill" id="inbound-connected-pill" style="<?php echo $inbound['connected'] ? '' : 'display:none;'; ?>">
+						<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+						<?php esc_html_e( 'Connected', 'inbox-ai' ); ?>
+					</span>
 				</div>
 				<div class="inboxai-card__body">
 					<?php if ( ! $inbound['imap_available'] ) : ?>
@@ -166,19 +172,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<input class="inboxai-field__input" type="text" data-field="inbound_password" value="<?php echo esc_attr( $inbound['password_masked'] ); ?>" placeholder="<?php esc_attr_e( 'App password or mailbox password', 'inbox-ai' ); ?>" style="font-family:var(--mono);">
 						<div class="inboxai-field__hint"><?php esc_html_e( 'Encrypted at rest and never shown in full.', 'inbox-ai' ); ?></div>
 					</div>
-
-					<?php if ( '' !== $inbound['last_check_message'] ) : ?>
-						<div class="inboxai-field__hint" id="inbound-last-check" style="margin-top:14px;">
-							<?php
-							printf(
-								/* translators: 1: human-readable outcome of the last check, 2: relative time since it ran */
-								esc_html__( '%1$s (%2$s)', 'inbox-ai' ),
-								esc_html( $inbound['last_check_message'] ),
-								esc_html( \InboxAI\Support\Format::time_ago( (string) $inbound['last_checked_at'] ) )
-							);
-							?>
-						</div>
-					<?php endif; ?>
 
 					<div style="margin-top:14px;">
 						<button type="button" class="inboxai-btn--secondary" id="inbound-test-connection"><?php esc_html_e( 'Save settings above, then test connection', 'inbox-ai' ); ?></button>
