@@ -4,7 +4,7 @@ Tags: contact form 7, AI, inbox, database, submissions
 Requires at least: 6.7
 Tested up to: 7.0.3
 Requires PHP: 8.1
-Stable tag: 1.0.1
+Stable tag: 1.1.0
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -211,8 +211,7 @@ The uncompiled source is public at https://github.com/theaminulai/inbox-ai — t
 5. Settings — Notifications tab, where you can configure email notifications.
 
 == Changelog ==
-
-= Inbox AI for Contact Form 7/v1.0.2 - 2026-08-09 =
+= Inbox AI for Contact Form 7/v1.1.0 - 2026-08-10 =
 * ***Added***
     * Added customer reply email notifications, sent to the site admin with a preview of the reply and a link to the submission. On by default in Settings → Notifications.
     * Added an unread count badge to the AI Inbox menu.
