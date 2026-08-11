@@ -32,3 +32,7 @@ Below the switches is a **Confidence threshold for "Needs Review"** slider (0–
 ## Saving your changes
 
 Click **Save Changes** at the bottom of the page after adjusting anything on this tab. Changes to Monitored Forms take effect immediately when you toggle them (you'll see a confirmation message), but the other settings need the Save Changes button.
+
+---
+
+[← Previous: AI Provider Settings](02-settings-ai-provider.md) | [Guide index](README.md) | [Next: Prompts →](04-settings-prompts.md)

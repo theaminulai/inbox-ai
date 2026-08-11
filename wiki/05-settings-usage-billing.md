@@ -28,3 +28,7 @@ Pick any option and the four summary cards and the breakdown below update automa
 Below the summary cards, a set of bars breaks down your estimated cost by what the request was *for* (for example, analyzing a submission versus drafting a reply). Each bar shows its share of the total as both a percentage-width bar and a dollar amount.
 
 If you haven't had any AI activity yet, this section will simply say there's no usage recorded yet — that's expected on a brand-new install.
+
+---
+
+[← Previous: Prompts](04-settings-prompts.md) | [Guide index](README.md) | [Next: Notifications →](06-settings-notifications.md)

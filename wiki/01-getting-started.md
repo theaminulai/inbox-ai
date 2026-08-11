@@ -26,3 +26,7 @@ Follow these five steps in order the first time you set the plugin up:
 5. **Submit a test message.** Fill out one of the forms you just turned on monitoring for, then go to **Contact → AI Inbox**. Your test submission should appear there within a few moments, followed shortly by an AI-written summary, category, and priority once analysis finishes.
 
 Once that test submission shows up correctly, you're fully set up. Head to [The AI Inbox List](08-ai-inbox-list.md) to learn how to work with incoming messages day to day.
+
+---
+
+[Guide index](README.md) | [Next: AI Provider Settings →](02-settings-ai-provider.md)

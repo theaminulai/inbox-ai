@@ -30,3 +30,7 @@ This means the plugin couldn't get a usable response from your AI provider for t
 ## Still stuck?
 
 Check that both Contact Form 7 and Inbox AI are updated to their latest versions, since fixes and improvements ship regularly.
+
+---
+
+[← Previous: Viewing & Replying to a Submission](09-submission-detail-and-replies.md) | [Guide index](README.md)

@@ -35,3 +35,7 @@ Choose a default tone for AI-drafted replies from the dropdown: **Friendly and p
 
 * Click **Save Prompts** to keep your changes.
 * Click **Reset to Defaults** if you want to discard your edits and go back to the plugin's original wording — useful if you've experimented and want a clean starting point again.
+
+---
+
+[← Previous: General Settings](03-settings-general.md) | [Guide index](README.md) | [Next: Usage & Billing →](05-settings-usage-billing.md)
