@@ -323,9 +323,12 @@ final class Repository {
 	}
 
 	/**
-	 * Notifications tab settings.
+	 * Notifications tab settings. The Slack Integration card that used to
+	 * live on this tab has its own settings now — see
+	 * {@see \InboxAI\Settings\SlackRepository} — and is no longer part of
+	 * this option at all.
 	 *
-	 * @return array{notify_urgent:bool,daily_digest:bool,notify_analysis_failure:bool,notify_draft_ready:bool,notify_customer_reply:bool,slack_enabled:bool,slack_webhook_url:string}
+	 * @return array{notify_urgent:bool,daily_digest:bool,notify_analysis_failure:bool,notify_draft_ready:bool,notify_customer_reply:bool}
 	 */
 	public static function get_notifications(): array {
 		$defaults = array(
@@ -338,8 +341,6 @@ final class Repository {
 			// this whole feature exists to answer; see
 			// {@see \InboxAI\Services\NotificationService::notify_customer_reply()}.
 			'notify_customer_reply'   => true,
-			'slack_enabled'           => false,
-			'slack_webhook_url'       => '',
 		);
 
 		$stored = get_option( self::NOTIFICATIONS_OPTION, array() );
@@ -350,22 +351,11 @@ final class Repository {
 	/**
 	 * Saves the Notifications tab.
 	 *
-	 * The Slack webhook URL is only accepted if it's a well-formed HTTPS
-	 * URL; otherwise whatever was already stored is kept.
-	 *
 	 * @param array<string, mixed> $data Raw, unsanitized input.
 	 *
 	 * @return void
 	 */
 	public static function save_notifications( array $data ): void {
-		$current = self::get_notifications();
-
-		$webhook = isset( $data['slack_webhook_url'] ) ? esc_url_raw( (string) $data['slack_webhook_url'] ) : $current['slack_webhook_url'];
-
-		if ( '' !== $webhook && ( 0 !== strpos( $webhook, 'https://' ) || ! wp_http_validate_url( $webhook ) ) ) {
-			$webhook = $current['slack_webhook_url'];
-		}
-
 		update_option(
 			self::NOTIFICATIONS_OPTION,
 			array(
@@ -374,8 +364,6 @@ final class Repository {
 				'notify_analysis_failure' => ! empty( $data['notify_analysis_failure'] ),
 				'notify_draft_ready'      => ! empty( $data['notify_draft_ready'] ),
 				'notify_customer_reply'   => ! empty( $data['notify_customer_reply'] ),
-				'slack_enabled'           => ! empty( $data['slack_enabled'] ),
-				'slack_webhook_url'       => $webhook,
 			),
 			false
 		);

@@ -16,6 +16,7 @@ import { initPromptsTab } from './promptsTab.js';
 import { initUsageBillingTab } from './usageBillingTab.js';
 import { initNotificationsTab } from './notificationsTab.js';
 import { initFlamingoImportTab } from './flamingoImportTab.js';
+import { initIntegrationsTab } from './integrationsTab.js';
 import { initCategoriesManager } from './categoriesManager.js';
 import { initSwitches } from '../shared/switch.js';
 import { initModalClose } from '../shared/modal.js';
@@ -30,6 +31,7 @@ export function initSettingsPage() {
 	initUsageBillingTab();
 	initNotificationsTab();
 	initFlamingoImportTab();
+	initIntegrationsTab();
 	initCategoriesManager();
 
 	showSettingsTab( getQueryParam( 'tab' ) || 'ai-settings' );

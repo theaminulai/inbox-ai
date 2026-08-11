@@ -4,7 +4,7 @@ Tags: contact form 7, AI, inbox, database, submissions
 Requires at least: 6.7
 Tested up to: 7.0.3
 Requires PHP: 8.1
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -211,6 +211,17 @@ The uncompiled source is public at https://github.com/theaminulai/inbox-ai — t
 5. Settings — Notifications tab, where you can configure email notifications.
 
 == Changelog ==
+= Inbox AI for Contact Form 7/v1.2.0 - 2026-08-11 =
+* ***Added***
+    * Added a new Integrations tab in Settings, separate from Notifications.
+    * Added a CRM Data Collection card (HubSpot, Mailchimp, and more) that saves your provider and API key ahead of automatic syncing in a future release.
+    * Added a "Send test message" button to confirm a Slack webhook URL works right away, without waiting for an urgent submission.
+* ***Changed***
+    * Moved the Slack Integration card from Settings → Notifications to the new Settings → Integrations tab.
+* ***Fixed***
+    * Fixed the Slack Integration switch not actually sending anything — urgent submissions now post a real message to the configured webhook.
+    * Fixed the Slack toggle silently resetting to off whenever Notification settings were saved.
+
 = Inbox AI for Contact Form 7/v1.1.0 - 2026-08-10 =
 * ***Added***
     * Added customer reply email notifications, sent to the site admin with a preview of the reply and a link to the submission. On by default in Settings → Notifications.

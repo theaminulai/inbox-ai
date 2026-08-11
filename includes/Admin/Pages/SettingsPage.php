@@ -18,7 +18,9 @@ use InboxAI\Database\MessageRepository;
 use InboxAI\Database\UsageRepository;
 use InboxAI\Migration\FlamingoImporter;
 use InboxAI\Security\Capabilities;
+use InboxAI\Settings\CrmRepository;
 use InboxAI\Settings\Repository as SettingsRepository;
+use InboxAI\Settings\SlackRepository;
 use InboxAI\Support\Template;
 
 /**
@@ -27,8 +29,8 @@ use InboxAI\Support\Template;
  * Every other page depends on at least this page's AI Provider and General
  * tabs (see docs/plans/05-settings-plan.md). `render()` contains no inline
  * markup — it assembles the current settings into a view model and hands
- * off to `includes/Templates/settings.php` (the shared six-tab shell) and
- * the six per-tab template files it in turn includes.
+ * off to `includes/Templates/settings.php` (the shared seven-tab shell) and
+ * the seven per-tab template files it in turn includes.
  *
  * This class enqueues nothing itself — {@see \InboxAI\Admin\Menu}
  * enqueues the one shared admin script/style bundle for every plugin page.
@@ -42,11 +44,14 @@ final class SettingsPage {
 	 * `flamingo` tab's own wizard covers both import paths this plugin
 	 * supports (Flamingo migration and the plugin-native
 	 * {@see \InboxAI\Migration\InboxCsvImporter} CSV path) — see
-	 * `includes/Templates/settings/flamingo.php`'s docblock.
+	 * `includes/Templates/settings/flamingo.php`'s docblock. `integrations`
+	 * holds the Slack Integration card (moved out of `notifications`) plus
+	 * the CRM Data Collection scaffold — see
+	 * `includes/Templates/settings/integrations.php`'s docblock.
 	 *
 	 * @var string[]
 	 */
-	private const TABS = array( 'ai-settings', 'general-settings', 'prompts', 'usage', 'notifications', 'flamingo' );
+	private const TABS = array( 'ai-settings', 'general-settings', 'prompts', 'usage', 'notifications', 'flamingo', 'integrations' );
 
 	/**
 	 * Hooks this page's data into {@see \InboxAI\Admin\Menu::enqueue_assets()}.
@@ -135,6 +140,14 @@ final class SettingsPage {
 			'usage_totals'    => UsageRepository::get_period_totals( '30_days' ),
 			'usage_breakdown' => UsageRepository::get_cost_breakdown( '30_days' ),
 			'flamingo_active' => FlamingoImporter::is_available(),
+			'slack'           => SlackRepository::get(),
+			'crm'             => array_merge(
+				CrmRepository::get(),
+				array(
+					'api_key_masked' => CrmRepository::get_masked_api_key(),
+					'has_api_key'    => CrmRepository::has_api_key(),
+				)
+			),
 		);
 	}
 
