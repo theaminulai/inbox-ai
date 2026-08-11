@@ -46,3 +46,7 @@ Click the **Export** button in the page header to download the currently filtere
 ## Paging through results
 
 At the bottom of the table, "Showing X to Y of Z messages" tells you where you are, with page-number links to move through the rest. If a search or filter turns up nothing, you'll see "No messages match your filters" along with a one-click **Clear filters** link.
+
+---
+
+[← Previous: Import & Migration](07-settings-import-migration.md) | [Guide index](README.md) | [Next: Viewing & Replying to a Submission →](09-submission-detail-and-replies.md)

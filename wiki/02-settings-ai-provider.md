@@ -29,3 +29,7 @@ Below the provider configuration is a **Fallback Behavior** card with three swit
 * **Send email alert on provider outage** — notifies site administrators by email if the AI provider becomes completely unreachable, so you find out about a wider problem quickly.
 
 Click a switch to turn it on (blue) or off (gray). These settings are saved as part of this tab — click **Save Changes** after adjusting them.
+
+---
+
+[← Previous: Getting Started](01-getting-started.md) | [Guide index](README.md) | [Next: General Settings →](03-settings-general.md)

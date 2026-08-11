@@ -31,3 +31,7 @@ Once done, you'll see a summary of what was imported. From here you can:
 ## Good to know
 
 Your original Flamingo entries are left completely untouched — this process only ever creates new copies inside Inbox AI.
+
+---
+
+[← Previous: Notifications](06-settings-notifications.md) | [Guide index](README.md) | [Next: The AI Inbox List →](08-ai-inbox-list.md)
