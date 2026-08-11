@@ -28,3 +28,7 @@ If the webhook URL field is left empty or isn't a valid HTTPS link, Slack messag
 ## Saving
 
 Click **Save Notification Settings** at the bottom of the page after making changes — nothing on this tab takes effect until you save.
+
+---
+
+[← Previous: Usage & Billing](05-settings-usage-billing.md) | [Guide index](README.md) | [Next: Import & Migration →](07-settings-import-migration.md)

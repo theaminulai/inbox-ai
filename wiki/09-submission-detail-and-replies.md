@@ -49,3 +49,7 @@ This only appears once AI analysis has completed. Here's how to send a reply:
 ## Activity
 
 A timeline at the bottom of the page logs everything that's happened to this submission — when it was received, when analysis completed (or failed), when a draft was saved, when a reply was sent, and so on — each with a "how long ago" timestamp.
+
+---
+
+[← Previous: The AI Inbox List](08-ai-inbox-list.md) | [Guide index](README.md) | [Next: Troubleshooting →](10-troubleshooting.md)
