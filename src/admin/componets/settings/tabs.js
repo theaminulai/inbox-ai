@@ -1,7 +1,7 @@
 /**
  * Settings page tab switching — the relocated `showSettingsTab()`.
  *
- * All six subtabs are rendered server-side into the same page load (see
+ * All seven subtabs are rendered server-side into the same page load (see
  * includes/Templates/settings.php), so switching between them is a pure
  * client-side visibility toggle with no fetch involved.
  */
@@ -13,6 +13,7 @@ const TABS = [
 	'usage',
 	'notifications',
 	'flamingo',
+	'integrations',
 ];
 
 /**

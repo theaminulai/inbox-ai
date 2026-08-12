@@ -16,6 +16,7 @@ use InboxAI\CF7\CategoryTaxonomy;
 use InboxAI\Database\ActivityRepository;
 use InboxAI\Database\MessageRepository;
 use InboxAI\Database\UsageRepository;
+use InboxAI\Services\SlackIntegrationService;
 use InboxAI\Settings\Repository as SettingsRepository;
 use WP_Error;
 
@@ -292,6 +293,8 @@ final class AnalysisQueue {
 		}
 
 		ActivityRepository::log( $message_id, 'ai_analysis_completed', $event_data );
+
+		SlackIntegrationService::notify_urgent( array_merge( $message, $analysis_fields ), $priority );
 	}
 
 	/**
@@ -445,6 +448,8 @@ final class AnalysisQueue {
 				'mood_reason' => $mood_reason,
 			)
 		);
+
+		SlackIntegrationService::notify_urgent( array_merge( $message, $analysis_fields ), $priority );
 	}
 
 	/**

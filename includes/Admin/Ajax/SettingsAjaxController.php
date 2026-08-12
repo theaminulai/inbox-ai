@@ -20,7 +20,10 @@ use InboxAI\Migration\FlamingoCsvImporter;
 use InboxAI\Migration\FlamingoImporter;
 use InboxAI\Migration\InboxCsvImporter;
 use InboxAI\Security\Capabilities;
+use InboxAI\Services\SlackIntegrationService;
+use InboxAI\Settings\CrmRepository;
 use InboxAI\Settings\Repository as SettingsRepository;
+use InboxAI\Settings\SlackRepository;
 
 /**
  * Class SettingsAjaxController
@@ -73,6 +76,7 @@ final class SettingsAjaxController extends BaseAjaxController {
 		add_action( 'wp_ajax_inboxai_save_settings', array( $this, 'save_settings' ) );
 		add_action( 'wp_ajax_inboxai_test_connection', array( $this, 'test_connection' ) );
 		add_action( 'wp_ajax_inboxai_test_inbound_connection', array( $this, 'test_inbound_connection' ) );
+		add_action( 'wp_ajax_inboxai_test_slack', array( $this, 'test_slack' ) );
 		add_action( 'wp_ajax_inboxai_list_models', array( $this, 'list_models' ) );
 		add_action( 'wp_ajax_inboxai_flamingo_detect', array( $this, 'flamingo_detect' ) );
 		add_action( 'wp_ajax_inboxai_flamingo_import_batch', array( $this, 'flamingo_import_batch' ) );
@@ -103,6 +107,8 @@ final class SettingsAjaxController extends BaseAjaxController {
 			'general'       => SettingsRepository::get_general(),
 			'prompts'       => SettingsRepository::get_prompts(),
 			'notifications' => SettingsRepository::get_notifications(),
+			'slack'         => SlackRepository::get(),
+			'crm'           => CrmRepository::get(),
 		);
 
 		if ( 'usage' === $tab ) {
@@ -177,6 +183,17 @@ final class SettingsAjaxController extends BaseAjaxController {
 				wp_send_json_success( array( 'saved' => true ) );
 				break;
 
+			case 'integrations':
+				SlackRepository::save( $values );
+				CrmRepository::save( $values );
+				wp_send_json_success(
+					array(
+						'saved'           => true,
+						'crmApiKeyMasked' => CrmRepository::get_masked_api_key(),
+					)
+				);
+				break;
+
 			default:
 				wp_send_json_error( array( 'message' => __( 'Unknown settings tab.', 'inbox-ai' ) ), 400 );
 		}
@@ -247,6 +264,29 @@ final class SettingsAjaxController extends BaseAjaxController {
 				'message' => $inbound['last_check_message'],
 			)
 		);
+	}
+
+	/**
+	 * `inboxai_test_slack` — Integrations tab's "Send test message" button:
+	 * posts a real message to whatever webhook URL is currently typed into
+	 * the field (not necessarily saved yet — same "test before you save"
+	 * pattern as {@see self::test_connection()}), and reports back whether
+	 * Slack actually accepted it.
+	 *
+	 * @return void
+	 */
+	public function test_slack(): void {
+		$this->check( Capabilities::MANAGE_SETTINGS, self::SETTINGS_NONCE_ACTION );
+
+		$webhook_url = esc_url_raw( (string) $this->post_string( 'webhook_url' ) );
+
+		$result = SlackIntegrationService::send_test( $webhook_url );
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( array( 'message' => $result->get_error_message() ) );
+		}
+
+		wp_send_json_success( array( 'message' => __( 'Test message sent — check your Slack channel.', 'inbox-ai' ) ) );
 	}
 
 	/**

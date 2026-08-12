@@ -3,6 +3,10 @@
 // inline warning banner this card needs for the "PHP's imap extension isn't
 // available" case — everything else in the card reuses existing
 // `.inboxai-field`/`.inboxai-switch-row`/`.inboxai-field__hint` classes.
+// The `--info` variant is reused by Settings → Integrations → "CRM Data
+// Collection" (includes/Templates/settings/integrations.php) for its
+// "coming soon, scaffold only" banner — same shape, neutral accent instead
+// of the urgent/red warning tone.
 .inboxai-notice {
 	border-radius: var(--radius-md);
 	padding: 12px 16px;
@@ -13,5 +17,11 @@
 		background: var(--urgent-soft);
 		border: 1px solid #F3C6C6;
 		color: #7A1F1F;
+	}
+
+	&--info {
+		background: var(--accent-soft);
+		border: 1px solid var(--accent-soft-border);
+		color: var(--text-secondary);
 	}
 }
