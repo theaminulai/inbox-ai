@@ -2,22 +2,23 @@
 /**
  * Settings page shell.
  *
- * All six subtabs render into this one page load (matching how
- * `html/settings.html` ships all six sections in one file) so the existing
- * `showSettingsTab()`-style client-side switch (now `tabs.js`) can toggle
- * between them instantly, with no server round trip. Each tab keeps its own
- * copy of the `.inboxai-settings__tabs` subnav (it doubles as the left
- * column of that tab's two-column CSS grid layout, not just navigation) —
- * only the page-level modal and toast container are shared, matching the
- * mockup exactly.
+ * All seven subtabs render into this one page load (matching how
+ * `html/settings.html` ships all six sections in one file, plus the later
+ * Integrations tab) so the existing `showSettingsTab()`-style client-side
+ * switch (now `tabs.js`) can toggle between them instantly, with no server
+ * round trip. Each tab keeps its own copy of the `.inboxai-settings__tabs`
+ * subnav (it doubles as the left column of that tab's two-column CSS grid
+ * layout, not just navigation) — only the page-level modal and toast
+ * container are shared, matching the mockup exactly.
  *
  * Expects, via {@see \InboxAI\Support\Template::render()}, everything
  * {@see \InboxAI\Admin\Pages\SettingsPage::build_view_model()} builds,
  * plus:
  *
- * @var string $active_tab Which of the six tabs should be visible on first
+ * @var string $active_tab Which of the seven tabs should be visible on first
  *                          paint (`ai-settings`, `general-settings`,
- *                          `prompts`, `usage`, `notifications`, `flamingo`).
+ *                          `prompts`, `usage`, `notifications`, `flamingo`,
+ *                          `integrations`).
  *
  * @package InboxAI\Templates
  */
@@ -28,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Re-collected explicitly (rather than via get_defined_vars()) so the
-// six nested Template::render() calls below only ever receive the exact
+// seven nested Template::render() calls below only ever receive the exact
 // view-model keys this page defines, not whatever else happens to be in
 // this template's local scope.
 $inboxai_settings_vars = array(
@@ -45,6 +46,8 @@ $inboxai_settings_vars = array(
 	'usage_totals'    => $usage_totals,
 	'usage_breakdown' => $usage_breakdown,
 	'flamingo_active' => $flamingo_active,
+	'slack'           => $slack,
+	'crm'             => $crm,
 );
 
 ?>
@@ -58,6 +61,7 @@ $inboxai_settings_vars = array(
 		\InboxAI\Support\Template::render( 'settings/usage', $inboxai_settings_vars );
 		\InboxAI\Support\Template::render( 'settings/notifications', $inboxai_settings_vars );
 		\InboxAI\Support\Template::render( 'settings/flamingo', $inboxai_settings_vars );
+		\InboxAI\Support\Template::render( 'settings/integrations', $inboxai_settings_vars );
 		?>
 
 	</div>

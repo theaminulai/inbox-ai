@@ -18,14 +18,15 @@ use InboxAI\Settings\Repository as SettingsRepository;
 /**
  * Class NotificationService
  *
- * The Settings → Notifications page has several toggles (see
- * {@see SettingsRepository::get_notifications()}) that store a preference but,
- * until this class, never actually sent anything — {@see self::notify_customer_reply()}
- * is the first of them wired to a real `wp_mail()` call, answering "how do I
- * know a customer has replied" without the admin needing to keep the AI Inbox
- * list open and watch for the unread badge (see `Admin\Menu::append_unread_badge()`).
- * Same thin `wp_mail()`-wrapper approach as {@see ReplyService}, just aimed at
- * the site owner's inbox instead of the customer's.
+ * Email-only: the Settings → Notifications page's `notify_*` toggles (see
+ * {@see SettingsRepository::get_notifications()}) that store a preference and
+ * are actually wired to a real `wp_mail()` call. Same thin `wp_mail()`-wrapper
+ * approach as {@see ReplyService}, just aimed at the site owner's inbox
+ * instead of the customer's.
+ *
+ * Slack — a completely different notification channel with its own settings
+ * and its own class — lives in {@see SlackIntegrationService} instead, not
+ * here; see that class's docblock for why it's kept separate.
  */
 final class NotificationService {
 

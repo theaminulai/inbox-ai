@@ -25,14 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 	</div>
 	<div class="inboxai-settings__shell">
-		<div class="inboxai-settings__tabs" id="settings-tabs-5">
-			<a href="#" data-subnav="ai-settings" class="<?php echo 'ai-settings' === $active_tab ? 'inboxai-is-active' : ''; ?>"><?php esc_html_e( 'AI Provider', 'inbox-ai' ); ?></a>
-			<a href="#" data-subnav="general-settings" class="<?php echo 'general-settings' === $active_tab ? 'inboxai-is-active' : ''; ?>"><?php esc_html_e( 'General', 'inbox-ai' ); ?></a>
-			<a href="#" data-subnav="prompts" class="<?php echo 'prompts' === $active_tab ? 'inboxai-is-active' : ''; ?>"><?php esc_html_e( 'Prompts', 'inbox-ai' ); ?></a>
-			<a href="#" data-subnav="usage" class="<?php echo 'usage' === $active_tab ? 'inboxai-is-active' : ''; ?>"><?php esc_html_e( 'Usage & Billing', 'inbox-ai' ); ?></a>
-			<a href="#" data-subnav="notifications" class="<?php echo 'notifications' === $active_tab ? 'inboxai-is-active' : ''; ?>"><?php esc_html_e( 'Notifications', 'inbox-ai' ); ?></a>
-			<a href="#" data-subnav="flamingo" class="<?php echo 'flamingo' === $active_tab ? 'inboxai-is-active' : ''; ?>"><?php esc_html_e( 'Import & Migration', 'inbox-ai' ); ?></a>
-		</div>
+		<?php \InboxAI\Support\Template::render( 'settings/partials/subnav', array( 'active_tab' => $active_tab ) ); ?>
 		<div class="inboxai-stack">
 
 			<div class="inboxai-card">
@@ -72,23 +65,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="inboxai-switch-row__sub"><?php esc_html_e( 'Sent as soon as a reply is pulled in from Inbound Email Replies', 'inbox-ai' ); ?></div>
 						</div>
 						<div class="inboxai-switch<?php echo $notifications['notify_customer_reply'] ? ' inboxai-is-on' : ''; ?>" data-field="notify_customer_reply"></div>
-					</div>
-				</div>
-			</div>
-
-			<div class="inboxai-card">
-				<div class="inboxai-card__header"><h2><?php esc_html_e( 'Slack Integration', 'inbox-ai' ); ?></h2></div>
-				<div class="inboxai-card__body">
-					<div class="inboxai-switch-row">
-						<div>
-							<div class="inboxai-switch-row__text"><?php esc_html_e( 'Send a Slack message for urgent submissions', 'inbox-ai' ); ?></div>
-							<div class="inboxai-switch-row__sub"><?php esc_html_e( 'Requires a valid HTTPS webhook URL below', 'inbox-ai' ); ?></div>
-						</div>
-						<div class="inboxai-switch<?php echo $notifications['slack_enabled'] ? ' inboxai-is-on' : ''; ?>" data-field="slack_enabled"></div>
-					</div>
-					<div class="inboxai-field" style="margin-top:14px;margin-bottom:0;">
-						<label><?php esc_html_e( 'Slack channel webhook URL', 'inbox-ai' ); ?></label>
-						<input class="inboxai-field__input" data-field="slack_webhook_url" value="<?php echo esc_attr( $notifications['slack_webhook_url'] ); ?>" placeholder="https://hooks.slack.com/services/&hellip;">
 					</div>
 				</div>
 			</div>
