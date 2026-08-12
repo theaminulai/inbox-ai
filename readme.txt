@@ -212,14 +212,7 @@ The uncompiled source is public at https://github.com/theaminulai/inbox-ai — t
 
 == Changelog ==
 
-= 1.1.1 =
-* Merge pull request #41 from theaminulai/development
-* Merge pull request #38 from theaminulai/Add-Integrations-tab-with-Slack-and-CRM-setup
-* Merge pull request #40 from theaminulai/development
-* Merge pull request #39 from theaminulai/Expand-docs-and-add-Slack-test-tool
-* Expand docs and add Slack test tool
-* Add Integrations tab with Slack and CRM setup
-= Inbox AI for Contact Form 7/v1.2.0 - 2026-08-11 =
+= Inbox AI for Contact Form 7/v1.1.1 - 2026-08-12 =
 * ***Added***
     * Added a new Integrations tab in Settings, separate from Notifications.
     * Added a CRM Data Collection card (HubSpot, Mailchimp, and more) that saves your provider and API key ahead of automatic syncing in a future release.
