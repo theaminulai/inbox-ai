@@ -211,12 +211,6 @@ The uncompiled source is public at https://github.com/theaminulai/inbox-ai — t
 5. Settings — Notifications tab, where you can configure email notifications.
 
 == Changelog ==
-
-= 1.1.2 =
-* Merge pull request #44 from theaminulai/development
-* Merge pull request #43 from theaminulai/Add-Integrations-tab-with-Slack-and-CRM-setup
-* Wire notification emails and daily digest cron
-
 = Inbox AI for Contact Form 7/v1.1.2 - 2026-08-15 =
 * ***Fixed***
 	* Fixed the "Notify me on urgent messages" setting so the site admin now receives an email whenever a submission or customer reply is marked as Urgent.
