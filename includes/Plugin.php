@@ -23,6 +23,7 @@ use InboxAI\CF7\CategoryTaxonomy;
 use InboxAI\CF7\SubmissionHandler;
 use InboxAI\Database\Migrator;
 use InboxAI\Mail\InboundMailChecker;
+use InboxAI\Services\NotificationService;
 
 /**
  * Class Plugin
@@ -110,6 +111,15 @@ final class Plugin {
 		// Settings → Notifications → Inbound Email "enabled" toggle, checked
 		// inside InboundMailChecker::check() itself.
 		( new InboundMailChecker() )->init();
+
+		// Also unconditional — registers the daily-digest cron event itself
+		// (always scheduled), while the `daily_digest` toggle is checked
+		// inside NotificationService::send_daily_digest() when that event
+		// actually fires. Every other NotificationService method (urgent,
+		// analysis-failure, draft-ready, customer-reply) is called directly
+		// from wherever that event happens (AnalysisQueue, InboundMailChecker)
+		// and needs no registration of its own.
+		( new NotificationService() )->init();
 
 		// Registers the per-form AI category taxonomy and its edit-screen
 		// sidebar box. Also unconditional: a WP-Cron analysis run needs to
