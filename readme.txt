@@ -212,6 +212,13 @@ The uncompiled source is public at https://github.com/theaminulai/inbox-ai — t
 
 == Changelog ==
 
+= Inbox AI for Contact Form 7/v1.1.2 - 2026-08-15 =
+* ***Fixed***
+	* Fixed the "Notify me on urgent messages" setting so the site admin now receives an email whenever a submission or customer reply is marked as Urgent.
+	* Fixed the "Notify on AI analysis failure" setting so the site admin now receives an email when AI analysis fails for a submission.
+	* Fixed the "Notify when a reply draft is ready" setting so the site admin now receives an email when AI finishes generating a reply draft.
+	* Fixed the "Daily summary digest" feature so the digest is now properly scheduled and sent at 9:00 AM, including new, unread, and urgent submissions from the previous 24 hours.
+
 = Inbox AI for Contact Form 7/v1.1.1 - 2026-08-12 =
 * ***Added***
     * Added a new Integrations tab in Settings, separate from Notifications.

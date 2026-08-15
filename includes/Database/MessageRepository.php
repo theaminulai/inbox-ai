@@ -616,6 +616,54 @@ final class MessageRepository {
 	}
 
 	/**
+	 * How many non-archived submissions were captured on or after a given
+	 * point in time — feeds the "new since yesterday" line in
+	 * {@see \InboxAI\Services\NotificationService::send_daily_digest()}.
+	 *
+	 * @param string $since MySQL `DATETIME` string (site local time, matching
+	 *                       `created_at`'s own `CURRENT_TIMESTAMP` default).
+	 *
+	 * @return int
+	 */
+	public static function count_created_since( string $since ): int {
+		global $wpdb;
+
+		$table = self::table();
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $table is $wpdb->prefix + a hardcoded class constant, never user input; $since is bound via prepare().
+		return (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM {$table} WHERE deleted_at IS NULL AND workflow_status != 'archived' AND created_at >= %s",
+				$since
+			)
+		);
+	}
+
+	/**
+	 * How many currently-unread, non-archived submissions carry a given
+	 * `priority` — used to call out unread urgent submissions specifically
+	 * in {@see \InboxAI\Services\NotificationService::send_daily_digest()},
+	 * distinct from the plain unread total {@see self::count_unread()} gives.
+	 *
+	 * @param string $priority One of `urgent`, `high`, `normal`, `low`.
+	 *
+	 * @return int
+	 */
+	public static function count_unread_by_priority( string $priority ): int {
+		global $wpdb;
+
+		$table = self::table();
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $table is $wpdb->prefix + a hardcoded class constant, never user input; $priority is bound via prepare().
+		return (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM {$table} WHERE deleted_at IS NULL AND is_unread = 1 AND workflow_status != 'archived' AND priority = %s",
+				$priority
+			)
+		);
+	}
+
+	/**
 	 * Records CF7's own mail delivery outcome (`sent`/`failed`) — separate
 	 * from `workflow_status`, which tracks the human review workflow, not
 	 * whether CF7's own notification email went out.
