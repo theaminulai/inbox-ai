@@ -4,7 +4,7 @@ Tags: contact form 7, AI, inbox, database, submissions
 Requires at least: 6.7
 Tested up to: 7.0.3
 Requires PHP: 8.1
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -211,6 +211,11 @@ The uncompiled source is public at https://github.com/theaminulai/inbox-ai — t
 5. Settings — Notifications tab, where you can configure email notifications.
 
 == Changelog ==
+
+= 1.1.2 =
+* Merge pull request #44 from theaminulai/development
+* Merge pull request #43 from theaminulai/Add-Integrations-tab-with-Slack-and-CRM-setup
+* Wire notification emails and daily digest cron
 
 = Inbox AI for Contact Form 7/v1.1.2 - 2026-08-15 =
 * ***Fixed***
