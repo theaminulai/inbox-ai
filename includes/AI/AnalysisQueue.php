@@ -16,6 +16,7 @@ use InboxAI\CF7\CategoryTaxonomy;
 use InboxAI\Database\ActivityRepository;
 use InboxAI\Database\MessageRepository;
 use InboxAI\Database\UsageRepository;
+use InboxAI\Services\NotificationService;
 use InboxAI\Services\SlackIntegrationService;
 use InboxAI\Settings\Repository as SettingsRepository;
 use WP_Error;
@@ -270,6 +271,8 @@ final class AnalysisQueue {
 				$analysis_fields['reply_subject']   = $draft['subject'];
 				$analysis_fields['reply_draft']     = $draft['body'];
 				$analysis_fields['workflow_status'] = 'drafted';
+
+				NotificationService::notify_draft_ready( array_merge( $message, $analysis_fields ) );
 			}
 		}
 
@@ -295,6 +298,7 @@ final class AnalysisQueue {
 		ActivityRepository::log( $message_id, 'ai_analysis_completed', $event_data );
 
 		SlackIntegrationService::notify_urgent( array_merge( $message, $analysis_fields ), $priority );
+		NotificationService::notify_urgent( array_merge( $message, $analysis_fields ), $priority );
 	}
 
 	/**
@@ -432,6 +436,8 @@ final class AnalysisQueue {
 				$analysis_fields['reply_subject']   = $draft['subject'];
 				$analysis_fields['reply_draft']     = $draft['body'];
 				$analysis_fields['workflow_status'] = 'drafted';
+
+				NotificationService::notify_draft_ready( array_merge( $message, $analysis_fields ) );
 			}
 		}
 
@@ -450,6 +456,7 @@ final class AnalysisQueue {
 		);
 
 		SlackIntegrationService::notify_urgent( array_merge( $message, $analysis_fields ), $priority );
+		NotificationService::notify_urgent( array_merge( $message, $analysis_fields ), $priority );
 	}
 
 	/**
@@ -568,6 +575,8 @@ final class AnalysisQueue {
 		MessageRepository::mark_failed( $message_id, $message );
 
 		ActivityRepository::log( $message_id, 'ai_analysis_failed', array( 'error' => $message ) );
+
+		NotificationService::notify_analysis_failure( $message_id, $message );
 	}
 
 	/**
