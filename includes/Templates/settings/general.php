@@ -157,13 +157,7 @@ $inboxai_retention_labels = array(
 								<option value="<?php echo esc_attr( $inboxai_value ); ?>" <?php selected( $general['retention_period'], $inboxai_value ); ?>><?php echo esc_html( $inboxai_label ); ?></option>
 							<?php endforeach; ?>
 						</select>
-					</div>
-					<div class="inboxai-switch-row">
-						<div>
-							<div class="inboxai-switch-row__text"><?php esc_html_e( 'Delete attachments after reply is sent', 'inbox-ai' ); ?></div>
-							<div class="inboxai-switch-row__sub"><?php esc_html_e( 'Reduces storage use; text content is kept', 'inbox-ai' ); ?></div>
-						</div>
-						<div class="inboxai-switch<?php echo $general['delete_attachments_after_reply'] ? ' inboxai-is-on' : ''; ?>" data-field="delete_attachments_after_reply"></div>
+						<div class="inboxai-field__hint"><?php esc_html_e( 'Submissions older than this are permanently deleted by a daily background check. "Forever" never deletes anything.', 'inbox-ai' ); ?></div>
 					</div>
 				</div>
 			</div>

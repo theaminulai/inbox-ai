@@ -22,6 +22,7 @@ use InboxAI\AI\AnalysisQueue;
 use InboxAI\CF7\CategoryTaxonomy;
 use InboxAI\CF7\SubmissionHandler;
 use InboxAI\Database\Migrator;
+use InboxAI\Database\RetentionPurger;
 use InboxAI\Mail\InboundMailChecker;
 use InboxAI\Services\NotificationService;
 
@@ -120,6 +121,12 @@ final class Plugin {
 		// from wherever that event happens (AnalysisQueue, InboundMailChecker)
 		// and needs no registration of its own.
 		( new NotificationService() )->init();
+
+		// Also unconditional — registers the daily retention-purge cron
+		// event itself (always scheduled), while the `retention_period`
+		// setting ("Forever" vs a finite window) is checked inside
+		// RetentionPurger::purge() when that event actually fires.
+		( new RetentionPurger() )->init();
 
 		// Registers the per-form AI category taxonomy and its edit-screen
 		// sidebar box. Also unconditional: a WP-Cron analysis run needs to
