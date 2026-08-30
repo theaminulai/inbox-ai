@@ -353,12 +353,24 @@ final class MessageRepository {
 	 * @return string MySQL datetime.
 	 */
 	private static function period_to_datetime( string $period ): string {
+		// `created_at` is written via current_time( 'mysql' ) — site-local
+		// wall-clock time, not UTC (see self::insert()) — so the cutoff here
+		// has to be anchored to that same local "now", not time()/gmdate(
+		// 'Y-m-01 00:00:00' ) on their own, which used to compare a UTC "now"
+		// against a local-time column and could be off by the site's UTC
+		// offset near any boundary (month start, day start). gmdate() is
+		// still the right formatter below — it just formats the already
+		// locally-shifted timestamp current_time( 'timestamp' ) returns
+		// without applying a second shift, matching self::count_this_month_by_form()'s
+		// own current_time( 'Y-m-01 00:00:00' ) call.
+		$now = current_time( 'timestamp' ); // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- comparing against a local-time created_at column, not doing anything timezone-sensitive.
+
 		if ( 'this_month' === $period ) {
-			return gmdate( 'Y-m-01 00:00:00' );
+			return current_time( 'Y-m-01 00:00:00' );
 		}
 
 		if ( preg_match( '/^(\d+)_years?$/', $period, $matches ) ) {
-			return gmdate( 'Y-m-d H:i:s', strtotime( '-' . (int) $matches[1] . ' years' ) );
+			return gmdate( 'Y-m-d H:i:s', strtotime( '-' . (int) $matches[1] . ' years', $now ) );
 		}
 
 		$days = 30;
@@ -367,7 +379,7 @@ final class MessageRepository {
 			$days = (int) $matches[1];
 		}
 
-		return gmdate( 'Y-m-d H:i:s', strtotime( "-{$days} days" ) );
+		return gmdate( 'Y-m-d H:i:s', strtotime( "-{$days} days", $now ) );
 	}
 
 	/**
@@ -637,6 +649,40 @@ final class MessageRepository {
 				$since
 			)
 		);
+	}
+
+	/**
+	 * Permanently deletes every submission created before a given point in
+	 * time — the real enforcement behind Settings → General → Data
+	 * Retention's "Keep submissions for" field, run by
+	 * {@see \InboxAI\Database\RetentionPurger}'s daily cron.
+	 *
+	 * Unlike {@see self::soft_delete()} (which only hides a row from the AI
+	 * Inbox/Contacts views by setting `deleted_at`, keeping it in the
+	 * database), this is a real `DELETE` — the whole point of a retention
+	 * policy is actually freeing the storage, and a soft-deleted row already
+	 * reads as "gone" everywhere else in the plugin regardless. Deliberately
+	 * ignores `deleted_at`/`workflow_status` entirely: an old row that was
+	 * already archived or soft-deleted is exactly as eligible for real
+	 * deletion as one that wasn't.
+	 *
+	 * @param string $before MySQL `DATETIME` string (site local time, matching
+	 *                        `created_at`'s own `CURRENT_TIMESTAMP` default) —
+	 *                        every row strictly older than this is deleted.
+	 *
+	 * @return int Number of rows deleted.
+	 */
+	public static function purge_older_than( string $before ): int {
+		global $wpdb;
+
+		$table = self::table();
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $table is $wpdb->prefix + a hardcoded class constant, never user input; $before is bound via prepare().
+		$deleted = $wpdb->query(
+			$wpdb->prepare( "DELETE FROM {$table} WHERE created_at < %s", $before )
+		);
+
+		return false === $deleted ? 0 : (int) $deleted;
 	}
 
 	/**

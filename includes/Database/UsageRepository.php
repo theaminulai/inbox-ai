@@ -145,14 +145,20 @@ final class UsageRepository {
 	 * @return string MySQL datetime.
 	 */
 	private static function period_to_datetime( string $period ): string {
+		// `created_at` is written via current_time( 'mysql' ) — site-local
+		// wall-clock time, not UTC (see self::record()) — so the cutoff here
+		// has to be anchored to that same local "now", matching the identical
+		// fix in {@see \InboxAI\Database\MessageRepository::period_to_datetime()}.
+		$now = current_time( 'timestamp' ); // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- comparing against a local-time created_at column, not doing anything timezone-sensitive.
+
 		if ( 'this_month' === $period ) {
-			return gmdate( 'Y-m-01 00:00:00' );
+			return current_time( 'Y-m-01 00:00:00' );
 		}
 
 		// Handled via strtotime()'s own "-N years" parsing (not N*365 days)
 		// so leap years land on the correct calendar date.
 		if ( preg_match( '/^(\d+)_years?$/', $period, $matches ) ) {
-			return gmdate( 'Y-m-d H:i:s', strtotime( '-' . (int) $matches[1] . ' years' ) );
+			return gmdate( 'Y-m-d H:i:s', strtotime( '-' . (int) $matches[1] . ' years', $now ) );
 		}
 
 		$days = 30;
@@ -161,6 +167,6 @@ final class UsageRepository {
 			$days = (int) $matches[1];
 		}
 
-		return gmdate( 'Y-m-d H:i:s', strtotime( "-{$days} days" ) );
+		return gmdate( 'Y-m-d H:i:s', strtotime( "-{$days} days", $now ) );
 	}
 }

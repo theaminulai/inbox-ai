@@ -186,17 +186,19 @@ final class Repository {
 	/**
 	 * General tab settings.
 	 *
-	 * @return array{monitored_forms:int[],auto_analyze:bool,auto_draft_high_confidence:bool,auto_archive_spam:bool,confidence_threshold:int,retention_period:string,delete_attachments_after_reply:bool}
+	 * @return array{monitored_forms:int[],auto_analyze:bool,auto_draft_high_confidence:bool,auto_archive_spam:bool,confidence_threshold:int,retention_period:string}
 	 */
 	public static function get_general(): array {
 		$defaults = array(
-			'monitored_forms'                => array(),
-			'auto_analyze'                   => true,
-			'auto_draft_high_confidence'     => true,
-			'auto_archive_spam'              => true,
-			'confidence_threshold'           => 60,
-			'retention_period'               => 'forever',
-			'delete_attachments_after_reply' => false,
+			'monitored_forms'            => array(),
+			'auto_analyze'               => true,
+			'auto_draft_high_confidence' => true,
+			'auto_archive_spam'          => true,
+			'confidence_threshold'       => 60,
+			// Actually enforced by {@see \InboxAI\Database\RetentionPurger}'s
+			// daily cron — see that class's own docblock for why this used to
+			// be saved-and-ignored.
+			'retention_period'           => 'forever',
 		);
 
 		$stored = get_option( self::GENERAL_OPTION, array() );
@@ -223,13 +225,12 @@ final class Repository {
 		update_option(
 			self::GENERAL_OPTION,
 			array(
-				'monitored_forms'                => $monitored_forms,
-				'auto_analyze'                   => ! empty( $data['auto_analyze'] ),
-				'auto_draft_high_confidence'     => ! empty( $data['auto_draft_high_confidence'] ),
-				'auto_archive_spam'              => ! empty( $data['auto_archive_spam'] ),
-				'confidence_threshold'           => min( 100, max( 0, absint( $data['confidence_threshold'] ?? $current['confidence_threshold'] ) ) ),
-				'retention_period'               => in_array( $data['retention_period'] ?? '', self::RETENTION_PERIODS, true ) ? $data['retention_period'] : $current['retention_period'],
-				'delete_attachments_after_reply' => ! empty( $data['delete_attachments_after_reply'] ),
+				'monitored_forms'            => $monitored_forms,
+				'auto_analyze'               => ! empty( $data['auto_analyze'] ),
+				'auto_draft_high_confidence' => ! empty( $data['auto_draft_high_confidence'] ),
+				'auto_archive_spam'          => ! empty( $data['auto_archive_spam'] ),
+				'confidence_threshold'       => min( 100, max( 0, absint( $data['confidence_threshold'] ?? $current['confidence_threshold'] ) ) ),
+				'retention_period'           => in_array( $data['retention_period'] ?? '', self::RETENTION_PERIODS, true ) ? $data['retention_period'] : $current['retention_period'],
 			),
 			false
 		);
