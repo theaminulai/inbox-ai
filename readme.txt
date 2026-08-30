@@ -211,6 +211,13 @@ The uncompiled source is public at https://github.com/theaminulai/inbox-ai — t
 5. Settings — Notifications tab, where you can configure email notifications.
 
 == Changelog ==
+= Inbox AI for Contact Form 7/v1.1.3 - 2026-08-30 =
+* ***Fixed***
+	* * Fixed: AI Inbox List date-range filter (7/30/90 days, this month, N years) — was comparing against UTC while submissions are timestamped in site-local time, throwing off results near any boundary.
+	* * Fixed: Usage & Billing period selector and cost-breakdown chart — same timezone bug, same fix.
+	* * Fixed: "Keep submissions for" (Data Retention) — build the real purge-by-age cron job; currently saved and never read.
+	* * Fixed: "Delete attachments after reply" — remove or clearly relabel; the plugin doesn't capture attachments at all yet, so this control has nothing to act on.
+
 = Inbox AI for Contact Form 7/v1.1.2 - 2026-08-15 =
 * ***Fixed***
 	* Fixed the "Notify me on urgent messages" setting so the site admin now receives an email whenever a submission or customer reply is marked as Urgent.
