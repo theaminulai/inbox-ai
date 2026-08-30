@@ -212,11 +212,6 @@ The uncompiled source is public at https://github.com/theaminulai/inbox-ai — t
 
 == Changelog ==
 
-= 1.1.3 =
-* Merge pull request #47 from theaminulai/development
-* Merge pull request #46 from theaminulai/Fixed-Usage-&-Billing-period-selector-and-cost-breakdown-chart-—-same-timezone-bug,-same-fix-
-* Tested up
-* Fixed: Usage & Billing period selector and cost-breakdown chart — same timezone bug, same fix.
 = Inbox AI for Contact Form 7/v1.1.3 - 2026-08-30 =
 * ***Fixed***
 	* * Fixed: AI Inbox List date-range filter (7/30/90 days, this month, N years) — was comparing against UTC while submissions are timestamped in site-local time, throwing off results near any boundary.
