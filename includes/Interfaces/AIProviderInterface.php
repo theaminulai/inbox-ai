@@ -74,11 +74,16 @@ interface AIProviderInterface {
 	 *                              the system role entirely rather than sending
 	 *                              an empty one.
 	 * @param string $user_prompt   User/content prompt.
+	 * @param int    $timeout       HTTP timeout in seconds for this request —
+	 *                              Settings → AI Provider → "Request timeout"
+	 *                              (see {@see \InboxAI\Settings\Repository::get_provider()}).
+	 *                              Defaults to 45 for any caller that doesn't
+	 *                              pass one explicitly.
 	 *
 	 * @return array{content:string,prompt_tokens:int,completion_tokens:int}|WP_Error
 	 *               On success, the raw text response plus token usage (`0`
 	 *               if the provider's response didn't include usage data).
 	 *               A WP_Error with a user-safe message on failure.
 	 */
-	public function analyze( string $api_key, string $model, string $system_prompt, string $user_prompt );
+	public function analyze( string $api_key, string $model, string $system_prompt, string $user_prompt, int $timeout = 45 );
 }

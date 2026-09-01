@@ -132,7 +132,6 @@ $inboxai_provider_label    = $inboxai_providers[ $inboxai_selected_provider ]['l
 					</div>
 					<div style="display:flex;gap:10px;margin-top:18px;">
 						<button class="inboxai-btn--secondary" id="settings-test-connection"><?php esc_html_e( 'Test Connection', 'inbox-ai' ); ?></button>
-						<button class="inboxai-btn--primary" id="settings-save-provider"><?php esc_html_e( 'Save Changes', 'inbox-ai' ); ?></button>
 					</div>
 				</div>
 			</div>
@@ -162,6 +161,10 @@ $inboxai_provider_label    = $inboxai_providers[ $inboxai_selected_provider ]['l
 						<div class="inboxai-switch<?php echo $provider['email_alert_outage'] ? ' inboxai-is-on' : ''; ?>" data-field="email_alert_outage"></div>
 					</div>
 				</div>
+			</div>
+
+			<div style="display:flex;justify-content:flex-end;">
+				<button class="inboxai-btn--primary" id="settings-save-provider"><?php esc_html_e( 'Save Changes', 'inbox-ai' ); ?></button>
 			</div>
 
 		</div>

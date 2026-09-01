@@ -254,6 +254,43 @@ final class NotificationService {
 	}
 
 	/**
+	 * Emails the site admin that the configured AI provider seems
+	 * unreachable, if Settings → AI Provider → "Send email alert on provider
+	 * outage" is on. Deliberately a separate setting/email from
+	 * {@see self::notify_analysis_failure()}: that one covers every failure
+	 * reason (missing API key, unparseable response, provider outage) and
+	 * lives under Settings → Notifications; this one is scoped to just the
+	 * "provider itself is down or erroring" case and lives under Settings →
+	 * AI Provider instead, so an admin can enable either independently —
+	 * e.g. only wanting a heads-up for a real outage, not every individual
+	 * submission failure.
+	 *
+	 * @param string $error User-safe error message from the failed provider call.
+	 *
+	 * @return void
+	 */
+	public static function notify_provider_outage( string $error ): void {
+		if ( empty( SettingsRepository::get_provider()['email_alert_outage'] ) ) {
+			return;
+		}
+
+		$to = get_option( 'admin_email' );
+
+		if ( ! is_email( $to ) ) {
+			return;
+		}
+
+		$lines   = array();
+		$lines[] = __( 'Inbox AI could not reach your configured AI provider:', 'inbox-ai' );
+		$lines[] = '';
+		$lines[] = $error;
+		$lines[] = '';
+		$lines[] = __( 'Submissions will keep being captured as normal; AI analysis will resume automatically once the provider is reachable again.', 'inbox-ai' );
+
+		wp_mail( $to, __( 'Inbox AI: AI provider appears unreachable', 'inbox-ai' ), implode( "\n", $lines ) );
+	}
+
+	/**
 	 * Emails the site admin that a reply draft is ready for review, if the
 	 * `notify_draft_ready` toggle is on. Called from
 	 * {@see \InboxAI\AI\AnalysisQueue::process()} and
