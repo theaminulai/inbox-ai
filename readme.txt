@@ -212,12 +212,21 @@ The uncompiled source is public at https://github.com/theaminulai/inbox-ai — t
 
 == Changelog ==
 
+= Inbox AI for Contact Form 7/v1.1.4 - 2026-09-01 =
+* ***Fixed***
+	* Fixed "Retry failed requests automatically" so a failed AI request is now actually retried up to 3 times with exponential backoff, instead of failing on the first attempt.
+	* Fixed "Fall back to manual review on repeated failure" so a submission is now marked Needs Review instead of Failed when this is on and retries are exhausted.
+	* Fixed "Send email alert on provider outage" so the site admin now receives an email when the configured AI provider is unreachable.
+	* Fixed the "Request timeout" setting so it now actually controls the AI request's timeout instead of always using a fixed 45 seconds.
+* ***Changed***
+	* Moved the AI Provider Settings "Save Changes" button to the bottom of the page, after the Fallback Behavior card, so it's no longer above settings it doesn't yet cover.
+
 = Inbox AI for Contact Form 7/v1.1.3 - 2026-08-30 =
 * ***Fixed***
-	* * Fixed: AI Inbox List date-range filter (7/30/90 days, this month, N years) — was comparing against UTC while submissions are timestamped in site-local time, throwing off results near any boundary.
-	* * Fixed: Usage & Billing period selector and cost-breakdown chart — same timezone bug, same fix.
-	* * Fixed: "Keep submissions for" (Data Retention) — build the real purge-by-age cron job; currently saved and never read.
-	* * Fixed: "Delete attachments after reply" — remove or clearly relabel; the plugin doesn't capture attachments at all yet, so this control has nothing to act on.
+	* Fixed: AI Inbox List date-range filter (7/30/90 days, this month, N years) — was comparing against UTC while submissions are timestamped in site-local time, throwing off results near any boundary.
+	* Fixed: Usage & Billing period selector and cost-breakdown chart — same timezone bug, same fix.
+	* Fixed: "Keep submissions for" (Data Retention) — build the real purge-by-age cron job; currently saved and never read.
+	* Fixed: "Delete attachments after reply" — remove or clearly relabel; the plugin doesn't capture attachments at all yet, so this control has nothing to act on.
 
 = Inbox AI for Contact Form 7/v1.1.2 - 2026-08-15 =
 * ***Fixed***

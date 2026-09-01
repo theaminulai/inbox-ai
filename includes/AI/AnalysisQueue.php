@@ -188,10 +188,10 @@ final class AnalysisQueue {
 			$categories
 		);
 
-		$result = $provider->analyze( $api_key, $provider_settings['model'], '', $analysis_prompt );
+		$result = $this->analyze_with_retry( $provider, $api_key, $provider_settings, '', $analysis_prompt );
 
 		if ( $result instanceof WP_Error ) {
-			$this->fail( $message_id, $result->get_error_message() );
+			$this->fail( $message_id, $result->get_error_message(), true );
 			return;
 		}
 
@@ -369,7 +369,7 @@ final class AnalysisQueue {
 			$categories
 		);
 
-		$result = $provider->analyze( $api_key, $provider_settings['model'], '', $analysis_prompt );
+		$result = $this->analyze_with_retry( $provider, $api_key, $provider_settings, '', $analysis_prompt );
 
 		if ( $result instanceof WP_Error ) {
 			return;
@@ -541,7 +541,7 @@ final class AnalysisQueue {
 			)
 		);
 
-		$result = $provider->analyze( $api_key, $provider_settings['model'], '', $reply_prompt );
+		$result = $provider->analyze( $api_key, $provider_settings['model'], '', $reply_prompt, (int) $provider_settings['request_timeout'] );
 
 		if ( $result instanceof WP_Error ) {
 			return null;
@@ -564,19 +564,83 @@ final class AnalysisQueue {
 	}
 
 	/**
-	 * Marks a message as failed and logs the failure to its timeline.
+	 * Calls {@see \InboxAI\Interfaces\AIProviderInterface::analyze()} once, or
+	 * up to 3 times total with exponential backoff (1s, then 2s between
+	 * attempts) when Settings → AI Provider → "Retry failed requests
+	 * automatically" is on — matching that toggle's own "Up to 3 attempts
+	 * with exponential backoff" label exactly. A plain, single attempt when
+	 * the toggle is off, same as before this existed.
+	 *
+	 * Always threads {@see \InboxAI\Settings\Repository::get_provider()}'s
+	 * `request_timeout` through to the provider call — this is also the one
+	 * place that setting takes effect for the analysis call (the reply-draft
+	 * call in {@see self::draft_reply()} reads it directly, without retrying,
+	 * since a failed draft is never fatal to begin with).
+	 *
+	 * @param \InboxAI\Interfaces\AIProviderInterface $provider          Provider instance.
+	 * @param string                                     $api_key           Decrypted API key.
+	 * @param array<string, mixed>                       $provider_settings From `Settings\Repository::get_provider()`.
+	 * @param string                                     $system_prompt     System/instruction prompt.
+	 * @param string                                     $user_prompt       User/content prompt.
+	 *
+	 * @return array{content:string,prompt_tokens:int,completion_tokens:int}|WP_Error
+	 */
+	private function analyze_with_retry( $provider, string $api_key, array $provider_settings, string $system_prompt, string $user_prompt ) {
+		$attempts = ! empty( $provider_settings['auto_retry'] ) ? 3 : 1;
+		$timeout  = (int) $provider_settings['request_timeout'];
+		$result   = null;
+
+		for ( $attempt = 1; $attempt <= $attempts; $attempt++ ) {
+			$result = $provider->analyze( $api_key, $provider_settings['model'], $system_prompt, $user_prompt, $timeout );
+
+			if ( ! ( $result instanceof WP_Error ) ) {
+				return $result;
+			}
+
+			if ( $attempt < $attempts ) {
+				sleep( 2 ** ( $attempt - 1 ) ); // 1s after attempt 1, 2s after attempt 2.
+			}
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Marks a message as failed (or, if "Fall back to manual review on
+	 * repeated failure" is on, Needs Review instead) and logs the failure to
+	 * its timeline.
 	 *
 	 * @param int    $message_id Message row id.
 	 * @param string $message    User-safe error message.
+	 * @param bool   $is_outage  Whether this failure came from the provider
+	 *                            call itself being unreachable/erroring
+	 *                            (as opposed to a config problem like a
+	 *                            missing API key, or an unparseable response)
+	 *                            — the specific case Settings → AI Provider →
+	 *                            "Send email alert on provider outage" means.
 	 *
 	 * @return void
 	 */
-	private function fail( int $message_id, string $message ): void {
-		MessageRepository::mark_failed( $message_id, $message );
+	private function fail( int $message_id, string $message, bool $is_outage = false ): void {
+		if ( ! empty( SettingsRepository::get_provider()['fallback_manual_review'] ) ) {
+			MessageRepository::update_analysis(
+				$message_id,
+				array(
+					'workflow_status' => 'review',
+					'ai_error'        => $message,
+				)
+			);
+		} else {
+			MessageRepository::mark_failed( $message_id, $message );
+		}
 
 		ActivityRepository::log( $message_id, 'ai_analysis_failed', array( 'error' => $message ) );
 
 		NotificationService::notify_analysis_failure( $message_id, $message );
+
+		if ( $is_outage ) {
+			NotificationService::notify_provider_outage( $message );
+		}
 	}
 
 	/**
