@@ -80,7 +80,7 @@ final class GeminiProvider implements AIProviderInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function analyze( string $api_key, string $model, string $system_prompt, string $user_prompt ) {
+	public function analyze( string $api_key, string $model, string $system_prompt, string $user_prompt, int $timeout = 45 ) {
 		if ( '' === trim( $api_key ) ) {
 			return new WP_Error( 'inboxai_missing_key', __( 'No API key has been configured.', 'inbox-ai' ) );
 		}
@@ -104,7 +104,7 @@ final class GeminiProvider implements AIProviderInterface {
 			self::API_BASE . '/' . rawurlencode( $model ) . ':generateContent?key=' . rawurlencode( $api_key ),
 			array(
 				'headers' => array( 'Content-Type' => 'application/json' ),
-				'timeout' => 45,
+				'timeout' => $timeout,
 				'body'    => wp_json_encode( $payload ),
 			)
 		);
