@@ -4,7 +4,7 @@ Tags: contact form 7, AI, inbox, database, submissions
 Requires at least: 6.7
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.1.3
+Stable tag: 1.1.4
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -211,6 +211,11 @@ The uncompiled source is public at https://github.com/theaminulai/inbox-ai — t
 5. Settings — Notifications tab, where you can configure email notifications.
 
 == Changelog ==
+
+= 1.1.4 =
+* Merge pull request #50 from theaminulai/development
+* Merge pull request #49 from theaminulai/Fix-AI-retry,-timeout,-and-outage-alerts
+* Fix AI retry, timeout, and outage alerts
 
 = Inbox AI for Contact Form 7/v1.1.4 - 2026-09-01 =
 * ***Fixed***
