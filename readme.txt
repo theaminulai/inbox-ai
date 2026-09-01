@@ -212,11 +212,6 @@ The uncompiled source is public at https://github.com/theaminulai/inbox-ai — t
 
 == Changelog ==
 
-= 1.1.4 =
-* Merge pull request #50 from theaminulai/development
-* Merge pull request #49 from theaminulai/Fix-AI-retry,-timeout,-and-outage-alerts
-* Fix AI retry, timeout, and outage alerts
-
 = Inbox AI for Contact Form 7/v1.1.4 - 2026-09-01 =
 * ***Fixed***
 	* Fixed "Retry failed requests automatically" so a failed AI request is now actually retried up to 3 times with exponential backoff, instead of failing on the first attempt.
