@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documentation — Inbox AI</title>
+<meta name="description" content="Full setup and usage guide for Inbox AI: connecting an AI provider, every Settings tab explained, using the AI Inbox, and troubleshooting.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-header">
+	<div class="wrap">
+		<a class="brand" href="index.html">
+			<span class="brand__mark">AI</span>
+			Inbox AI
+		</a>
+		<nav class="site-nav">
+			<a href="index.html#features">Features</a>
+			<a href="index.html#how-it-works">How it works</a>
+			<a href="index.html#providers">Providers</a>
+			<a href="docs.html" class="is-active">Docs</a>
+		</nav>
+		<a class="btn btn--outline btn--sm" href="index.html">&larr; Back to site</a>
+	</div>
+</header>
+
+<div class="docs-shell">
+	<aside class="docs-nav">
+		<input type="search" id="docs-search" class="docs-search" placeholder="Search docs&hellip;">
+		<a href="https://github.com/theaminulai/inbox-ai/tree/main/wiki" target="_blank" rel="noopener" style="display:block;font-size:12px;font-weight:600;color:var(--accent-deep);text-decoration:none;margin-bottom:14px;">View this guide on GitHub &rarr;</a>
+		<div class="docs-nav__title">Guide</div>
+		<a href="#getting-started" data-nav>1. Getting Started</a>
+		<a href="#ai-provider" data-nav>2. AI Provider Settings</a>
+		<a href="#general" data-nav>3. General Settings</a>
+		<a href="#prompts" data-nav>4. Prompts</a>
+		<a href="#usage-billing" data-nav>5. Usage &amp; Billing</a>
+		<a href="#notifications" data-nav>6. Notifications</a>
+		<a href="#import-migration" data-nav>7. Import &amp; Migration</a>
+		<a href="#ai-inbox-list" data-nav>8. The AI Inbox List</a>
+		<a href="#submission-detail" data-nav>9. Viewing &amp; Replying</a>
+		<a href="#troubleshooting" data-nav>10. Troubleshooting</a>
+	</aside>
+
+	<main class="docs-content">
+
+		<article class="chapter" id="getting-started" data-title="Getting Started">
+			<div class="eyebrow">Chapter 1</div>
+			<h2>Getting Started</h2>
+
+			<h3>What you need before you start</h3>
+			<ul>
+				<li><strong>Contact Form 7</strong> installed and active. Inbox AI works alongside it and never modifies your existing forms.</li>
+				<li>WordPress 6.7 or newer.</li>
+				<li>A hosting account running PHP 8.1 or newer.</li>
+				<li>An account with at least one AI provider: <strong>OpenAI</strong>, <strong>Anthropic</strong>, or <strong>Google (Gemini)</strong> — you'll need an API key.</li>
+			</ul>
+
+			<h3>Installing and activating</h3>
+			<ol>
+				<li>Upload the Inbox AI plugin the same way you would any other WordPress plugin (<strong>Plugins &rarr; Add New &rarr; Upload Plugin</strong>, or by placing the folder in <code>wp-content/plugins/</code>).</li>
+				<li>Go to <strong>Plugins</strong> and click <strong>Activate</strong> next to Inbox AI.</li>
+				<li>Look for <strong>Contact</strong> in your admin sidebar — you should see two new entries under it: <strong>AI Inbox</strong> and <strong>Settings</strong>.</li>
+			</ol>
+			<div class="callout">If you don't see these two entries, double-check that Contact Form 7 itself is active — Inbox AI won't add its menu items without it.</div>
+
+			<h3>First-time setup checklist</h3>
+			<ol>
+				<li><strong>Connect an AI provider.</strong> Contact &rarr; Settings &rarr; AI Provider tab. Pick a provider, paste your API key, click Test Connection.</li>
+				<li><strong>Choose which forms to monitor.</strong> Settings &rarr; General tab. Nothing is captured until a form is turned on here.</li>
+				<li><strong>(Optional) Review the AI's instructions.</strong> The Prompts tab — defaults work well for most sites.</li>
+				<li><strong>(Optional) Turn on notifications.</strong> The Notifications tab can email you or post to Slack when something urgent comes in.</li>
+				<li><strong>Submit a test message.</strong> Then check Contact &rarr; AI Inbox — your submission should appear within moments, followed by an AI summary shortly after.</li>
+			</ol>
+		</article>
+
+		<article class="chapter" id="ai-provider" data-title="AI Provider Settings">
+			<div class="eyebrow">Chapter 2</div>
+			<h2>AI Provider Settings</h2>
+			<div class="where">Where to find it: Contact &rarr; Settings &rarr; <code>AI Provider</code> tab</div>
+			<p>This is where you tell Inbox AI which AI service to use for analyzing submissions and drafting replies — nothing works until a provider is connected.</p>
+
+			<h3>Connecting a provider</h3>
+			<ol>
+				<li>Under <strong>Choose a provider</strong>, click the card for the service you have an account with: OpenAI, Anthropic, or Google.</li>
+				<li>Paste your <strong>API key</strong> into the Configuration section. It's encrypted at rest and never shown in full again (<code>sk-&bull;&bull;&bull;&bull;7f2A</code>).</li>
+				<li>Choose a <strong>Model</strong> from the dropdown.</li>
+				<li>Choose a <strong>Request timeout</strong> — how many seconds to wait for a response (30, 60, or 90 seconds).</li>
+				<li>Click <strong>Test Connection</strong>, then <strong>Save Changes</strong> once it succeeds.</li>
+			</ol>
+			<p class="muted">A green <strong>Connected</strong> badge appears next to the Configuration heading once a working key is saved. You can switch providers at any time — the Model dropdown refreshes to match.</p>
+
+			<h3>Fallback Behavior</h3>
+			<ul>
+				<li><strong>Retry failed requests automatically</strong> — retries a failed AI request up to 3 times, with a longer wait between each attempt, before giving up.</li>
+				<li><strong>Fall back to manual review on repeated failure</strong> — if every retry still fails, the submission is marked <strong>Needs Review</strong> instead of <strong>Failed</strong>, so it doesn't get lost.</li>
+				<li><strong>Send email alert on provider outage</strong> — emails site admins if the AI provider becomes unreachable.</li>
+			</ul>
+		</article>
+
+		<article class="chapter" id="general" data-title="General Settings">
+			<div class="eyebrow">Chapter 3</div>
+			<h2>General Settings</h2>
+			<div class="where">Where to find it: Contact &rarr; Settings &rarr; <code>General</code> tab</div>
+			<p>Controls which forms feed into the AI Inbox and how new submissions are automatically handled.</p>
+
+			<h3>Monitored Forms</h3>
+			<p>Every Contact Form 7 form on your site is listed with a switch next to it. Turn a switch on to start capturing that form's submissions; turning it off stops new ones without removing existing history. A line under each form shows how many submissions it's received this calendar month.</p>
+
+			<h3>Automatic Processing</h3>
+			<ul>
+				<li><strong>Analyze new submissions automatically</strong> — the AI immediately summarizes, categorizes, and scores every new submission.</li>
+				<li><strong>Auto-draft replies for high-confidence messages</strong> — the AI also writes a suggested reply. A draft is never sent on its own.</li>
+				<li><strong>Auto-archive detected spam</strong> — messages the AI is at least 95% sure are spam are archived automatically.</li>
+			</ul>
+			<p class="muted">A <strong>Confidence threshold for "Needs Review"</strong> slider (0&ndash;100%) flags anything analyzed below that confidence for manual double-checking.</p>
+
+			<h3>Data Retention</h3>
+			<p><strong>Keep submissions for</strong> &mdash; Forever, 24 months, 12 months, or 6 months. Submissions older than the chosen window are permanently deleted by a daily background check; "Forever" never deletes anything.</p>
+		</article>
+
+		<article class="chapter" id="prompts" data-title="Prompts">
+			<div class="eyebrow">Chapter 4</div>
+			<h2>Prompts</h2>
+			<div class="where">Where to find it: Contact &rarr; Settings &rarr; <code>Prompts</code> tab</div>
+			<p>"Prompts" are the written instructions given to the AI. The defaults work well out of the box — most people never need to touch this tab.</p>
+
+			<h3>Analysis Prompt</h3>
+			<p>The instruction the AI follows when reading a new submission. Supports placeholders: <code>{message}</code>, <code>{customer_name}</code>, <code>{form_name}</code>, <code>{submitted_fields}</code>, <code>{categories}</code>. Changes only affect new submissions from that point on.</p>
+
+			<h3>Reply Draft Prompt</h3>
+			<p>The instruction used when writing a suggested reply. Supports <code>{message}</code>, <code>{summary}</code>, <code>{tone}</code>, <code>{signature}</code>.</p>
+
+			<h3>Reply Tone</h3>
+			<p>Choose a default tone for AI-drafted replies: Friendly and professional, Formal, Casual, or Concise.</p>
+			<p class="muted">Click <strong>Save Prompts</strong> to keep changes, or <strong>Reset to Defaults</strong> to discard your edits and start clean again.</p>
+		</article>
+
+		<article class="chapter" id="usage-billing" data-title="Usage & Billing">
+			<div class="eyebrow">Chapter 5</div>
+			<h2>Usage &amp; Billing</h2>
+			<div class="where">Where to find it: Contact &rarr; Settings &rarr; <code>Usage &amp; Billing</code> tab</div>
+			<p>A read-only dashboard — nothing to configure, just numbers to keep an eye on. A dropdown in the top-right corner switches the time period: last 7/30/90 days, this month, or the last 1&ndash;5 years.</p>
+
+			<h3>The four summary cards</h3>
+			<ul>
+				<li><strong>Total requests</strong> — how many times the AI was called during the selected period.</li>
+				<li><strong>Tokens used</strong> — total text processed, broken down by sent vs. generated.</li>
+				<li><strong>Estimated cost</strong> — an approximate dollar figure across whichever provider(s) you've used.</li>
+				<li><strong>Monthly budget</strong> — shows "Not configured yet" until a spending-limit feature ships.</li>
+			</ul>
+			<p class="muted"><strong>Cost by Request Type</strong> breaks estimated cost down by what the request was for — analyzing a submission versus drafting a reply.</p>
+		</article>
+
+		<article class="chapter" id="notifications" data-title="Notifications">
+			<div class="eyebrow">Chapter 6</div>
+			<h2>Notifications</h2>
+			<div class="where">Where to find it: Contact &rarr; Settings &rarr; <code>Notifications</code> tab</div>
+			<p>Decide how you or your team hear about activity, instead of checking the inbox constantly.</p>
+
+			<h3>Email Notifications</h3>
+			<ul>
+				<li><strong>Notify me on urgent messages</strong> — the moment a submission is scored Urgent.</li>
+				<li><strong>Daily summary digest</strong> — one email each morning at 9:00 AM summarizing recent activity.</li>
+				<li><strong>Notify on AI analysis failure</strong> — whenever a submission's analysis couldn't complete.</li>
+				<li><strong>Notify when a reply draft is ready</strong> — when a new AI-drafted reply is waiting for approval.</li>
+			</ul>
+			<p class="muted">These four switches work independently of each other.</p>
+
+			<h3>Slack Integration</h3>
+			<ol>
+				<li>Turn on <strong>Send a Slack message for urgent submissions</strong>.</li>
+				<li>Paste a valid <code>https://</code> webhook URL from your Slack workspace's Incoming Webhooks integration.</li>
+				<li>Save your settings.</li>
+			</ol>
+			<p class="muted">Click <strong>Save Notification Settings</strong> at the bottom of the page &mdash; nothing takes effect until you save.</p>
+		</article>
+
+		<article class="chapter" id="import-migration" data-title="Import & Migration">
+			<div class="eyebrow">Chapter 7</div>
+			<h2>Import &amp; Migration (Flamingo)</h2>
+			<div class="where">Where to find it: Contact &rarr; Settings &rarr; <code>Import &amp; Migration</code> tab</div>
+			<p>If you previously used <strong>Flamingo</strong> to store Contact Form 7 submissions, this wizard brings that history into Inbox AI as copies &mdash; nothing in Flamingo is ever changed or deleted, and re-running the import never creates duplicates.</p>
+			<ol>
+				<li><strong>Choose a Source</strong> &mdash; live Flamingo data (if Flamingo is active) or a CSV exported from Flamingo's own Export button.</li>
+				<li><strong>Options</strong> &mdash; optionally run AI analysis on imported messages right away, or leave it for later in smaller batches.</li>
+				<li><strong>Review &amp; Import</strong> &mdash; confirm the count, then start the import; a progress bar tracks it.</li>
+				<li><strong>Complete</strong> &mdash; import another batch, or jump straight to the AI Inbox.</li>
+			</ol>
+		</article>
+
+		<article class="chapter" id="ai-inbox-list" data-title="The AI Inbox List">
+			<div class="eyebrow">Chapter 8</div>
+			<h2>The AI Inbox List</h2>
+			<div class="where">Where to find it: Contact &rarr; <code>AI Inbox</code></div>
+			<p>The main screen &mdash; every monitored submission shows up here, sorted by priority and AI confidence, most relevant first.</p>
+
+			<h3>Searching and filtering</h3>
+			<p>Search box (name/email/message text), plus filters for Form, Status (All, New, Needs Review, Reviewed, Drafted, Replied, Failed, Archived), Priority, and Category. A separate date-range dropdown in the header limits the list to a time window. Every filter is reflected in the URL, so a view can be bookmarked or shared.</p>
+
+			<h3>Row actions</h3>
+			<ul>
+				<li><strong>View</strong> &mdash; opens the full submission.</li>
+				<li><strong>Reply</strong> &mdash; opens the submission at the Reply Composer.</li>
+				<li><strong>More</strong> &mdash; Retry (Failed only), Mark reviewed (New/Needs Review), Archive.</li>
+			</ul>
+			<p class="muted">Click <strong>Export</strong> to download the currently filtered list as a CSV file.</p>
+		</article>
+
+		<article class="chapter" id="submission-detail" data-title="Viewing & Replying">
+			<div class="eyebrow">Chapter 9</div>
+			<h2>Viewing &amp; Replying to a Submission</h2>
+			<div class="where">Where to find it: click any customer's name/email, or the eye/envelope icon, from the AI Inbox list</div>
+
+			<h3>AI Analysis</h3>
+			<p>Summary, Category and Priority, Confidence (with a bar), AI Reasoning, and a <strong>Regenerate Analysis</strong> link. If analysis failed instead, you'll see Retry, Mark Reviewed, and a Provider Settings shortcut.</p>
+
+			<h3>Reply Composer</h3>
+			<p>Appears once analysis has completed. The recipient is always the real sender and can't be edited. Edit the pre-filled subject/body as needed, use the small formatting toolbar, or click the refresh icon to have the AI regenerate the draft. <strong>Save Draft</strong> keeps edits without sending; <strong>Send Reply</strong> shows a confirmation step before anything actually goes out.</p>
+
+			<h3>Activity</h3>
+			<p>A timeline at the bottom logs everything that's happened &mdash; received, analyzed, drafted, sent &mdash; each with a relative timestamp.</p>
+		</article>
+
+		<article class="chapter" id="troubleshooting" data-title="Troubleshooting">
+			<div class="eyebrow">Chapter 10</div>
+			<h2>Troubleshooting</h2>
+
+			<h3>"AI analysis could not be completed" on a submission</h3>
+			<ol>
+				<li>Open the submission and click <strong>Retry</strong> &mdash; many failures are temporary.</li>
+				<li>If it keeps failing, check the AI Provider tab for a green <strong>Connected</strong> badge; re-check your API key if not.</li>
+				<li>If you just changed your key or provider, make sure you clicked <strong>Save Changes</strong> &mdash; testing alone doesn't save it.</li>
+				<li>As a fallback, click <strong>Mark Reviewed</strong> and handle the reply manually while you sort out the provider issue.</li>
+			</ol>
+
+			<h3>No submissions are showing up</h3>
+			<ol>
+				<li>Confirm the form is toggled <strong>on</strong> under Settings &rarr; General &rarr; Monitored Forms.</li>
+				<li>Check the AI Inbox's date-range dropdown &mdash; switch it to <strong>All time</strong>.</li>
+				<li>Clear any active search/filter.</li>
+			</ol>
+
+			<h3>Test Connection fails</h3>
+			<ul>
+				<li>Double-check the API key was copied in full, with no extra spaces.</li>
+				<li>Confirm the key hasn't been revoked or expired.</li>
+				<li>Make sure you're testing the provider card you meant to configure.</li>
+			</ul>
+
+			<h3>Slack notifications aren't arriving</h3>
+			<ul>
+				<li>Confirm the Slack switch is on in Settings &rarr; Notifications.</li>
+				<li>Confirm the webhook URL is a real <code>https://</code> Slack webhook.</li>
+				<li>Remember this only fires for <strong>Urgent</strong>-priority submissions.</li>
+			</ul>
+
+			<div class="callout">Still stuck? Make sure both Contact Form 7 and Inbox AI are updated to their latest versions &mdash; fixes ship regularly.</div>
+		</article>
+
+	</main>
+</div>
+
+<footer class="site-footer">
+	<div class="wrap">
+		<p>Inbox AI — an AI-powered review inbox for Contact Form 7 submissions.</p>
+		<nav>
+			<a href="index.html">Home</a>
+			<a href="index.html#features">Features</a>
+		</nav>
+	</div>
+</footer>
+
+<script>
+	// Highlight the current chapter link as it scrolls into view.
+	const links = Array.from(document.querySelectorAll('.docs-nav a[data-nav]'));
+	const chapters = Array.from(document.querySelectorAll('.chapter'));
+
+	const observer = new IntersectionObserver((entries) => {
+		entries.forEach((entry) => {
+			if (!entry.isIntersecting) return;
+			const id = entry.target.getAttribute('id');
+			links.forEach((a) => a.classList.toggle('is-active', a.getAttribute('href') === '#' + id));
+		});
+	}, { rootMargin: '-20% 0px -70% 0px' });
+
+	chapters.forEach((c) => observer.observe(c));
+
+	// Simple client-side search across chapter title + body text.
+	const search = document.getElementById('docs-search');
+	search.addEventListener('input', () => {
+		const q = search.value.trim().toLowerCase();
+
+		chapters.forEach((chapter) => {
+			const matches = q === '' || chapter.textContent.toLowerCase().includes(q);
+			chapter.hidden = !matches;
+		});
+
+		links.forEach((a) => {
+			const chapter = document.querySelector(a.getAttribute('href'));
+			a.hidden = q !== '' && chapter && chapter.hidden;
+		});
+	});
+</script>
+
+</body>
+</html>

@@ -23,6 +23,7 @@ Edit the text in the **Prompt template** box to change how analysis works. Chang
 This is the instruction the AI follows when writing a suggested reply. It supports its own set of placeholders:
 
 * `{message}` — the original submission.
+* `{customer_name}` — the sender's name.
 * `{summary}` — the AI's own summary of it.
 * `{tone}` — the tone you've selected below.
 * `{signature}` — your sign-off.

@@ -47,6 +47,10 @@ Click the **Export** button in the page header to download the currently filtere
 
 At the bottom of the table, "Showing X to Y of Z messages" tells you where you are, with page-number links to move through the rest. If a search or filter turns up nothing, you'll see "No messages match your filters" along with a one-click **Clear filters** link.
 
+## Looking for a summary by sender instead?
+
+If you'd rather see one row per customer (with their total message count and how many you've replied to) instead of one row per submission, see [Contacts](contacts.md).
+
 ---
 
 [← Previous: Import & Migration](07-settings-import-migration.md) | [Guide index](README.md) | [Next: Viewing & Replying to a Submission →](09-submission-detail-and-replies.md)

@@ -2,6 +2,8 @@
 
 Welcome! This guide explains, in plain language and step by step, how to use **Inbox AI** — the plugin that adds an AI-powered review inbox on top of your Contact Form 7 forms.
 
+Browsable online at: https://github.com/theaminulai/inbox-ai/tree/main/wiki
+
 No technical background is needed to follow this guide. Every screen, button, and toggle you'll actually see in your WordPress admin is explained here.
 
 ## What this plugin does
@@ -21,7 +23,7 @@ After the plugin is active, look in your WordPress admin sidebar under **Contact
 
 ## What's available right now
 
-This guide only documents features that actually work today. The plugin is still being built out, so a few things you might see mentioned elsewhere (a Campaigns/bulk-email tool, a Contacts list, an Analytics dashboard) are still in development and aren't part of your live site yet. This guide will be updated as they're released.
+This guide only documents features that actually work today. The plugin is still being built out, so a few things you might see mentioned elsewhere (a Campaigns/bulk-email tool, an Analytics dashboard, automatic CRM syncing) are still in development and aren't part of your live site yet. This guide will be updated as they're released.
 
 ## Guide contents
 
@@ -32,10 +34,16 @@ Read these in order the first time you set up the plugin:
 3. [General Settings](03-settings-general.md) — choose which forms to monitor and how submissions are handled.
 4. [Prompts](04-settings-prompts.md) — customize the instructions the AI follows.
 5. [Usage & Billing](05-settings-usage-billing.md) — track how much you're using and spending.
-6. [Notifications](06-settings-notifications.md) — get emailed or Slack-messaged about inbox activity.
+6. [Notifications](06-settings-notifications.md) — get emailed about inbox activity, and set up Inbound Email Replies.
 7. [Import & Migration](07-settings-import-migration.md) — bring in older submissions from Flamingo.
 8. [The AI Inbox List](08-ai-inbox-list.md) — search, filter, and browse submissions.
 9. [Viewing & Replying to a Submission](09-submission-detail-and-replies.md) — the AI's analysis and how to send a reply.
 10. [Troubleshooting](10-troubleshooting.md) — common issues and what to do about them.
+
+Also see:
+
+* [Integrations](settings-integrations.md) — connect Slack notifications and save CRM connection details.
+* [Contacts](contacts.md) — every sender grouped into one row, built from your existing submissions.
+* [Inbound Email Replies Setup Guide](Inbound-Email-Replies-Setup-Guide.md) — a deep dive on that one feature specifically (IMAP setup, common hosting quirks, WP-Cron troubleshooting).
 
 Each guide is a short, standalone page — feel free to jump straight to the one you need.

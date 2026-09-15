@@ -24,10 +24,19 @@ These three switches control what happens the moment a new submission comes in:
 
 Below the switches is a **Confidence threshold for "Needs Review"** slider (0–100%). Any submission the AI analyzes with confidence *below* this number gets flagged as **Needs Review** instead of being treated as fully processed — a signal to double-check it yourself before relying on the AI's summary or category.
 
+## Manage Categories
+
+Add, rename, or delete the categories the AI can assign to a submission (these are the same categories you'll see in the AI Inbox's Category filter and on each submission).
+
+* Type a name into the **New category name** field and click **Add category**.
+* Click the pencil icon next to an existing category to rename it — this updates it everywhere it's already been used, on every form.
+* Click the trash icon to delete a category. The "Used by N form(s)" line under each name tells you how widely it's used before you delete it.
+
+Categories you add here are available to every monitored form; there's nothing per-form to configure separately.
+
 ## Data Retention
 
-* **Keep submissions for** — choose how long to keep submission records: Forever, 24 months, 12 months, or 6 months.
-* **Delete attachments after reply is sent** — when on, uploaded files (but not the message text itself) are removed once you've replied, to save storage space.
+* **Keep submissions for** — choose how long to keep submission records: Forever, 24 months, 12 months, or 6 months. Anything older than your chosen period is permanently deleted by a daily background check — there's nothing to click to trigger this, it just runs. Choosing **Forever** turns this off entirely.
 
 ## Saving your changes
 

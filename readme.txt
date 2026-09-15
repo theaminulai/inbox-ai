@@ -113,7 +113,7 @@ It isn't a full replacement for a dedicated database add-on, though. Inbox AI do
 3. Go to **Contact → Settings** to connect an AI provider (OpenAI, Anthropic, or Google Gemini) and choose which forms to monitor.
 4. Open **Contact → AI Inbox** to see submissions arrive, get analyzed, and become ready to review.
 
-A full step-by-step user guide is included with the plugin under `wiki/`.
+A full step-by-step user guide is included with the plugin under `wiki/`, and is also browsable online at [Wiki](https://github.com/theaminulai/inbox-ai/tree/main/wiki).
 
 == Frequently Asked Questions ==
 

@@ -6,24 +6,27 @@ Use this tab to decide how you (or your team) hear about activity in the AI Inbo
 
 ## Email Notifications
 
-Four independent switches:
+Five independent switches:
 
 * **Notify me on urgent messages** — sends an email the moment a submission is scored as Urgent priority.
 * **Daily summary digest** — sends one email each morning at 9:00 AM summarizing the previous day's activity.
 * **Notify on AI analysis failure** — sends an email whenever a submission's AI analysis couldn't complete.
 * **Notify when a reply draft is ready** — sends an email when a new AI-drafted reply is waiting for your approval.
+* **Notify me when a customer replies** — sends an email as soon as a customer's reply is pulled in by Inbound Email Replies (see below).
 
 Turn on whichever combination makes sense for you — they work independently of each other.
 
-## Slack Integration
+## Inbound Email Replies
 
-If your team uses Slack:
+This card lets Inbox AI pick up a customer's reply when they hit "Reply" in their own email client, and bring it back into that submission's conversation thread automatically — instead of it just landing in your regular mailbox and going unnoticed by the plugin.
 
-1. Turn on **Send a Slack message for urgent submissions**.
-2. Paste a valid webhook URL (it must start with `https://`) into the **Slack channel webhook URL** field. You can get this URL from your Slack workspace's app/integration settings — search Slack's own help documentation for "incoming webhooks" if you haven't set one up before.
-3. Save your settings.
+Setting this up involves a few technical fields (an IMAP host, port, and mailbox password), so it has its own dedicated walkthrough with common hosting examples and troubleshooting: see the [Inbound Email Replies Setup Guide](Inbound-Email-Replies-Setup-Guide.md).
 
-If the webhook URL field is left empty or isn't a valid HTTPS link, Slack messages won't be sent even with the switch on.
+If your host's PHP doesn't have the `imap` extension enabled, this card shows a yellow warning saying so — the rest of the tab still saves fine, but checking won't run until your host turns it on.
+
+## Looking for Slack or a CRM?
+
+Slack notifications and CRM connection details moved to their own **Integrations** tab — see [Integrations](settings-integrations.md).
 
 ## Saving
 
